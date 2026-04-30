@@ -9,34 +9,34 @@ export default function LandingPage() {
   const navigate = useNavigate()
 
   const stats = [
-    { value: '50+', label: 'Entegre Tasiyici', icon: Truck },
-    { value: '10K+', label: 'Aylik Sevkiyat', icon: Package },
+    { value: '50+', label: 'Entegre Taşıyıcı', icon: Truck },
+    { value: '10K+', label: 'Aylık Sevkiyat', icon: Package },
     { value: '%23', label: 'Ort. Tasarruf', icon: TrendingUp },
     { value: '99.9%', label: 'Uptime', icon: Shield },
   ]
 
   const features = [
-    { icon: Database, title: 'ERP Entegrasyon', desc: 'SAP, Logo, Netsis ile aninda baglanin. Siparisleriniz otomatik akar, manuel veri girisi sifir.' },
-    { icon: Calculator, title: 'Otomatik Hesaplama', desc: 'Desi, hacim, agirlik ve ucretlendirme agirligi aninda hesaplanir. Arac tipi otomatik belirlenir.' },
-    { icon: BarChart3, title: 'Akilli Karsilastirma', desc: 'Anlasma tarifeleriniz uzerinden tum provider\'lari karsilastirir, en uygun secenegi bulur.' },
-    { icon: MapPin, title: 'Canli Takip', desc: 'Tum sevkiyatlariniz tek haritada. Gercek zamanli konum, ETA ve gecikme uyarilari.' },
-    { icon: Leaf, title: 'CO2 Raporu', desc: 'GLEC Framework ile karbon ayak izi hesaplama. ESG uyumu ve surdurulebilirlik raporlari.' },
-    { icon: DollarSign, title: 'Fatura Denetimi', desc: 'Anlasma fiyati vs. provider faturasi otomatik karsilastirma. Fazla odemeleri aninda tespit.' },
+    { icon: Database, title: 'ERP Entegrasyon', desc: 'SAP, Logo, Netsis ile anında bağlanın. Siparişleriniz otomatik akar, manuel veri girişi sıfır.' },
+    { icon: Calculator, title: 'Otomatik Hesaplama', desc: 'Desi, hacim, ağırlık ve ücretlendirme ağırlığı anında hesaplanır. Araç tipi otomatik belirlenir.' },
+    { icon: BarChart3, title: 'Akıllı Karşılaştırma', desc: 'Anlaşma tarifeleriniz üzerinden tüm provider\'ları karşılaştırır, en uygun seçeneği bulur.' },
+    { icon: MapPin, title: 'Canlı Takip', desc: 'Tüm sevkiyatlarınız tek haritada. Gerçek zamanlı konum, ETA ve gecikme uyarıları.' },
+    { icon: Leaf, title: 'CO2 Raporu', desc: 'GLEC Framework ile karbon ayak izi hesaplama. ESG uyumu ve sürdürülebilirlik raporları.' },
+    { icon: DollarSign, title: 'Fatura Denetimi', desc: 'Anlaşma fiyatı vs. provider faturası otomatik karşılaştırma. Fazla ödemeleri anında tespit.' },
   ]
 
   const steps = [
-    { num: '1', title: 'Entegre Ol', desc: 'ERP sisteminizi baglayin, tasiyici anlasmalarinizi tanimlayin. Stepper wizard ile 15 dakikada hazir.', icon: Database },
-    { num: '2', title: 'Hesapla', desc: 'Sevkiyat ihtiyaci dogdugunda karar motoru aninda calisir. Tum tasiyicilarin tarifelerini karsilastirir.', icon: Calculator },
-    { num: '3', title: 'Tasarruf Et', desc: 'En uygun tasiyici otomatik secilir. Performans takibi ve raporlarla surekli iyilestirin.', icon: TrendingUp },
+    { num: '1', title: 'Entegre Ol', desc: 'ERP sisteminizi bağlayın, taşıyıcı anlaşmalarınızı tanımlayın. Stepper wizard ile 15 dakikada hazır.', icon: Database },
+    { num: '2', title: 'Hesapla', desc: 'Sevkiyat ihtiyacı doğduğunda karar motoru anında çalışır. Tüm taşıyıcıların tarifelerini karşılaştırır.', icon: Calculator },
+    { num: '3', title: 'Tasarruf Et', desc: 'En uygun taşıyıcı otomatik seçilir. Performans takibi ve raporlarla sürekli iyileştirin.', icon: TrendingUp },
   ]
 
   const benefits = [
-    'Tek entegrasyon ile tum lojistik provider\'lara erisim',
-    'Anlasma bazli aninda fiyat karsilastirma — teklif bekleme yok',
-    'Firma bazli konfigüre edilebilir karar kriterleri',
-    'Kural motoru ile otomatik tasiyici atama',
-    'Rol bazli dashboard\'lar (Yonetim, Lojistik, Operasyon, Finans)',
-    'Multi-tenant SaaS — her firma kendi alaninda izole',
+    'Tek entegrasyon ile tüm lojistik provider\'lara erişim',
+    'Anlaşma bazlı anında fiyat karşılaştırma — teklif bekleme yok',
+    'Firma bazlı konfigüre edilebilir karar kriterleri',
+    'Kural motoru ile otomatik taşıyıcı atama',
+    'Rol bazlı dashboard\'lar (Yönetim, Lojistik, Operasyon, Finans)',
+    'Multi-tenant SaaS — her firma kendi alanında izole',
   ]
 
   return (
@@ -55,16 +55,16 @@ export default function LandingPage() {
             </span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Ozellikler</a>
-            <a href="#how-it-works" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Nasil Calisir</a>
-            <a href="#pricing" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Cozumler</a>
+            <a href="#features" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Özellikler</a>
+            <a href="#how-it-works" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Nasıl Çalışır</a>
+            <a href="#pricing" className="text-[13px] text-gray-500 hover:text-orange-500 transition-colors font-medium">Çözümler</a>
           </nav>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/login')} className="px-4 py-2 text-[13px] text-gray-600 font-medium hover:text-orange-500 transition-colors">
-              Giris Yap
+              Giriş Yap
             </button>
             <button onClick={() => navigate('/onboarding')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white text-[13px] font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg shadow-orange-200">
-              Ucretsiz Deneyin
+              Ücretsiz Deneyin
             </button>
           </div>
         </div>
@@ -84,22 +84,22 @@ export default function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-[13px] font-semibold mb-8">
                 <Zap className="w-4 h-4" />
-                Lojistigin iyzico'su
+                Lojistiğin iyzico'su
               </div>
               <h1 className="text-4xl lg:text-[52px] font-extrabold leading-[1.1] tracking-tight text-gray-900 mb-6">
                 Tek Entegrasyon,
                 <br />
-                <span className="text-orange-500">Tum Tasiyicilar</span>
+                <span className="text-orange-500">Tüm Taşıyıcılar</span>
               </h1>
               <p className="text-[17px] text-gray-500 leading-relaxed mb-8 max-w-lg">
-                Sirketiniz birden fazla lojistik firma ile mi calisiyor? Artik her biri ile ayri ayri ugrasmaniza gerek yok. Biz entegre olduk, siz tasarruf edin.
+                Şirketiniz birden fazla lojistik firma ile mi çalışıyor? Artık her biri ile ayrı ayrı uğraşmanıza gerek yok. Biz entegre olduk, siz tasarruf edin.
               </p>
               <div className="flex flex-wrap gap-4 mb-10">
                 <button onClick={() => navigate('/onboarding')} className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-[15px] shadow-xl shadow-orange-200 flex items-center gap-2">
-                  Ucretsiz Demo Isteyin <ArrowRight className="w-5 h-5" />
+                  Ücretsiz Demo İsteyin <ArrowRight className="w-5 h-5" />
                 </button>
                 <button onClick={() => navigate('/login')} className="px-7 py-3.5 rounded-xl border-2 border-orange-200 text-orange-600 font-semibold hover:bg-orange-50 transition-all duration-200 text-[15px]">
-                  Hemen Baslayin
+                  Hemen Başlayın
                 </button>
               </div>
               {/* Trust badges */}
@@ -110,7 +110,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Kredi karti gerekmez
+                  Kredi kartı gerekmez
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -140,13 +140,13 @@ export default function LandingPage() {
                     <p className="text-lg font-bold text-orange-400">₺284K</p>
                   </div>
                   <div className="bg-white/5 rounded-lg p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Zamaninda</p>
+                    <p className="text-[10px] text-gray-500 mb-1">Zamanında</p>
                     <p className="text-lg font-bold text-green-400">%96.8</p>
                   </div>
                 </div>
                 {/* Mock chart bars */}
                 <div className="bg-white/5 rounded-lg p-4">
-                  <p className="text-[10px] text-gray-500 mb-3">Aylik Maliyet Trendi</p>
+                  <p className="text-[10px] text-gray-500 mb-3">Aylık Maliyet Trendi</p>
                   <div className="flex items-end gap-2 h-20">
                     {[60, 75, 55, 80, 65, 90, 70, 85, 45, 72, 68, 78].map((h, i) => (
                       <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: i === 11 ? 'linear-gradient(to top, #f97316, #fb923c)' : 'rgba(255,255,255,0.08)' }} />
@@ -160,7 +160,7 @@ export default function LandingPage() {
                       <TrendingUp className="w-4 h-4 text-orange-500" />
                     </div>
                     <div>
-                      <p className="text-[10px] text-gray-400">En Uygun Tasiyici</p>
+                      <p className="text-[10px] text-gray-400">En Uygun Taşıyıcı</p>
                       <p className="text-[13px] font-bold text-gray-800">Yolda Lojistik</p>
                     </div>
                   </div>
@@ -194,12 +194,12 @@ export default function LandingPage() {
       <section id="features" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[13px] text-orange-500 font-semibold uppercase tracking-wider mb-3">Ozellikler</p>
+            <p className="text-[13px] text-orange-500 font-semibold uppercase tracking-wider mb-3">Özellikler</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
               Neden <span className="text-orange-500">Logic.Route</span>?
             </h2>
             <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              End-to-end lojistik optimizasyonu icin ihtiyaciniz olan her sey tek platformda.
+              End-to-end lojistik optimizasyonu için ihtiyacınız olan her şey tek platformda.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -220,12 +220,12 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[13px] text-orange-500 font-semibold uppercase tracking-wider mb-3">Nasil Calisir?</p>
+            <p className="text-[13px] text-orange-500 font-semibold uppercase tracking-wider mb-3">Nasıl Çalışır?</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-              3 Adimda Baslayın
+              3 Adımda Başlayın
             </h2>
             <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              Kurulum 15 dakika. Hemen tasarruf etmeye baslayin.
+              Kurulum 15 dakika. Hemen tasarruf etmeye başlayın.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-10">
@@ -234,7 +234,7 @@ export default function LandingPage() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-200">
                   <s.icon className="w-7 h-7 text-white" />
                 </div>
-                <div className="text-[11px] font-bold text-orange-400 uppercase tracking-wider mb-2">Adim {s.num}</div>
+                <div className="text-[11px] font-bold text-orange-400 uppercase tracking-wider mb-2">Adım{s.num}</div>
                 <h3 className="text-[20px] font-bold text-gray-900 mb-3">{s.title}</h3>
                 <p className="text-[14px] text-gray-400 leading-relaxed">{s.desc}</p>
                 {i < 2 && (
@@ -256,7 +256,7 @@ export default function LandingPage() {
                 Lojistik maliyetlerinizi <span className="text-orange-500">optimize edin</span>
               </h2>
               <p className="text-[16px] text-gray-400 mb-8 leading-relaxed">
-                Tek tek provider API'leri ile ugrasmayin. Biz zaten entegre olduk — siz sadece karar verin.
+                Tek tek provider API'leri ile uğraşmayın. Biz zaten entegre olduk — siz sadece karar verin.
               </p>
               <div className="space-y-4">
                 {benefits.map((b, i) => (
@@ -267,16 +267,16 @@ export default function LandingPage() {
                 ))}
               </div>
               <button onClick={() => navigate('/onboarding')} className="mt-8 px-7 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 text-[14px] shadow-lg shadow-orange-200 inline-flex items-center gap-2">
-                Hemen Baslayin <ArrowRight className="w-4 h-4" />
+                Hemen Başlayın <ArrowRight className="w-4 h-4" />
               </button>
             </div>
             {/* Right — Stats card */}
             <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-lg shadow-gray-100/50">
-              <h3 className="text-[18px] font-bold text-gray-900 mb-6">Platform Istatistikleri</h3>
+              <h3 className="text-[18px] font-bold text-gray-900 mb-6">Platform İstatistikleri</h3>
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-[14px] text-gray-500">Zamaninda Teslimat</span>
+                    <span className="text-[14px] text-gray-500">Zamanında Teslimat</span>
                     <span className="text-[14px] font-bold text-gray-900">%96.8</span>
                   </div>
                   <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -294,7 +294,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-[14px] text-gray-500">Musteri Memnuniyeti</span>
+                    <span className="text-[14px] text-gray-500">Müşteri Memnuniyeti</span>
                     <span className="text-[14px] font-bold text-gray-900">%98.5</span>
                   </div>
                   <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -303,7 +303,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-[14px] text-gray-500">CO2 Azaltma</span>
+                    <span className="text-[14px] text-gray-500">CO₂ Azaltma</span>
                     <span className="text-[14px] font-bold text-gray-900">%15</span>
                   </div>
                   <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -319,7 +319,7 @@ export default function LandingPage() {
       {/* References */}
       <section className="py-14 bg-white border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-[12px] text-gray-400 uppercase tracking-wider mb-8 font-medium">Guvenilen Cozum Ortagi</p>
+          <p className="text-center text-[12px] text-gray-400 uppercase tracking-wider mb-8 font-medium">Güvenilen Çözüm Ortağı</p>
           <div className="flex items-center justify-center gap-12 flex-wrap">
             {['A101', 'Migros', 'BIM', 'CarrefourSA', 'Metro', 'LC Waikiki'].map((name) => (
               <div key={name} className="text-[18px] font-bold text-gray-300 hover:text-orange-400 transition-colors cursor-default">{name}</div>
@@ -336,17 +336,17 @@ export default function LandingPage() {
         </div>
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-4">
-            Lojistik maliyetlerinizi dusurmeye hazir misiniz?
+            Lojistik maliyetlerinizi düşürmeye hazır mısınız?
           </h2>
           <p className="text-[17px] text-orange-100 mb-10 max-w-lg mx-auto">
-            15 dakikada kurulum, aninda tasarruf. Kredi karti gerekmez.
+            15 dakikada kurulum, anında tasarruf. Kredi kartı gerekmez.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <button onClick={() => navigate('/onboarding')} className="px-8 py-4 rounded-xl bg-white text-orange-600 font-bold hover:bg-orange-50 transition-all duration-200 text-[16px] shadow-xl shadow-orange-700/20 inline-flex items-center gap-2">
-              Ucretsiz Demo Isteyin <ArrowRight className="w-5 h-5" />
+              Ücretsiz Demo İsteyin <ArrowRight className="w-5 h-5" />
             </button>
             <button onClick={() => navigate('/login')} className="px-8 py-4 rounded-xl border-2 border-white/30 text-white font-semibold hover:bg-white/10 transition-all duration-200 text-[16px]">
-              Giris Yap
+              Giriş Yap
             </button>
           </div>
         </div>
@@ -366,7 +366,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-[13px] text-gray-400 leading-relaxed mb-5">
-                Akilli lojistik karar motoru. Tek entegrasyon ile tum tasiyicilara erisin, maliyetlerinizi optimize edin.
+                Akıllı lojistik karar motoru. Tek entegrasyon ile tüm taşıyıcılara erişin, maliyetlerinizi optimize edin.
               </p>
               <div className="flex items-center gap-3">
                 {['LinkedIn', 'Twitter', 'GitHub'].map((s) => (
@@ -377,23 +377,23 @@ export default function LandingPage() {
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Urun</h4>
+              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Ürün</h4>
               <div className="space-y-3">
-                {['Karar Motoru', 'Rota Optimizasyonu', 'Canli Takip', 'CO2 Raporu', 'Fatura Denetimi', 'ERP Entegrasyon'].map((item) => (
+                {['Karar Motoru', 'Rota Optimizasyonu', 'Canlı Takip', 'CO2 Raporu', 'Fatura Denetimi', 'ERP Entegrasyon'].map((item) => (
                   <p key={item} className="text-[13px] text-gray-400 hover:text-orange-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Sirket</h4>
+              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Şirket</h4>
               <div className="space-y-3">
-                {['Hakkimizda', 'Kariyer', 'Blog', 'Basinda Biz', 'Iletisim'].map((item) => (
+                {['Hakkımızda', 'Kariyer', 'Blog', 'Basında Biz', 'İletişim'].map((item) => (
                   <p key={item} className="text-[13px] text-gray-400 hover:text-orange-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Iletisim</h4>
+              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">İletişim</h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-[13px] text-gray-400">
                   <Mail className="w-4 h-4 text-orange-400" /> info@klcsystem.com
@@ -406,15 +406,15 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="mt-5 space-y-2">
-                {['Gizlilik Politikasi', 'Kullanim Sartlari', 'KVKK'].map((item) => (
+                {['Gizlilik Politikası', 'Kullanım Şartları', 'KVKK'].map((item) => (
                   <p key={item} className="text-[12px] text-gray-500 hover:text-orange-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-[12px] text-gray-500">&copy; 2026 KLC Logic.Route. Tum haklari saklidir.</p>
-            <p className="text-[12px] text-gray-500">Turkiye'nin lojistik karar motoru platformu.</p>
+            <p className="text-[12px] text-gray-500">&copy; 2026 KLC Logic.Route. Tüm hakları saklıdır.</p>
+            <p className="text-[12px] text-gray-500">Türkiye'nin lojistik karar motoru platformu.</p>
           </div>
         </div>
       </footer>
