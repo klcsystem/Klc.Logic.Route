@@ -251,7 +251,48 @@ Sevkiyat emri provider API'si üzerinden otomatik oluşturulacak:
 - **Araç tipi bazlı:** Tır, kamyon, kamyonet için farklı tarifeler
 - **Anlaşmalı sabit fiyatlar** — spot değil, önceden belirlenmiş km kademe fiyatları
 
-**Etki:** ContractRate entity'sinde km kademe desteği zaten var (minWeightKg/maxWeightKg gibi, km için de minDistanceKm/maxDistanceKm eklenmeli). PricingUnit enum'da "PerKm" zaten var ama kademe bazlı fiyatlandırma için mesafe aralığı desteği gerekiyor.
+**Etki:** ContractRate entity'sinde km kademe desteği eklendi (minDistanceKm/maxDistanceKm).
+
+**Gerçek Tarife Örneği (Esra Hanım'dan):**
+Tır için km bazlı TL/km fiyatları:
+- 1-12 km: 5.410 TL/km (sabit baz fiyat)
+- 13 km: 5.429 | 14 km: 5.466 | 15 km: 5.504
+- 16 km: 5.541 | 17 km: 5.579 | 18 km: 5.616
+- 19 km: 5.654 | 20 km: 5.691 | 21 km: 5.728
+- 22 km: 5.766 | 23 km: 5.803 | 24 km: 5.841 | 25 km: 5.878
+- 26 km: 7.246 | 27 km: 7.284 | 28 km: 7.321 | 29 km: 7.358 | 30 km: 7.396
+Not: 25→26 km'de büyük fiyat sıçraması var (şehirlerarası tarife geçişi olabilir).
+Hesaplama: Toplam fiyat = mesafe(km) × TL/km tarife
+
+---
+
+## 19. Provider Portal & Multi-Tenant Yapı
+
+### S: Provider firmaları sisteme nasıl dahil olacak?
+**C:** Her lojistik firma kendi tenant'ına sahip olacak:
+- Kendi admin kullanıcısını oluşturabilir
+- Kendi altına kullanıcı ekleyebilir
+- Gelen siparişleri görebilir
+- Sabit fiyat tarifelerini girebilir
+- Teklif verebilir (gelen sipariş için)
+- Şoför ve araç bilgilerini yönetebilir
+- Sevkiyat durumlarını güncelleyebilir
+
+### S: Provider portalında neler görünecek?
+**C:** Provider firma portalı:
+- Gelen siparişler listesi (teklif verilebilir)
+- Sabit km/araç bazlı tarife tablosu girişi
+- Araç filosu yönetimi (plaka, tip, tonaj, sigorta)
+- Şoför yönetimi (ad, telefon, ehliyet)
+- Atanmış sevkiyatlar + durum güncelleme
+- Kendi performans metrikleri
+- NOT: Fiyat bilgilerini, müşteri bilgilerini, diğer provider bilgilerini GÖRMEZ
+
+### S: Provider firma admin ekranı nasıl olacak?
+**C:** Her provider firmanın kendi tenant'ı olacak:
+- Provider admin → kendi firması altına kullanıcı oluşturabilir
+- Kullanıcılar sadece kendi firmasının verilerini görebilir
+- Multi-tenant izolasyon — Yolda, Murat Lojistik her biri ayrı tenant
 
 ---
 
