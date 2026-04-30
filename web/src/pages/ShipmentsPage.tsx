@@ -18,11 +18,11 @@ const mockEvents: ShipmentEvent[] = [
 ]
 
 const mockShipments: Shipment[] = [
-  { id: 's1', shipmentNumber: 'SHP-2024-0412', orderId: '1', originCity: 'Istanbul', destinationCity: 'Ankara', status: 'InTransit', priority: 'Urgent', totalWeightKg: 735, totalVolumeM3: 1.35, totalDesiWeight: 270, chargeableWeight: 735, palletCount: 4, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Tir', selectedProviderName: 'Yolda', calculatedPrice: 8450, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: mockItems, events: mockEvents, recommendation: { selectedProviderName: 'Yolda', calculatedPrice: 8450, savingsAmount: 650, savingsPercent: 7.1, reason: 'Optimal', scorePrice: 78, scoreSpeed: 92, scoreReliability: 85, overallScore: 84, recommendedVehicle: 'Tir', explanation: '' }, createdAt: '2024-03-15' },
-  { id: 's2', shipmentNumber: 'SHP-2024-0411', originCity: 'Istanbul', destinationCity: 'Bursa', status: 'Calculated', priority: 'Normal', totalWeightKg: 520, totalVolumeM3: 2.4, totalDesiWeight: 480, chargeableWeight: 520, palletCount: 3, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyon', selectedProviderName: 'Tırport', calculatedPrice: 3200, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: [], events: [], createdAt: '2024-03-15' },
-  { id: 's3', shipmentNumber: 'SHP-2024-0410', originCity: 'Istanbul', destinationCity: 'Istanbul', status: 'Delivered', priority: 'Normal', totalWeightKg: 210, totalVolumeM3: 0.9, totalDesiWeight: 180, chargeableWeight: 210, palletCount: 1, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyonet', selectedProviderName: 'Ekol Lojistik', calculatedPrice: 1800, currency: 'TRY', requestedDeliveryDate: '2024-03-14', actualDeliveryDate: '2024-03-14', items: [], events: [], createdAt: '2024-03-14' },
-  { id: 's4', shipmentNumber: 'SHP-2024-0409', originCity: 'Kocaeli', destinationCity: 'Istanbul', status: 'Draft', priority: 'Priority', totalWeightKg: 3200, totalVolumeM3: 12.5, totalDesiWeight: 2500, chargeableWeight: 3200, palletCount: 14, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Frigorifik', currency: 'TRY', requestedDeliveryDate: '2024-03-17', items: [], events: [], createdAt: '2024-03-15' },
-  { id: 's5', shipmentNumber: 'SHP-2024-0408', originCity: 'Ankara', destinationCity: 'Izmir', status: 'PendingApproval', priority: 'Normal', totalWeightKg: 1500, totalVolumeM3: 6.0, totalDesiWeight: 1200, chargeableWeight: 1500, palletCount: 8, isHazardous: true, requiresColdChain: false, recommendedVehicle: 'Tir', selectedProviderName: 'Yolda', calculatedPrice: 11200, currency: 'TRY', requestedDeliveryDate: '2024-03-18', items: [], events: [], createdAt: '2024-03-15' },
+  { id: 's1', shipmentNumber: 'SHP-2024-0412', orderId: '1', originCity: 'Istanbul', destinationCity: 'Ankara', status: 'InTransit', priority: 'Urgent', totalWeightKg: 735, totalVolumeM3: 1.35, totalDesiWeight: 270, chargeableWeight: 735, palletCount: 4, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Tir', selectedProviderName: 'Yolda', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 8450, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: mockItems, events: mockEvents, recommendation: { selectedProviderName: 'Yolda', calculatedPrice: 8450, savingsAmount: 650, savingsPercent: 7.1, reason: 'Optimal', scorePrice: 78, scoreSpeed: 92, scoreReliability: 85, overallScore: 84, recommendedVehicle: 'Tir', explanation: '' }, createdAt: '2024-03-15' },
+  { id: 's2', shipmentNumber: 'SHP-2024-0411', originCity: 'Istanbul', destinationCity: 'Bursa', status: 'Calculated', priority: 'Normal', totalWeightKg: 520, totalVolumeM3: 2.4, totalDesiWeight: 480, chargeableWeight: 520, palletCount: 3, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyon', selectedProviderName: 'Tırport', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 3200, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: [], events: [], createdAt: '2024-03-15' },
+  { id: 's3', shipmentNumber: 'SHP-2024-0410', originCity: 'Istanbul', destinationCity: 'Istanbul', status: 'Delivered', priority: 'Normal', totalWeightKg: 210, totalVolumeM3: 0.9, totalDesiWeight: 180, chargeableWeight: 210, palletCount: 1, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyonet', selectedProviderName: 'Ekol Lojistik', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 1800, currency: 'TRY', requestedDeliveryDate: '2024-03-14', actualDeliveryDate: '2024-03-14', items: [], events: [], createdAt: '2024-03-14' },
+  { id: 's4', shipmentNumber: 'SHP-2024-0409', originCity: 'Kocaeli', destinationCity: 'Istanbul', status: 'Draft', priority: 'Priority', totalWeightKg: 3200, totalVolumeM3: 12.5, totalDesiWeight: 2500, chargeableWeight: 3200, palletCount: 14, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Frigorifik', selectedProviderName: 'Murat Lojistik', providerIntegrationMode: 'SelfService', currency: 'TRY', requestedDeliveryDate: '2024-03-17', items: [], events: [], createdAt: '2024-03-15' },
+  { id: 's5', shipmentNumber: 'SHP-2024-0408', originCity: 'Ankara', destinationCity: 'Izmir', status: 'PendingApproval', priority: 'Normal', totalWeightKg: 1500, totalVolumeM3: 6.0, totalDesiWeight: 1200, chargeableWeight: 1500, palletCount: 8, isHazardous: true, requiresColdChain: false, recommendedVehicle: 'Tir', selectedProviderName: 'Horoz Lojistik', providerIntegrationMode: 'Managed', calculatedPrice: 11200, currency: 'TRY', requestedDeliveryDate: '2024-03-18', items: [], events: [], createdAt: '2024-03-15' },
 ]
 
 const ALL_STATUSES: ShipmentStatus[] = ['Draft', 'Calculated', 'PendingApproval', 'Approved', 'SentToProvider', 'VehicleAssigned', 'Loading', 'InTransit', 'Delivered', 'Completed', 'Cancelled']
@@ -40,6 +40,7 @@ export default function ShipmentsPage() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [providerFilter, setProviderFilter] = useState('all')
   const [shipmentDrawerOpen, setShipmentDrawerOpen] = useState(false)
   const [shipmentForm, setShipmentForm] = useState({ originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, palletCount: 0, priority: 'Normal', requestedDeliveryDate: '', isHazardous: false, requiresColdChain: false })
 
@@ -50,10 +51,13 @@ export default function ShipmentsPage() {
     Completed: t.shipments.completed, Cancelled: t.shipments.cancelled,
   }
 
+  const uniqueProviders = [...new Set(mockShipments.map((s) => s.selectedProviderName).filter(Boolean))] as string[]
+
   const filtered = mockShipments.filter((s) => {
     const matchSearch = searchTerm === '' || s.shipmentNumber.toLowerCase().includes(searchTerm.toLowerCase()) || (s.selectedProviderName || '').toLowerCase().includes(searchTerm.toLowerCase())
     const matchStatus = statusFilter === 'all' || s.status === statusFilter
-    return matchSearch && matchStatus
+    const matchProvider = providerFilter === 'all' || s.selectedProviderName === providerFilter
+    return matchSearch && matchStatus && matchProvider
   })
 
   const kpis = [
@@ -92,9 +96,15 @@ export default function ShipmentsPage() {
         })}
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
+      <div className="flex gap-3 items-center">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
+        </div>
+        <select value={providerFilter} onChange={(e) => setProviderFilter(e.target.value)} className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400">
+          <option value="all">Tüm Taşıyıcılar</option>
+          {uniqueProviders.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
@@ -118,7 +128,16 @@ export default function ShipmentsPage() {
                   <td className="px-6 py-3.5 text-[12px] text-slate-500">{s.originCity} → {s.destinationCity}</td>
                   <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{s.totalWeightKg.toLocaleString()} kg</td>
                   <td className="px-6 py-3.5 text-center"><Badge variant="info">{s.recommendedVehicle}</Badge></td>
-                  <td className="px-6 py-3.5 text-[13px] text-slate-700">{s.selectedProviderName || '—'}</td>
+                  <td className="px-6 py-3.5">
+                    {s.selectedProviderName ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] text-slate-700">{s.selectedProviderName}</span>
+                        {s.providerIntegrationMode === 'ApiIntegrated' && <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-orange-50 text-orange-600 border border-orange-200">API</span>}
+                        {s.providerIntegrationMode === 'SelfService' && <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-blue-50 text-blue-600 border border-blue-200">SS</span>}
+                        {s.providerIntegrationMode === 'Managed' && <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-100 text-slate-500 border border-slate-200">YÖN</span>}
+                      </div>
+                    ) : '—'}
+                  </td>
                   <td className="px-6 py-3.5 text-right text-[13px] font-medium text-slate-800">{s.calculatedPrice ? `${s.calculatedPrice.toLocaleString()} ${s.currency}` : '—'}</td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={priorityVariant[s.priority]}>{s.priority}</Badge></td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[s.status]}>{statusLabels[s.status]}</Badge></td>

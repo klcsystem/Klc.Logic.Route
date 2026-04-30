@@ -88,6 +88,7 @@ export interface Provider {
   serviceRegions: string[]
   supportedVehicleTypes: string[]
   contractCount: number
+  integrationMode?: 'ApiIntegrated' | 'SelfService' | 'Managed'
   apiEndpoint?: string
   apiKey?: string
   contactEmail?: string
@@ -262,6 +263,7 @@ export interface Shipment {
   requiresColdChain: boolean
   recommendedVehicle: VehicleCategory
   selectedProviderName?: string
+  providerIntegrationMode?: 'ApiIntegrated' | 'SelfService' | 'Managed'
   calculatedPrice?: number
   currency: string
   requestedDeliveryDate?: string

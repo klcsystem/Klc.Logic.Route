@@ -1,4 +1,4 @@
-import { Truck, Package, Clock, DollarSign, AlertTriangle, CheckCircle2, TrendingUp, Users, MapPin, BarChart3, Leaf, FileText } from 'lucide-react'
+import { Truck, Package, Clock, DollarSign, AlertTriangle, CheckCircle2, TrendingUp, Users, MapPin, BarChart3, Leaf, FileText, ArrowRightLeft } from 'lucide-react'
 import { BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Line } from 'recharts'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
@@ -94,6 +94,81 @@ const statusLabels: Record<string, string> = {
 }
 
 const activityColors: Record<string, string> = { info: 'bg-blue-400', success: 'bg-green-400', warning: 'bg-orange-400', error: 'bg-red-400' }
+
+const costComparisons = [
+  {
+    shipmentNo: 'SHP-0412',
+    route: 'İstanbul → Ankara',
+    weight: '18.5 ton',
+    distanceKm: 450,
+    selected: { provider: 'Yolda', price: 15200, integrationMode: 'ApiIntegrated' },
+    alternatives: [
+      { provider: 'Murat Lojistik', price: 12800 },
+      { provider: 'Horoz Lojistik', price: 14500 },
+    ],
+    savings: 2400,
+  },
+  {
+    shipmentNo: 'SHP-0415',
+    route: 'Bursa → Konya',
+    weight: '8.4 ton',
+    distanceKm: 520,
+    selected: { provider: 'Ekol Lojistik', price: 9800, integrationMode: 'ApiIntegrated' },
+    alternatives: [
+      { provider: 'Tırport', price: 8200 },
+      { provider: 'Mars Logistics', price: 9100 },
+    ],
+    savings: 1600,
+  },
+  {
+    shipmentNo: 'SHP-0418',
+    route: 'İzmir → Antalya',
+    weight: '22.0 ton',
+    distanceKm: 470,
+    selected: { provider: 'Horoz Lojistik', price: 18500, integrationMode: 'Managed' },
+    alternatives: [
+      { provider: 'Yolda', price: 16200 },
+      { provider: 'Tırport', price: 17100 },
+    ],
+    savings: 2300,
+  },
+  {
+    shipmentNo: 'SHP-0420',
+    route: 'Ankara → İzmir',
+    weight: '14.0 ton',
+    distanceKm: 590,
+    selected: { provider: 'Yolda', price: 13400, integrationMode: 'ApiIntegrated' },
+    alternatives: [
+      { provider: 'Ekol Lojistik', price: 14200 },
+      { provider: 'Murat Lojistik', price: 13800 },
+    ],
+    savings: 0,
+  },
+  {
+    shipmentNo: 'SHP-0422',
+    route: 'Kocaeli → Adana',
+    weight: '20.0 ton',
+    distanceKm: 680,
+    selected: { provider: 'Mars Logistics', price: 22100, integrationMode: 'SelfService' },
+    alternatives: [
+      { provider: 'Yolda', price: 19500 },
+      { provider: 'Tırport', price: 20200 },
+    ],
+    savings: 2600,
+  },
+]
+
+const integrationModeLabels: Record<string, string> = {
+  ApiIntegrated: 'API Entegre',
+  Managed: 'Yönetilen',
+  SelfService: 'Self Servis',
+}
+
+const integrationModeVariant: Record<string, 'info' | 'success' | 'default'> = {
+  ApiIntegrated: 'info',
+  Managed: 'success',
+  SelfService: 'default',
+}
 
 // --- Dashboard Components ---
 
@@ -317,6 +392,89 @@ function ExecutiveDashboard() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Alternatif Maliyet Analizi */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 mb-2">
+          <ArrowRightLeft className="w-5 h-5 text-orange-500" />
+          <h3 className="text-[17px] font-bold text-slate-800">Alternatif Maliyet Analizi</h3>
+        </div>
+
+        {/* Summary Card */}
+        <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-6 text-white">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <p className="text-[13px] text-orange-100 mb-1">Son 30 günde toplam tasarruf potansiyeli</p>
+              <p className="text-[32px] font-extrabold">₺42.800</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[14px] font-semibold text-orange-100">5 sevkiyattan 4'ünde daha ucuz alternatif mevcuttu</p>
+              <p className="text-[12px] text-orange-200 mt-1">Ortalama tasarruf oranı: %11.2</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Comparison Cards */}
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {costComparisons.map((c) => (
+            <div key={c.shipmentNo} className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <span className="text-[14px] font-bold text-slate-800">{c.shipmentNo}</span>
+                  <p className="text-[12px] text-slate-400 mt-0.5">{c.route}</p>
+                </div>
+                <div className="text-right text-[11px] text-slate-400">
+                  <p>{c.weight}</p>
+                  <p>{c.distanceKm} km</p>
+                </div>
+              </div>
+
+              {/* Selected Provider */}
+              <div className="p-3 rounded-xl bg-green-50 border border-green-200 mb-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                  <span className="text-[13px] font-semibold text-green-800">{c.selected.provider}</span>
+                  <Badge variant={integrationModeVariant[c.selected.integrationMode]}>
+                    {integrationModeLabels[c.selected.integrationMode]}
+                  </Badge>
+                </div>
+                <p className="text-[18px] font-bold text-green-700 ml-6">₺{c.selected.price.toLocaleString('tr-TR')}</p>
+              </div>
+
+              {/* Alternatives */}
+              <div className="space-y-2 mb-3">
+                {c.alternatives.map((alt) => {
+                  const diff = ((alt.price - c.selected.price) / c.selected.price * 100).toFixed(1)
+                  const isLower = alt.price < c.selected.price
+                  return (
+                    <div key={alt.provider} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
+                      <span className="text-[12px] text-slate-600">{alt.provider}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-semibold text-slate-700">₺{alt.price.toLocaleString('tr-TR')}</span>
+                        <span className={`text-[11px] font-medium ${isLower ? 'text-green-600' : 'text-red-500'}`}>
+                          {isLower ? '' : '+'}{diff}%
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Savings */}
+              {c.savings > 0 ? (
+                <div className="text-[13px] font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-center">
+                  {'💡'} ₺{c.savings.toLocaleString('tr-TR')} tasarruf edilebilirdi
+                </div>
+              ) : (
+                <div className="text-[13px] font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-center">
+                  {'✅'} En uygun seçenek!
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
