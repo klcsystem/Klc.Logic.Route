@@ -23,6 +23,10 @@ import AuditLogPage from './pages/AuditLogPage'
 import ErpConnectionPage from './pages/settings/ErpConnectionPage'
 import LoginPage from './pages/auth/LoginPage'
 import LandingPage from './pages/LandingPage'
+import YoldaDashboard from './pages/yolda/YoldaDashboard'
+import YoldaShipmentCreate from './pages/yolda/YoldaShipmentCreate'
+import YoldaContacts from './pages/yolda/YoldaContacts'
+import YoldaShipmentDetail from './pages/yolda/YoldaShipmentDetail'
 
 export default function App() {
   return (
@@ -60,6 +64,12 @@ export default function App() {
         <Route path="/audit-logs" element={<AuditLogPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+
+        {/* ENTEGRASYONLAR */}
+        <Route path="/yolda" element={<YoldaDashboard />} />
+        <Route path="/yolda/create" element={<YoldaShipmentCreate />} />
+        <Route path="/yolda/contacts" element={<YoldaContacts />} />
+        <Route path="/yolda/shipments/:id" element={<YoldaShipmentDetail />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
