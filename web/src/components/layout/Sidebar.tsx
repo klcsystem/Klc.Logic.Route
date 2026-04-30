@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package, Truck, MapPin, Route, Building2,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
-  Navigation, Globe, Plus, Contact,
+  Navigation,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
 
@@ -95,15 +95,7 @@ export default function Sidebar() {
         { to: '/carrier-scorecard', icon: Star, label: t.sidebar.carrierScorecard },
         { to: '/market-intelligence', icon: TrendingUp, label: t.sidebar.marketIntelligence },
         { to: '/co2', icon: Leaf, label: t.sidebar.co2Report },
-      ],
-    },
-    {
-      label: 'Entegrasyonlar',
-      icon: Globe,
-      items: [
-        { to: '/yolda', icon: Truck, label: 'Yolda' },
-        { to: '/yolda/create', icon: Plus, label: 'Yeni Sevkiyat' },
-        { to: '/yolda/contacts', icon: Contact, label: 'Kontaklar' },
+        { to: '/fleet', icon: Truck, label: 'Filo Yönetimi' },
       ],
     },
     {

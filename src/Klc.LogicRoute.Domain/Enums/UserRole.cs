@@ -6,5 +6,6 @@ public enum UserRole
     LogisticsManager = 1,
     OperationsSpecialist = 2,
     Finance = 3,
-    Executive = 4
+    Executive = 4,
+    ProviderUser = 5
 }

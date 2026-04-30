@@ -12,6 +12,7 @@ public class Provider : BaseEntity
     public string? ApiKey { get; set; }
     public string? ApiSecret { get; set; }
     public bool IsActive { get; set; } = true;
+    public IntegrationMode IntegrationMode { get; set; } = IntegrationMode.Managed;
     public bool IsGlobal { get; set; }
     public string? SupportedVehicleTypes { get; set; }
     public string? ServiceRegions { get; set; }

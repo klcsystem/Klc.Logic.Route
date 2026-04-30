@@ -245,6 +245,14 @@ Sevkiyat emri provider API'si üzerinden otomatik oluşturulacak:
 ### S: Anlaşma süresi var mı?
 **C:** (CEVAP BEKLENİYOR — başlangıç/bitiş tarihi, otomatik yenileme?)
 
+### S: Fiyatlandırma km bazlı mı?
+**C:** Evet. Saha yöneticisi Esra Hanım'dan gelen bilgi: "Belli km'lere göre tır fiyatlarımız var, anlaşmalı." Yani fiyat tarife yapısı:
+- **Km kademe bazlı:** 0-100 km → X TL, 100-300 km → Y TL, 300-500 km → Z TL gibi
+- **Araç tipi bazlı:** Tır, kamyon, kamyonet için farklı tarifeler
+- **Anlaşmalı sabit fiyatlar** — spot değil, önceden belirlenmiş km kademe fiyatları
+
+**Etki:** ContractRate entity'sinde km kademe desteği zaten var (minWeightKg/maxWeightKg gibi, km için de minDistanceKm/maxDistanceKm eklenmeli). PricingUnit enum'da "PerKm" zaten var ama kademe bazlı fiyatlandırma için mesafe aralığı desteği gerekiyor.
+
 ---
 
 ## 12. Müşteri Onboarding

@@ -11,6 +11,8 @@ public class ContractRate : BaseEntity
     public VehicleCategory VehicleCategory { get; set; }
     public decimal MinWeightKg { get; set; }
     public decimal MaxWeightKg { get; set; }
+    public decimal? MinDistanceKm { get; set; }
+    public decimal? MaxDistanceKm { get; set; }
     public decimal PricePerUnit { get; set; }
     public PricingUnit PricingUnit { get; set; }
     public string? Currency { get; set; } = "TRY";

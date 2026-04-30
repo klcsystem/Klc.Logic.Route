@@ -57,6 +57,10 @@ public static class DependencyInjection
         services.AddScoped<Application.CargoCalculation.ICargoCalculationService, Application.CargoCalculation.CargoCalculationService>();
         services.AddScoped<Application.DecisionEngine.IDecisionEngineService, Application.DecisionEngine.DecisionEngineService>();
 
+        // Repositories — Fleet (Vehicles + Drivers)
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IDriverRepository, DriverRepository>();
+
         // Repositories — Audit, Webhook, Invoice, Routing
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IInvoiceAuditRepository, InvoiceAuditRepository>();

@@ -21,12 +21,10 @@ import SettingsPage from './pages/SettingsPage'
 import InvoiceVerificationPage from './pages/InvoiceVerificationPage'
 import AuditLogPage from './pages/AuditLogPage'
 import ErpConnectionPage from './pages/settings/ErpConnectionPage'
+import FleetPage from './pages/FleetPage'
+import ProviderPortalPage from './pages/ProviderPortalPage'
 import LoginPage from './pages/auth/LoginPage'
 import LandingPage from './pages/LandingPage'
-import YoldaDashboard from './pages/yolda/YoldaDashboard'
-import YoldaShipmentCreate from './pages/yolda/YoldaShipmentCreate'
-import YoldaContacts from './pages/yolda/YoldaContacts'
-import YoldaShipmentDetail from './pages/yolda/YoldaShipmentDetail'
 
 export default function App() {
   return (
@@ -50,6 +48,7 @@ export default function App() {
         <Route path="/carriers" element={<ProvidersPage />} />
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/rules" element={<RoutingRulesPage />} />
+        <Route path="/fleet" element={<FleetPage />} />
 
         {/* ANALITIK */}
         <Route path="/reports" element={<ReportsPage />} />
@@ -65,11 +64,8 @@ export default function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
 
-        {/* ENTEGRASYONLAR */}
-        <Route path="/yolda" element={<YoldaDashboard />} />
-        <Route path="/yolda/create" element={<YoldaShipmentCreate />} />
-        <Route path="/yolda/contacts" element={<YoldaContacts />} />
-        <Route path="/yolda/shipments/:id" element={<YoldaShipmentDetail />} />
+        {/* PROVIDER PORTAL */}
+        <Route path="/provider-portal" element={<ProviderPortalPage />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
