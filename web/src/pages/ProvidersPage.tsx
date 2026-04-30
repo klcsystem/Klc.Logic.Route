@@ -6,11 +6,40 @@ import Drawer from '../components/ui/Drawer'
 import type { Provider } from '../types'
 
 const mockProviders: Provider[] = [
-  { id: '1', name: 'Aras Kargo', code: 'ARAS', type: 'FTL', isActive: true, serviceRegions: ['Marmara', 'Ege', 'Ic Anadolu'], supportedVehicleTypes: ['Tir', 'Kamyon'], contractCount: 3, contactEmail: 'api@araskargo.com' },
-  { id: '2', name: 'MNG Kargo', code: 'MNG', type: 'LTL', isActive: true, serviceRegions: ['Marmara', 'Karadeniz'], supportedVehicleTypes: ['Kamyonet', 'Kamyon'], contractCount: 2, contactEmail: 'api@mngkargo.com' },
-  { id: '3', name: 'Yurtici Kargo', code: 'YK', type: 'Express', isActive: true, serviceRegions: ['Tum Turkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Tir'], contractCount: 4, contactEmail: 'api@yurticikargo.com' },
-  { id: '4', name: 'Surat Kargo', code: 'SURAT', type: 'LastMile', isActive: false, serviceRegions: ['Marmara'], supportedVehicleTypes: ['Kamyonet'], contractCount: 1, contactEmail: 'api@suratkargo.com' },
-  { id: '5', name: 'PTT Kargo', code: 'PTT', type: 'LTL', isActive: true, serviceRegions: ['Tum Turkiye'], supportedVehicleTypes: ['Kamyon'], contractCount: 1, contactEmail: 'api@ptt.gov.tr' },
+  // Dijital Navlun Platformları
+  { id: '1', name: 'Yolda', code: 'YOLDA', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Kamyonet', 'Frigorifik'], contractCount: 5, contactEmail: 'api@yolda.io' },
+  { id: '2', name: 'Tırport', code: 'TIRPORT', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Ortadoğu'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Tanker'], contractCount: 4, contactEmail: 'info@tirport.com' },
+  { id: '3', name: 'Lojistik360', code: 'L360', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik'], contractCount: 2, contactEmail: 'destek@lojistik360.com' },
+
+  // Büyük Lojistik Şirketleri
+  { id: '4', name: 'Ekol Lojistik', code: 'EKOL', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Ortadoğu', 'Orta Asya'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Demiryolu'], contractCount: 6, contactEmail: 'info@ekol.com' },
+  { id: '5', name: 'Mars Logistics', code: 'MARS', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Tanker'], contractCount: 3, contactEmail: 'info@marslogistics.com' },
+  { id: '6', name: 'Horoz Lojistik', code: 'HOROZ', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Parsiyel'], contractCount: 4, contactEmail: 'info@horoz.com.tr' },
+  { id: '7', name: 'Reeder', code: 'REEDER', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner'], contractCount: 3, contactEmail: 'info@reeder.com.tr' },
+  { id: '8', name: 'Omsan Lojistik', code: 'OMSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Lowbed'], contractCount: 5, contactEmail: 'info@omsan.com.tr' },
+  { id: '9', name: 'Netlog Lojistik', code: 'NETLOG', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Balkanlar'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Parsiyel'], contractCount: 2, contactEmail: 'info@netlog.com' },
+  { id: '10', name: 'Borusan Lojistik', code: 'BORUSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Konteyner'], contractCount: 4, contactEmail: 'info@borusanlojistik.com' },
+
+  // Kargo & Parsiyel
+  { id: '11', name: 'Aras Kargo', code: 'ARAS', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 3, contactEmail: 'kurumsal@araskargo.com.tr' },
+  { id: '12', name: 'Yurtiçi Kargo', code: 'YURTICI', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 4, contactEmail: 'kurumsal@yurticikargo.com' },
+  { id: '13', name: 'MNG Kargo', code: 'MNG', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 2, contactEmail: 'kurumsal@mngkargo.com.tr' },
+  { id: '14', name: 'Sürat Kargo', code: 'SURAT', type: 'LTL', isActive: false, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Parsiyel'], contractCount: 1, contactEmail: 'kurumsal@suratkargo.com.tr' },
+  { id: '15', name: 'PTT Kargo', code: 'PTT', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon'], contractCount: 1, contactEmail: 'kurumsal@ptt.gov.tr' },
+  { id: '16', name: 'Sendeo', code: 'SENDEO', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Parsiyel'], contractCount: 2, contactEmail: 'info@sendeo.com.tr' },
+
+  // Uluslararası & Özel Taşımacılık
+  { id: '17', name: 'Ceva Lojistik', code: 'CEVA', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Havayolu'], contractCount: 3, contactEmail: 'turkey@cevalogistics.com' },
+  { id: '18', name: 'DB Schenker', code: 'SCHENKER', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Demiryolu', 'Havayolu'], contractCount: 5, contactEmail: 'turkey@dbschenker.com' },
+  { id: '19', name: 'DHL Freight', code: 'DHL', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Havayolu'], contractCount: 4, contactEmail: 'turkey@dhl.com' },
+  { id: '20', name: 'Gebrüder Weiss', code: 'GW', type: 'FTL', isActive: false, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner'], contractCount: 2, contactEmail: 'turkey@gw-world.com' },
+
+  // Özel Araç & ADR
+  { id: '21', name: 'Barsan Global Lojistik', code: 'BARSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Tanker', 'ADR'], contractCount: 3, contactEmail: 'info@barsan.com' },
+  { id: '22', name: 'Kontrolör Lojistik', code: 'KONTROL', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Tanker', 'ADR', 'Frigorifik'], contractCount: 2, contactEmail: 'info@kontrolor.com' },
+  { id: '23', name: 'Murat Lojistik', code: 'MURAT', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Kamyonet'], contractCount: 3, contactEmail: 'info@muratlojistik.com.tr' },
+  { id: '24', name: 'Alışan Lojistik', code: 'ALISAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Konteyner'], contractCount: 4, contactEmail: 'info@alisan.com' },
+  { id: '25', name: 'UND (Uluslararası Nakliyeciler Derneği)', code: 'UND', type: 'FTL', isActive: false, serviceRegions: ['Avrupa', 'Ortadoğu', 'BDT'], supportedVehicleTypes: ['Tır', 'Konteyner'], contractCount: 1, contactEmail: 'info@und.org.tr' },
 ]
 
 export default function ProvidersPage() {

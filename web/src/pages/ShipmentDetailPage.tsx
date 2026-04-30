@@ -12,19 +12,19 @@ const mockItems: ShipmentItem[] = [
 
 const mockEvents: ShipmentEvent[] = [
   { id: 'e1', shipmentId: 's1', eventType: 'Created', status: 'Draft', description: 'Sevkiyat olusturuldu', createdAt: '2024-03-15 08:00', createdBy: 'Sistem' },
-  { id: 'e2', shipmentId: 's1', eventType: 'Calculated', status: 'Calculated', description: 'Karar motoru calistirildi — Aras Kargo secildi', createdAt: '2024-03-15 08:15', createdBy: 'Sistem' },
+  { id: 'e2', shipmentId: 's1', eventType: 'Calculated', status: 'Calculated', description: 'Karar motoru calistirildi — Yolda secildi', createdAt: '2024-03-15 08:15', createdBy: 'Sistem' },
   { id: 'e3', shipmentId: 's1', eventType: 'Approved', status: 'Approved', description: 'Sevkiyat onaylandi', createdAt: '2024-03-15 09:30', createdBy: 'A. Yilmaz' },
-  { id: 'e4', shipmentId: 's1', eventType: 'SentToProvider', status: 'SentToProvider', description: 'Aras Kargo\'ya gonderildi', createdAt: '2024-03-15 10:00', createdBy: 'Sistem' },
+  { id: 'e4', shipmentId: 's1', eventType: 'SentToProvider', status: 'SentToProvider', description: 'Yolda\'ya gonderildi', createdAt: '2024-03-15 10:00', createdBy: 'Sistem' },
   { id: 'e5', shipmentId: 's1', eventType: 'Loading', status: 'Loading', description: 'Yuklenme basladi — Istanbul depo', location: 'Istanbul', createdAt: '2024-03-15 11:00', createdBy: 'M. Kaya' },
   { id: 'e6', shipmentId: 's1', eventType: 'InTransit', status: 'InTransit', description: 'Yola cikti — tahmini varis: 16 Mart 14:00', createdAt: '2024-03-15 12:30', createdBy: 'Sistem' },
 ]
 
 const mockRecommendation: Recommendation = {
-  selectedProviderName: 'Aras Kargo',
+  selectedProviderName: 'Yolda',
   calculatedPrice: 8450,
-  alternativeProvider1: 'Yurtici Kargo',
+  alternativeProvider1: 'Ekol Lojistik',
   alternativePrice1: 9100,
-  alternativeProvider2: 'MNG Kargo',
+  alternativeProvider2: 'Tırport',
   alternativePrice2: 7200,
   savingsAmount: 650,
   savingsPercent: 7.1,
@@ -34,7 +34,7 @@ const mockRecommendation: Recommendation = {
   scoreReliability: 85,
   overallScore: 84,
   recommendedVehicle: 'Tir',
-  explanation: 'Istanbul-Ankara arasi FTL tasimada Aras Kargo, hiz ve guvenilirlik dengesinde en uygun secenek. MNG %7 daha ucuz ancak transit sure 1 gun fazla.',
+  explanation: 'Istanbul-Ankara arasi FTL tasimada Yolda, hiz ve guvenilirlik dengesinde en uygun secenek. Tırport %7 daha ucuz ancak transit sure 1 gun fazla.',
 }
 
 const mockShipment: Shipment = {
@@ -53,7 +53,7 @@ const mockShipment: Shipment = {
   isHazardous: false,
   requiresColdChain: true,
   recommendedVehicle: 'Tir',
-  selectedProviderName: 'Aras Kargo',
+  selectedProviderName: 'Yolda',
   calculatedPrice: 8450,
   currency: 'TRY',
   requestedDeliveryDate: '2024-03-16',

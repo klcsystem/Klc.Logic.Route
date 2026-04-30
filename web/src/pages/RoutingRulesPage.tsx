@@ -9,8 +9,8 @@ interface Rule { id: string; name: string; condition: string; action: string; pr
 
 const mockRules: Rule[] = [
   { id: '1', name: 'Frigo Zorunlu', condition: 'requiresColdChain = true', action: 'vehicleCategory = Frigorifik', priority: 1, isEnabled: true },
-  { id: '2', name: 'ADR Filtresi', condition: 'isHazardous = true', action: 'provider IN (Aras, Yurtici)', priority: 2, isEnabled: true },
-  { id: '3', name: 'Marmara Bolge Tercihi', condition: 'originRegion = Marmara AND weight < 5000', action: 'preferProvider = MNG', priority: 3, isEnabled: true },
+  { id: '2', name: 'ADR Filtresi', condition: 'isHazardous = true', action: 'provider IN (Yolda, Ekol)', priority: 2, isEnabled: true },
+  { id: '3', name: 'Marmara Bolge Tercihi', condition: 'originRegion = Marmara AND weight < 5000', action: 'preferProvider = Tirport', priority: 3, isEnabled: true },
   { id: '4', name: 'Acil Siparis', condition: 'priority = Urgent', action: 'applyUrgentSurcharge + fastestProvider', priority: 4, isEnabled: true },
   { id: '5', name: 'Hacim Indirimi', condition: 'monthlyShipments > 50', action: 'applyDiscount = 5%', priority: 5, isEnabled: false },
 ]
@@ -64,7 +64,7 @@ export default function RoutingRulesPage() {
           <h4 className="text-[13px] font-semibold text-slate-700 pt-2">{t.rules.action}</h4>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="block text-[12px] text-slate-500 mb-1">Aksiyon Tipi</label><select value={formData.action} onChange={(e) => setFormData({ ...formData, action: e.target.value })} className={inputClass}><option value="selectProvider">{t.rules.selectProvider}</option><option value="applyDiscount">{t.rules.applyDiscount}</option><option value="setVehicle">Arac Tipi Belirle</option><option value="addSurcharge">Ek Ucret Ekle</option></select></div>
-            <div><label className="block text-[12px] text-slate-500 mb-1">Deger</label><input type="text" value={formData.actionValue} onChange={(e) => setFormData({ ...formData, actionValue: e.target.value })} className={inputClass} placeholder="Aras Kargo" /></div>
+            <div><label className="block text-[12px] text-slate-500 mb-1">Deger</label><input type="text" value={formData.actionValue} onChange={(e) => setFormData({ ...formData, actionValue: e.target.value })} className={inputClass} placeholder="Yolda" /></div>
           </div>
         </div>
       </Drawer>

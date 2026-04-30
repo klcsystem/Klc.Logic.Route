@@ -12,11 +12,14 @@ const mockRates: ContractRate[] = [
 ]
 
 const mockContracts: Contract[] = [
-  { id: '1', providerId: '1', providerName: 'Aras Kargo', contractNumber: 'CNT-2024-001', startDate: '2024-01-01', endDate: '2024-12-31', status: 'Active', rates: mockRates },
-  { id: '2', providerId: '2', providerName: 'MNG Kargo', contractNumber: 'CNT-2024-002', startDate: '2024-03-01', endDate: '2025-02-28', status: 'Active', rates: [] },
-  { id: '3', providerId: '3', providerName: 'Yurtici Kargo', contractNumber: 'CNT-2024-003', startDate: '2024-01-15', endDate: '2024-07-15', status: 'Active', rates: [] },
-  { id: '4', providerId: '4', providerName: 'Surat Kargo', contractNumber: 'CNT-2023-045', startDate: '2023-06-01', endDate: '2024-01-31', status: 'Expired', rates: [] },
-  { id: '5', providerId: '5', providerName: 'PTT Kargo', contractNumber: 'CNT-2024-004', startDate: '2024-04-01', endDate: '2025-03-31', status: 'Draft', rates: [] },
+  { id: '1', providerId: '1', providerName: 'Yolda', contractNumber: 'CNT-2026-001', startDate: '2026-01-01', endDate: '2026-12-31', status: 'Active', rates: mockRates },
+  { id: '2', providerId: '2', providerName: 'Tırport', contractNumber: 'CNT-2026-002', startDate: '2026-02-01', endDate: '2027-01-31', status: 'Active', rates: [] },
+  { id: '3', providerId: '4', providerName: 'Ekol Lojistik', contractNumber: 'CNT-2026-003', startDate: '2026-01-15', endDate: '2026-12-31', status: 'Active', rates: [] },
+  { id: '4', providerId: '5', providerName: 'Mars Logistics', contractNumber: 'CNT-2026-004', startDate: '2026-03-01', endDate: '2027-02-28', status: 'Active', rates: [] },
+  { id: '5', providerId: '6', providerName: 'Horoz Lojistik', contractNumber: 'CNT-2026-005', startDate: '2026-01-01', endDate: '2026-06-30', status: 'Active', rates: [] },
+  { id: '6', providerId: '8', providerName: 'Omsan Lojistik', contractNumber: 'CNT-2025-042', startDate: '2025-06-01', endDate: '2026-01-31', status: 'Expired', rates: [] },
+  { id: '7', providerId: '17', providerName: 'Ceva Lojistik', contractNumber: 'CNT-2026-006', startDate: '2026-04-01', endDate: '2027-03-31', status: 'Draft', rates: [] },
+  { id: '8', providerId: '23', providerName: 'Murat Lojistik', contractNumber: 'CNT-2026-007', startDate: '2026-01-01', endDate: '2026-12-31', status: 'Active', rates: [] },
 ]
 
 const statusVariant: Record<string, 'success' | 'error' | 'warning' | 'default'> = { Active: 'success', Expired: 'error', Draft: 'warning', Suspended: 'default' }

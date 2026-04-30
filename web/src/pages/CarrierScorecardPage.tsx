@@ -16,10 +16,12 @@ interface CarrierScore {
 }
 
 const mockScores: CarrierScore[] = [
-  { id: '1', name: 'Aras Kargo', overallRating: 88, onTimeRate: 94.2, damageRate: 0.8, responseTime: 92, costEfficiency: 78, totalShipments: 145, trend: 'up', lastUpdated: '2024-03-15' },
-  { id: '2', name: 'Yurtici Kargo', overallRating: 85, onTimeRate: 91.5, damageRate: 1.2, responseTime: 88, costEfficiency: 82, totalShipments: 112, trend: 'stable', lastUpdated: '2024-03-15' },
-  { id: '3', name: 'MNG Kargo', overallRating: 79, onTimeRate: 87.8, damageRate: 2.1, responseTime: 75, costEfficiency: 90, totalShipments: 98, trend: 'down', lastUpdated: '2024-03-15' },
-  { id: '4', name: 'PTT Kargo', overallRating: 72, onTimeRate: 82.3, damageRate: 3.5, responseTime: 65, costEfficiency: 95, totalShipments: 45, trend: 'up', lastUpdated: '2024-03-14' },
+  { id: '1', name: 'Yolda', overallRating: 95, onTimeRate: 96.8, damageRate: 0.4, responseTime: 95, costEfficiency: 82, totalShipments: 185, trend: 'up', lastUpdated: '2024-03-15' },
+  { id: '2', name: 'Tırport', overallRating: 91, onTimeRate: 93.5, damageRate: 0.9, responseTime: 90, costEfficiency: 85, totalShipments: 142, trend: 'up', lastUpdated: '2024-03-15' },
+  { id: '3', name: 'Ekol Lojistik', overallRating: 89, onTimeRate: 91.2, damageRate: 1.1, responseTime: 88, costEfficiency: 84, totalShipments: 128, trend: 'stable', lastUpdated: '2024-03-15' },
+  { id: '4', name: 'Horoz Lojistik', overallRating: 87, onTimeRate: 89.5, damageRate: 1.5, responseTime: 85, costEfficiency: 88, totalShipments: 98, trend: 'stable', lastUpdated: '2024-03-15' },
+  { id: '5', name: 'Mars Logistics', overallRating: 85, onTimeRate: 87.8, damageRate: 1.8, responseTime: 82, costEfficiency: 90, totalShipments: 76, trend: 'down', lastUpdated: '2024-03-14' },
+  { id: '6', name: 'Omsan Lojistik', overallRating: 83, onTimeRate: 85.4, damageRate: 2.2, responseTime: 78, costEfficiency: 92, totalShipments: 54, trend: 'up', lastUpdated: '2024-03-14' },
 ]
 
 function RatingBar({ value, max = 100, color }: { value: number; max?: number; color: string }) {

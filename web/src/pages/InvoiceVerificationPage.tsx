@@ -7,11 +7,11 @@ import Badge from '../components/ui/Badge'
 interface InvoiceRow { id: string; invoiceNo: string; carrier: string; invoiceDate: string; invoiceAmount: number; calculatedAmount: number; status: 'Verified' | 'Pending' | 'Disputed' }
 
 const mockInvoices: InvoiceRow[] = [
-  { id: '1', invoiceNo: 'INV-2024-0891', carrier: 'Aras Kargo', invoiceDate: '2024-03-15', invoiceAmount: 8450, calculatedAmount: 8450, status: 'Verified' },
-  { id: '2', invoiceNo: 'INV-2024-0892', carrier: 'MNG Kargo', invoiceDate: '2024-03-15', invoiceAmount: 3450, calculatedAmount: 3200, status: 'Disputed' },
-  { id: '3', invoiceNo: 'INV-2024-0893', carrier: 'Yurtici Kargo', invoiceDate: '2024-03-14', invoiceAmount: 1800, calculatedAmount: 1800, status: 'Verified' },
-  { id: '4', invoiceNo: 'INV-2024-0894', carrier: 'Aras Kargo', invoiceDate: '2024-03-14', invoiceAmount: 12800, calculatedAmount: 12600, status: 'Pending' },
-  { id: '5', invoiceNo: 'INV-2024-0895', carrier: 'PTT Kargo', invoiceDate: '2024-03-13', invoiceAmount: 4200, calculatedAmount: 4200, status: 'Verified' },
+  { id: '1', invoiceNo: 'INV-2024-0891', carrier: 'Yolda', invoiceDate: '2024-03-15', invoiceAmount: 8450, calculatedAmount: 8450, status: 'Verified' },
+  { id: '2', invoiceNo: 'INV-2024-0892', carrier: 'Tırport', invoiceDate: '2024-03-15', invoiceAmount: 3450, calculatedAmount: 3200, status: 'Disputed' },
+  { id: '3', invoiceNo: 'INV-2024-0893', carrier: 'Ekol Lojistik', invoiceDate: '2024-03-14', invoiceAmount: 1800, calculatedAmount: 1800, status: 'Verified' },
+  { id: '4', invoiceNo: 'INV-2024-0894', carrier: 'Yolda', invoiceDate: '2024-03-14', invoiceAmount: 12800, calculatedAmount: 12600, status: 'Pending' },
+  { id: '5', invoiceNo: 'INV-2024-0895', carrier: 'Mars Logistics', invoiceDate: '2024-03-13', invoiceAmount: 4200, calculatedAmount: 4200, status: 'Verified' },
 ]
 
 const statusVariant: Record<string, 'success' | 'warning' | 'error'> = { Verified: 'success', Pending: 'warning', Disputed: 'error' }

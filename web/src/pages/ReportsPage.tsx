@@ -16,17 +16,17 @@ const costTrendData = [
 ]
 
 const carrierCostData = [
-  { carrier: 'Aras Kargo', shipments: 145, totalCost: 892000, avgCost: 6152 },
-  { carrier: 'MNG Kargo', shipments: 98, totalCost: 524000, avgCost: 5347 },
-  { carrier: 'Yurtici Kargo', shipments: 112, totalCost: 678000, avgCost: 6054 },
-  { carrier: 'PTT Kargo', shipments: 45, totalCost: 198000, avgCost: 4400 },
+  { carrier: 'Yolda', shipments: 145, totalCost: 892000, avgCost: 6152 },
+  { carrier: 'Tırport', shipments: 98, totalCost: 524000, avgCost: 5347 },
+  { carrier: 'Ekol Lojistik', shipments: 112, totalCost: 678000, avgCost: 6054 },
+  { carrier: 'Mars Logistics', shipments: 45, totalCost: 198000, avgCost: 4400 },
 ]
 
 const carrierPerfData = [
-  { name: 'Aras', onTime: 94.2, avgDays: 1.2, damage: 0.8 },
-  { name: 'Yurtici', onTime: 91.5, avgDays: 1.4, damage: 1.2 },
-  { name: 'MNG', onTime: 87.8, avgDays: 1.8, damage: 2.1 },
-  { name: 'PTT', onTime: 82.3, avgDays: 2.4, damage: 3.5 },
+  { name: 'Yolda', onTime: 94.2, avgDays: 1.2, damage: 0.8 },
+  { name: 'Ekol', onTime: 91.5, avgDays: 1.4, damage: 1.2 },
+  { name: 'Tırport', onTime: 87.8, avgDays: 1.8, damage: 2.1 },
+  { name: 'Mars', onTime: 82.3, avgDays: 2.4, damage: 3.5 },
 ]
 
 const deliveryTimeData = [

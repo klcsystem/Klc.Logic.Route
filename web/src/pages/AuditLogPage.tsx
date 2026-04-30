@@ -8,7 +8,7 @@ interface AuditEntry { id: string; user: string; action: string; entity: string;
 const mockEntries: AuditEntry[] = [
   { id: '1', user: 'Ahmet Yilmaz', action: 'Login', entity: 'Auth', entityId: '-', details: 'Basarili giris', ipAddress: '192.168.1.10', timestamp: '2024-03-15 14:30:22' },
   { id: '2', user: 'Mehmet Kaya', action: 'Create', entity: 'Shipment', entityId: 'SHP-0412', details: 'Yeni sevkiyat olusturuldu', ipAddress: '192.168.1.15', timestamp: '2024-03-15 14:28:10' },
-  { id: '3', user: 'Sistem', action: 'Calculate', entity: 'Shipment', entityId: 'SHP-0412', details: 'Karar motoru calistirildi — Aras Kargo secildi', ipAddress: '-', timestamp: '2024-03-15 14:28:15' },
+  { id: '3', user: 'Sistem', action: 'Calculate', entity: 'Shipment', entityId: 'SHP-0412', details: 'Karar motoru calistirildi — Yolda secildi', ipAddress: '-', timestamp: '2024-03-15 14:28:15' },
   { id: '4', user: 'Ayse Demir', action: 'Approve', entity: 'Shipment', entityId: 'SHP-0411', details: 'Sevkiyat onaylandi', ipAddress: '192.168.1.20', timestamp: '2024-03-15 13:45:30' },
   { id: '5', user: 'Ahmet Yilmaz', action: 'Update', entity: 'Contract', entityId: 'CNT-001', details: 'Tarife kalemi eklendi', ipAddress: '192.168.1.10', timestamp: '2024-03-15 12:20:00' },
   { id: '6', user: 'Sistem', action: 'Sync', entity: 'Order', entityId: '-', details: 'ERP senkronizasyonu: 42 siparis', ipAddress: '-', timestamp: '2024-03-15 09:00:00' },

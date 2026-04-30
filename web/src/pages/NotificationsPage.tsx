@@ -12,13 +12,13 @@ interface NotificationItem {
 }
 
 const mockNotifications: NotificationItem[] = [
-  { id: '1', type: 'Critical', title: 'Sevkiyat Gecikmesi', message: 'SHP-2024-0412 sevkiyati 2 saat gecikti. Aras Kargo bilgilendirildi.', isRead: false, createdAt: '2024-03-15 14:30' },
-  { id: '2', type: 'Warning', title: 'Anlasma Suresi Doluyor', message: 'MNG Kargo ile CNT-2024-002 anlasmasinin suresi 15 gun icinde doluyor.', isRead: false, createdAt: '2024-03-15 11:00' },
+  { id: '1', type: 'Critical', title: 'Sevkiyat Gecikmesi', message: 'SHP-2024-0412 sevkiyati 2 saat gecikti. Yolda bilgilendirildi.', isRead: false, createdAt: '2024-03-15 14:30' },
+  { id: '2', type: 'Warning', title: 'Anlasma Suresi Doluyor', message: 'Tırport ile CNT-2024-002 anlasmasinin suresi 15 gun icinde doluyor.', isRead: false, createdAt: '2024-03-15 11:00' },
   { id: '3', type: 'Positive', title: 'Teslim Tamamlandi', message: 'SHP-2024-0410 basariyla teslim edildi. Zamaninda teslim orani: %94.2', isRead: false, createdAt: '2024-03-14 16:45' },
   { id: '4', type: 'Info', title: 'ERP Senkronizasyon', message: '142 yeni siparis ERP\'den senkronize edildi.', isRead: true, createdAt: '2024-03-14 09:00' },
   { id: '5', type: 'Warning', title: 'Kapasite Uyarisi', message: 'Istanbul depo kapasitesinin %85\'ine ulasti.', isRead: true, createdAt: '2024-03-13 15:20' },
   { id: '6', type: 'Positive', title: 'CO2 Hedefi', message: 'Bu ayin CO2 emisyonu hedefin %14 altinda.', isRead: true, createdAt: '2024-03-13 10:00' },
-  { id: '7', type: 'Info', title: 'Yeni Tasiyici', message: 'PTT Kargo sisteme eklendi ve aktif edildi.', isRead: true, createdAt: '2024-03-12 14:00' },
+  { id: '7', type: 'Info', title: 'Yeni Tasiyici', message: 'Mars Logistics sisteme eklendi ve aktif edildi.', isRead: true, createdAt: '2024-03-12 14:00' },
 ]
 
 const typeConfig = {

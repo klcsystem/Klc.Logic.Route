@@ -5,9 +5,9 @@ import Badge from '../components/ui/Badge'
 import type { CarrierOption } from '../types'
 
 const mockOptions: CarrierOption[] = [
-  { providerId: '1', providerName: 'Aras Kargo', contractId: 'c1', vehicleCategory: 'Tir', estimatedCost: 8450, currency: 'TRY', estimatedTransitDays: 1, score: 92, scorePrice: 78, scoreSpeed: 95, scoreReliability: 88, priceBreakdown: { baseCost: 7200, surcharges: [{ label: 'Frigo', amount: 1050 }, { label: 'Yakit', amount: 200 }] } },
-  { providerId: '3', providerName: 'Yurtici Kargo', contractId: 'c3', vehicleCategory: 'Tir', estimatedCost: 9100, currency: 'TRY', estimatedTransitDays: 1, score: 85, scorePrice: 65, scoreSpeed: 90, scoreReliability: 92, priceBreakdown: { baseCost: 7800, surcharges: [{ label: 'Frigo', amount: 1100 }, { label: 'Haftasonu', amount: 200 }] } },
-  { providerId: '2', providerName: 'MNG Kargo', contractId: 'c2', vehicleCategory: 'Kamyon', estimatedCost: 7200, currency: 'TRY', estimatedTransitDays: 2, score: 78, scorePrice: 92, scoreSpeed: 60, scoreReliability: 75, priceBreakdown: { baseCost: 6500, surcharges: [{ label: 'Frigo', amount: 700 }] } },
+  { providerId: '1', providerName: 'Yolda', contractId: 'c1', vehicleCategory: 'Tir', estimatedCost: 8450, currency: 'TRY', estimatedTransitDays: 1, score: 92, scorePrice: 78, scoreSpeed: 95, scoreReliability: 88, priceBreakdown: { baseCost: 7200, surcharges: [{ label: 'Frigo', amount: 1050 }, { label: 'Yakit', amount: 200 }] } },
+  { providerId: '3', providerName: 'Ekol Lojistik', contractId: 'c3', vehicleCategory: 'Tir', estimatedCost: 9100, currency: 'TRY', estimatedTransitDays: 1, score: 85, scorePrice: 65, scoreSpeed: 90, scoreReliability: 92, priceBreakdown: { baseCost: 7800, surcharges: [{ label: 'Frigo', amount: 1100 }, { label: 'Haftasonu', amount: 200 }] } },
+  { providerId: '2', providerName: 'Tırport', contractId: 'c2', vehicleCategory: 'Kamyon', estimatedCost: 7200, currency: 'TRY', estimatedTransitDays: 2, score: 78, scorePrice: 92, scoreSpeed: 60, scoreReliability: 75, priceBreakdown: { baseCost: 6500, surcharges: [{ label: 'Frigo', amount: 700 }] } },
 ]
 
 function ScoreBar({ value, color }: { value: number; color: string }) {

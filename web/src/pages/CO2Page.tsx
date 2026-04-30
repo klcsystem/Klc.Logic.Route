@@ -20,10 +20,10 @@ const vehicleData = [
 ]
 
 const carrierEmissionData = [
-  { name: 'Aras', emissions: 28.4 },
-  { name: 'Yurtici', emissions: 21.5 },
-  { name: 'MNG', emissions: 18.2 },
-  { name: 'PTT', emissions: 9.1 },
+  { name: 'Yolda', emissions: 28.4 },
+  { name: 'Ekol', emissions: 21.5 },
+  { name: 'Tırport', emissions: 18.2 },
+  { name: 'Mars', emissions: 9.1 },
 ]
 
 const routeData = [
