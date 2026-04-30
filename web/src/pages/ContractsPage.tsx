@@ -28,6 +28,8 @@ export default function ContractsPage() {
   const [rateDrawerOpen, setRateDrawerOpen] = useState(false)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
   const [rateForm, setRateForm] = useState({ originRegion: '', destinationRegion: '', vehicleCategory: 'Tir', minWeightKg: 0, maxWeightKg: 25000, pricePerUnit: 0, pricingUnit: 'km', currency: 'TRY', urgentSurchargePercent: 0, adrSurchargePercent: 0, frigoSurchargePercent: 0, weekendSurchargePercent: 0 })
+  const [contractDrawerOpen, setContractDrawerOpen] = useState(false)
+  const [contractForm, setContractForm] = useState({ providerName: '', contractNumber: '', startDate: '', endDate: '', status: 'Draft' })
 
   const statusLabels: Record<string, string> = { Active: t.contracts.active, Expired: t.contracts.expired, Draft: t.contracts.draft, Suspended: 'Askiya Alindi' }
 
@@ -53,7 +55,7 @@ export default function ContractsPage() {
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">{t.contracts.title}</h1>
           <p className="text-[14px] text-slate-400 mt-1">{t.contracts.subtitle}</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
+        <button onClick={() => { setContractForm({ providerName: '', contractNumber: '', startDate: '', endDate: '', status: 'Draft' }); setContractDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Plus className="w-4 h-4" /> {t.contracts.newContract}
         </button>
       </div>
@@ -165,17 +167,17 @@ export default function ContractsPage() {
       }>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Cikis Bolge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varis Bolge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="Ic Anadolu" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Bölge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Bölge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="İç Anadolu" /></div>
           </div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Arac Tipi</label>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Araç Tipi</label>
             <select value={rateForm.vehicleCategory} onChange={(e) => setRateForm({ ...rateForm, vehicleCategory: e.target.value })} className={inputClass}>
-              <option value="Tir">Tir</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
+              <option value="Tir">Tır</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Agirlik (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Agirlik (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Ağırlık (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Ağırlık (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Birim Fiyat</label><input type="number" step="0.01" value={rateForm.pricePerUnit} onChange={(e) => setRateForm({ ...rateForm, pricePerUnit: Number(e.target.value) })} className={inputClass} /></div>
@@ -190,12 +192,36 @@ export default function ContractsPage() {
               </select>
             </div>
           </div>
-          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ucretler (%)</h4>
+          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ücretler (%)</h4>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[12px] text-slate-500 mb-1">Acil</label><input type="number" value={rateForm.urgentSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, urgentSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[12px] text-slate-500 mb-1">ADR</label><input type="number" value={rateForm.adrSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, adrSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[12px] text-slate-500 mb-1">Frigo</label><input type="number" value={rateForm.frigoSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, frigoSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[12px] text-slate-500 mb-1">Hafta Sonu</label><input type="number" value={rateForm.weekendSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, weekendSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
+          </div>
+        </div>
+      </Drawer>
+
+      {/* New Contract Drawer */}
+      <Drawer isOpen={contractDrawerOpen} onClose={() => setContractDrawerOpen(false)} title={t.contracts.newContract} footer={
+        <div className="flex justify-end gap-3">
+          <button onClick={() => setContractDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">{t.common.cancel}</button>
+          <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">{t.common.save}</button>
+        </div>
+      }>
+        <div className="space-y-4">
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.carrier}</label><input type="text" value={contractForm.providerName} onChange={(e) => setContractForm({ ...contractForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adı" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.contractNo}</label><input type="text" value={contractForm.contractNumber} onChange={(e) => setContractForm({ ...contractForm, contractNumber: e.target.value })} className={inputClass} placeholder="CNT-2024-006" /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.startDate}</label><input type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.endDate}</label><input type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} className={inputClass} /></div>
+          </div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.common.status}</label>
+            <select value={contractForm.status} onChange={(e) => setContractForm({ ...contractForm, status: e.target.value })} className={inputClass}>
+              <option value="Draft">{t.contracts.draft}</option>
+              <option value="Active">{t.contracts.active}</option>
+              <option value="Suspended">Askıya Alındı</option>
+            </select>
           </div>
         </div>
       </Drawer>

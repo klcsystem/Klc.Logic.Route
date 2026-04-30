@@ -31,6 +31,8 @@ export default function OrdersPage() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [orderDrawerOpen, setOrderDrawerOpen] = useState(false)
+  const [orderForm, setOrderForm] = useState({ orderNumber: '', customerName: '', originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, priority: 'Normal', productCategory: 'FMCG', isHazardous: false, requiresColdChain: false })
 
   const statusLabels: Record<string, string> = { Pending: t.orders.pending, Assigned: t.orders.assigned, InTransit: t.orders.inTransit, Delivered: t.orders.delivered, Failed: t.orders.failed, Cancelled: t.orders.cancelled }
 
@@ -61,7 +63,7 @@ export default function OrdersPage() {
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? t.orders.syncing : t.orders.syncErp}
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
+          <button onClick={() => { setOrderForm({ orderNumber: '', customerName: '', originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, priority: 'Normal', productCategory: 'FMCG', isHazardous: false, requiresColdChain: false }); setOrderDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
             <Plus className="w-4 h-4" /> {t.orders.newOrder}
           </button>
         </div>
@@ -160,6 +162,49 @@ export default function OrdersPage() {
             )}
           </div>
         )}
+      </Drawer>
+
+      {/* New Order Drawer */}
+      <Drawer isOpen={orderDrawerOpen} onClose={() => setOrderDrawerOpen(false)} title={t.orders.newOrder} footer={
+        <div className="flex justify-end gap-3">
+          <button onClick={() => setOrderDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">{t.common.cancel}</button>
+          <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">{t.common.save}</button>
+        </div>
+      }>
+        <div className="space-y-4">
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.orderNo}</label><input type="text" value={orderForm.orderNumber} onChange={(e) => setOrderForm({ ...orderForm, orderNumber: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="ORD-2024-0827" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.customer}</label><input type="text" value={orderForm.customerName} onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Müşteri adı" /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Şehir</label><input type="text" value={orderForm.originCity} onChange={(e) => setOrderForm({ ...orderForm, originCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="İstanbul" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Şehir</label><input type="text" value={orderForm.destinationCity} onChange={(e) => setOrderForm({ ...orderForm, destinationCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Ankara" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.weight}</label><input type="number" value={orderForm.totalWeightKg} onChange={(e) => setOrderForm({ ...orderForm, totalWeightKg: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.volume}</label><input type="number" step="0.1" value={orderForm.totalVolumeM3} onChange={(e) => setOrderForm({ ...orderForm, totalVolumeM3: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.priority}</label>
+              <select value={orderForm.priority} onChange={(e) => setOrderForm({ ...orderForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
+                <option value="Normal">Normal</option><option value="Priority">Öncelikli</option><option value="Urgent">Acil</option>
+              </select>
+            </div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ürün Kategorisi</label>
+              <select value={orderForm.productCategory} onChange={(e) => setOrderForm({ ...orderForm, productCategory: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
+                <option value="Gida">Gıda</option><option value="FMCG">FMCG</option><option value="Temizlik">Temizlik</option><option value="Kimyasal">Kimyasal</option><option value="Elektronik">Elektronik</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center gap-6 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={orderForm.isHazardous} onChange={(e) => setOrderForm({ ...orderForm, isHazardous: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
+              <span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde (ADR)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={orderForm.requiresColdChain} onChange={(e) => setOrderForm({ ...orderForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
+              <span className="text-[13px] font-medium text-slate-700">Soğuk Zincir</span>
+            </label>
+          </div>
+        </div>
       </Drawer>
     </div>
   )

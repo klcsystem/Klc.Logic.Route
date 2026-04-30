@@ -4,6 +4,7 @@ import { Truck, Plus, Search } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
+import Drawer from '../components/ui/Drawer'
 import type { Shipment, ShipmentItem, ShipmentEvent, ShipmentStatus } from '../types'
 
 const mockItems: ShipmentItem[] = [
@@ -39,6 +40,8 @@ export default function ShipmentsPage() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [shipmentDrawerOpen, setShipmentDrawerOpen] = useState(false)
+  const [shipmentForm, setShipmentForm] = useState({ originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, palletCount: 0, priority: 'Normal', requestedDeliveryDate: '', isHazardous: false, requiresColdChain: false })
 
   const statusLabels: Record<string, string> = {
     Draft: t.shipments.draft, Calculated: t.shipments.calculated, PendingApproval: t.shipments.pendingApproval,
@@ -67,7 +70,7 @@ export default function ShipmentsPage() {
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">{t.shipments.title}</h1>
           <p className="text-[14px] text-slate-400 mt-1">{t.shipments.subtitle}</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
+        <button onClick={() => { setShipmentForm({ originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, palletCount: 0, priority: 'Normal', requestedDeliveryDate: '', isHazardous: false, requiresColdChain: false }); setShipmentDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Plus className="w-4 h-4" /> {t.shipments.newShipment}
         </button>
       </div>
@@ -127,6 +130,44 @@ export default function ShipmentsPage() {
           </table>
         </div>
       </div>
+
+      {/* New Shipment Drawer */}
+      <Drawer isOpen={shipmentDrawerOpen} onClose={() => setShipmentDrawerOpen(false)} title={t.shipments.newShipment} footer={
+        <div className="flex justify-end gap-3">
+          <button onClick={() => setShipmentDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">{t.common.cancel}</button>
+          <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">{t.common.save}</button>
+        </div>
+      }>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Şehir</label><input type="text" value={shipmentForm.originCity} onChange={(e) => setShipmentForm({ ...shipmentForm, originCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="İstanbul" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Şehir</label><input type="text" value={shipmentForm.destinationCity} onChange={(e) => setShipmentForm({ ...shipmentForm, destinationCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Ankara" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.shipments.weight}</label><input type="number" value={shipmentForm.totalWeightKg} onChange={(e) => setShipmentForm({ ...shipmentForm, totalWeightKg: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Hacim (m³)</label><input type="number" step="0.1" value={shipmentForm.totalVolumeM3} onChange={(e) => setShipmentForm({ ...shipmentForm, totalVolumeM3: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Palet Sayısı</label><input type="number" value={shipmentForm.palletCount} onChange={(e) => setShipmentForm({ ...shipmentForm, palletCount: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Öncelik</label>
+              <select value={shipmentForm.priority} onChange={(e) => setShipmentForm({ ...shipmentForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
+                <option value="Normal">Normal</option><option value="Priority">Öncelikli</option><option value="Urgent">Acil</option>
+              </select>
+            </div>
+          </div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Talep Edilen Teslimat Tarihi</label><input type="date" value={shipmentForm.requestedDeliveryDate} onChange={(e) => setShipmentForm({ ...shipmentForm, requestedDeliveryDate: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+          <div className="flex items-center gap-6 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={shipmentForm.isHazardous} onChange={(e) => setShipmentForm({ ...shipmentForm, isHazardous: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
+              <span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde (ADR)</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={shipmentForm.requiresColdChain} onChange={(e) => setShipmentForm({ ...shipmentForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
+              <span className="text-[13px] font-medium text-slate-700">Soğuk Zincir</span>
+            </label>
+          </div>
+        </div>
+      </Drawer>
     </div>
   )
 }
