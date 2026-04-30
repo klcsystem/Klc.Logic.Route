@@ -2,86 +2,149 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Truck, Package, CheckCircle2, XCircle, Plus, Users, Eye } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import L from 'leaflet'
 import StatCard from '../../components/ui/StatCard'
 import Badge from '../../components/ui/Badge'
 import type { YoldaShipment } from '../../api/yolda'
+import 'leaflet/dist/leaflet.css'
 
-// --- Mock Data (based on real Yolda API responses) ---
+// Map icons (same pattern as LiveTrackingPage)
+const pickupIcon = L.divIcon({
+  className: '',
+  html: `<div style="background:#10b981;width:14px;height:14px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+})
+
+const dropoffIcon = L.divIcon({
+  className: '',
+  html: `<div style="background:#3b82f6;width:14px;height:14px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+})
+
+const vehicleIcon = L.divIcon({
+  className: '',
+  html: `<div style="background:#f97316;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+    </svg>
+  </div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+})
+
+// --- Mock Data (based on real Yolda API responses with real-style IDs) ---
 const mockShipments: YoldaShipment[] = [
   {
-    id: 'yld-001',
+    id: 'D3PA9LAK',
+    latestStatus: 'VEHICLE_IS_SUPPLIED',
     pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
     dropoff: { company: 'A101 Depo Istanbul', name: 'Mehmet', phoneNumber: '+905559876543', city: 'Istanbul', district: 'Tuzla', address: 'Tuzla Lojistik Merkezi', addressType: 'WAREHOUSE', latitude: 40.8167, longitude: 29.3000 },
     shipmentType: 'FTL', totalKg: 22000, totalDs: 45, routeTotalDistanceInKm: 78,
-    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-28T08:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-28T07:00:00' }, { type: 'APPROVED', date: '2026-04-28T08:30:00' }, { type: 'IN_TRANSIT', date: '2026-04-28T10:00:00' }],
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-29T08:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-29T07:00:00' }, { type: 'APPROVED', date: '2026-04-29T07:30:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-29T08:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-29T09:00:00' }],
     vehicle: { type: 'TIR', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 24, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_THE_SIDE' },
     pricing: { type: 'FIXED', price: 14500, tax: 2610, total: 17110, currency: 'TRY', deliveryType: 'STANDARD' },
   },
   {
-    id: 'yld-002',
+    id: '0183YIJB',
+    latestStatus: 'VEHICLE_IS_SUPPLIED',
     pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
     dropoff: { company: 'A101 Depo Ankara', name: 'Fatma', phoneNumber: '+905553456789', city: 'Ankara', district: 'Sincan', address: 'Sincan OSB Lojistik Alani', addressType: 'WAREHOUSE', latitude: 39.9690, longitude: 32.5578 },
     shipmentType: 'FTL', totalKg: 18500, totalDs: 38, routeTotalDistanceInKm: 385,
-    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-27T06:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-27T05:00:00' }, { type: 'APPROVED', date: '2026-04-27T06:00:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-27T07:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-27T08:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-27T09:00:00' }, { type: 'DELIVERED', date: '2026-04-27T18:30:00' }],
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-29T06:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-29T05:00:00' }, { type: 'APPROVED', date: '2026-04-29T05:30:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-29T06:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-29T07:00:00' }],
     vehicle: { type: 'TIR', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 24, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_BEHIND' },
     pricing: { type: 'FIXED', price: 28000, tax: 5040, total: 33040, currency: 'TRY', deliveryType: 'STANDARD' },
   },
   {
-    id: 'yld-003',
-    pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
-    dropoff: { company: 'A101 Depo Izmir', name: 'Ali', phoneNumber: '+905557654321', city: 'Izmir', district: 'Kemalpasa', address: 'Kemalpasa OSB Lojistik Alani', addressType: 'WAREHOUSE', latitude: 38.4260, longitude: 27.4270 },
-    shipmentType: 'FTL', totalKg: 20000, totalDs: 42, routeTotalDistanceInKm: 490,
-    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-29T07:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-29T06:00:00' }],
-    vehicle: { type: 'TIR', bodyType: 'MEGA_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_THE_SIDE', wayOfUnloading: 'FORKLIFT_FROM_THE_SIDE' },
-    pricing: { type: 'AUCTION', currency: 'TRY', deliveryType: 'STANDARD', targetCost: 32000 },
-  },
-  {
-    id: 'yld-004',
+    id: 'V23UBRF9',
+    latestStatus: 'VEHICLE_IS_SUPPLIED',
     pickup: { company: 'Petkim Petrokimya A.S.', name: 'Kemal', phoneNumber: '+905551112233', city: 'Izmir', district: 'Aliaga', address: 'Petkim Petrokimya Holding', addressType: 'FACTORY', latitude: 38.7983, longitude: 26.9590 },
     dropoff: { company: 'A101 Depo Bursa', name: 'Zeynep', phoneNumber: '+905554443322', city: 'Bursa', district: 'Nilufer', address: 'Nilufer OSB Depo Alani', addressType: 'WAREHOUSE', latitude: 40.2128, longitude: 28.9482 },
     shipmentType: 'FTL', totalKg: 15000, totalDs: 30, routeTotalDistanceInKm: 320,
-    temperatureType: 'COLD', isRoundTrip: false, pickupStartDate: '2026-04-26T05:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-26T04:00:00' }, { type: 'APPROVED', date: '2026-04-26T05:00:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-26T06:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-26T07:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-26T08:00:00' }, { type: 'DELIVERED', date: '2026-04-26T16:00:00' }],
+    temperatureType: 'COLD', isRoundTrip: false, pickupStartDate: '2026-04-29T05:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-29T04:00:00' }, { type: 'APPROVED', date: '2026-04-29T04:30:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-29T05:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-29T06:00:00' }],
     vehicle: { type: 'REEFER_TRUCK', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 20, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_BEHIND' },
     pricing: { type: 'FIXED', price: 35000, tax: 6300, total: 41300, currency: 'TRY', deliveryType: 'EXPRESS' },
   },
   {
-    id: 'yld-005',
-    pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
-    dropoff: { company: 'A101 Depo Antalya', name: 'Hasan', phoneNumber: '+905556667788', city: 'Antalya', district: 'Dosemealti', address: 'Dosemealti Lojistik Merkezi', addressType: 'WAREHOUSE', latitude: 37.0027, longitude: 30.6489 },
-    shipmentType: 'FTL', totalKg: 24000, totalDs: 50, routeTotalDistanceInKm: 620,
-    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-25T04:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-25T03:00:00' }, { type: 'APPROVED', date: '2026-04-25T04:00:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-25T05:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-25T06:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-25T07:00:00' }, { type: 'DELIVERED', date: '2026-04-25T20:00:00' }],
-    vehicle: { type: 'CURTAINSIDER', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_THE_SIDE', wayOfUnloading: 'CRANE' },
-    pricing: { type: 'FIXED', price: 42000, tax: 7560, total: 49560, currency: 'TRY', deliveryType: 'STANDARD' },
-  },
-  {
-    id: 'yld-006',
+    id: 'G87BKYAZ',
+    latestStatus: 'VEHICLE_IS_SUPPLIED',
     pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
     dropoff: { company: 'A101 Depo Konya', name: 'Veli', phoneNumber: '+905558889900', city: 'Konya', district: 'Selcuklu', address: 'Selcuklu OSB Depo Sahasi', addressType: 'WAREHOUSE', latitude: 37.8713, longitude: 32.4846 },
     shipmentType: 'FTL', totalKg: 16000, totalDs: 32, routeTotalDistanceInKm: 450,
     temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-29T09:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-29T08:00:00' }, { type: 'APPROVED', date: '2026-04-29T09:00:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-29T10:00:00' }],
+    status: [{ type: 'NEED_PRICE', date: '2026-04-29T08:00:00' }, { type: 'APPROVED', date: '2026-04-29T08:30:00' }, { type: 'VEHICLE_GETTING_SUPPLIED', date: '2026-04-29T09:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-29T10:00:00' }],
     vehicle: { type: 'TRUCK', bodyType: 'SHORT_TRAILER', tonnagePerVehicle: 18, numberOfVehicles: 1, packageType: 'BOX', wayOfLoading: 'MANUAL', wayOfUnloading: 'MANUAL' },
     pricing: { type: 'FIXED', price: 26000, tax: 4680, total: 30680, currency: 'TRY', deliveryType: 'STANDARD' },
   },
   {
-    id: 'yld-007',
+    id: 'KXWP42TN',
+    latestStatus: 'IN_TRANSIT',
+    pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
+    dropoff: { company: 'A101 Depo Antalya', name: 'Hasan', phoneNumber: '+905556667788', city: 'Antalya', district: 'Dosemealti', address: 'Dosemealti Lojistik Merkezi', addressType: 'WAREHOUSE', latitude: 37.0027, longitude: 30.6489 },
+    shipmentType: 'FTL', totalKg: 24000, totalDs: 50, routeTotalDistanceInKm: 620,
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-28T04:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-28T03:00:00' }, { type: 'APPROVED', date: '2026-04-28T04:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-28T06:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-28T07:00:00' }],
+    vehicle: { type: 'CURTAINSIDER', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_THE_SIDE', wayOfUnloading: 'CRANE' },
+    pricing: { type: 'FIXED', price: 42000, tax: 7560, total: 49560, currency: 'TRY', deliveryType: 'STANDARD' },
+  },
+  {
+    id: 'NF7RDWEX',
+    latestStatus: 'DELIVERED',
+    pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
+    dropoff: { company: 'A101 Depo Izmir', name: 'Ali', phoneNumber: '+905557654321', city: 'Izmir', district: 'Kemalpasa', address: 'Kemalpasa OSB Lojistik Alani', addressType: 'WAREHOUSE', latitude: 38.4260, longitude: 27.4270 },
+    shipmentType: 'FTL', totalKg: 20000, totalDs: 42, routeTotalDistanceInKm: 490,
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-27T07:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-27T06:00:00' }, { type: 'APPROVED', date: '2026-04-27T07:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-27T08:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-27T09:00:00' }, { type: 'DELIVERED', date: '2026-04-27T19:00:00' }],
+    vehicle: { type: 'TIR', bodyType: 'MEGA_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_THE_SIDE', wayOfUnloading: 'FORKLIFT_FROM_THE_SIDE' },
+    pricing: { type: 'FIXED', price: 32000, tax: 5760, total: 37760, currency: 'TRY', deliveryType: 'STANDARD' },
+  },
+  {
+    id: 'QP5CHJM1',
+    latestStatus: 'DELIVERED',
     pickup: { company: 'Sasa Polyester A.S.', name: 'Murat', phoneNumber: '+905552223344', city: 'Adana', district: 'Ceyhan', address: 'Ceyhan Sanayi Bolgesi', addressType: 'FACTORY', latitude: 37.0167, longitude: 35.8167 },
     dropoff: { company: 'A101 Depo Istanbul', name: 'Mehmet', phoneNumber: '+905559876543', city: 'Istanbul', district: 'Tuzla', address: 'Tuzla Lojistik Merkezi', addressType: 'WAREHOUSE', latitude: 40.8167, longitude: 29.3000 },
     shipmentType: 'FTL', totalKg: 25000, totalDs: 48, routeTotalDistanceInKm: 940,
-    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-28T03:00:00',
-    status: [{ type: 'NEED_PRICE', date: '2026-04-28T02:00:00' }, { type: 'APPROVED', date: '2026-04-28T03:00:00' }, { type: 'CANCELED', date: '2026-04-28T04:00:00' }],
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-26T03:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-26T02:00:00' }, { type: 'APPROVED', date: '2026-04-26T03:00:00' }, { type: 'VEHICLE_IS_SUPPLIED', date: '2026-04-26T05:00:00' }, { type: 'IN_TRANSIT', date: '2026-04-26T06:00:00' }, { type: 'DELIVERED', date: '2026-04-26T20:00:00' }],
     vehicle: { type: 'TIR', bodyType: 'MEGA_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_BEHIND' },
     pricing: { type: 'FIXED', price: 55000, tax: 9900, total: 64900, currency: 'TRY', deliveryType: 'STANDARD' },
   },
+  {
+    id: 'LTKW0Z3E',
+    latestStatus: 'NEED_PRICE',
+    pickup: { company: 'Catom Kimya A.S.', name: 'Ahmet', phoneNumber: '+905551234567', city: 'Kocaeli', district: 'Gebze', address: 'Gebze OSB Mah. 1. Sok. No:5', addressType: 'FACTORY', latitude: 40.7988, longitude: 29.4314 },
+    dropoff: { company: 'A101 Depo Gaziantep', name: 'Osman', phoneNumber: '+905553334455', city: 'Gaziantep', district: 'Sehitkamil', address: 'Sehitkamil OSB Depo', addressType: 'WAREHOUSE', latitude: 37.0662, longitude: 37.3833 },
+    shipmentType: 'FTL', totalKg: 21000, totalDs: 44, routeTotalDistanceInKm: 870,
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-30T06:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-29T14:00:00' }],
+    vehicle: { type: 'TIR', bodyType: 'LONG_TRAILER', tonnagePerVehicle: 24, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_BEHIND' },
+    pricing: { type: 'AUCTION', currency: 'TRY', deliveryType: 'STANDARD', targetCost: 48000 },
+  },
+  {
+    id: 'RW9FX7BQ',
+    latestStatus: 'CANCELED',
+    pickup: { company: 'Sasa Polyester A.S.', name: 'Murat', phoneNumber: '+905552223344', city: 'Adana', district: 'Ceyhan', address: 'Ceyhan Sanayi Bolgesi', addressType: 'FACTORY', latitude: 37.0167, longitude: 35.8167 },
+    dropoff: { company: 'A101 Depo Ankara', name: 'Fatma', phoneNumber: '+905553456789', city: 'Ankara', district: 'Sincan', address: 'Sincan OSB Lojistik Alani', addressType: 'WAREHOUSE', latitude: 39.9690, longitude: 32.5578 },
+    shipmentType: 'FTL', totalKg: 19000, totalDs: 40, routeTotalDistanceInKm: 490,
+    temperatureType: 'DRY', isRoundTrip: false, pickupStartDate: '2026-04-28T03:00:00',
+    status: [{ type: 'NEED_PRICE', date: '2026-04-28T02:00:00' }, { type: 'APPROVED', date: '2026-04-28T03:00:00' }, { type: 'CANCELED', date: '2026-04-28T04:00:00' }],
+    vehicle: { type: 'TIR', bodyType: 'MEGA_TRAILER', tonnagePerVehicle: 26, numberOfVehicles: 1, packageType: 'PALLET', wayOfLoading: 'FORKLIFT_FROM_BEHIND', wayOfUnloading: 'FORKLIFT_FROM_BEHIND' },
+    pricing: { type: 'FIXED', price: 38000, tax: 6840, total: 44840, currency: 'TRY', deliveryType: 'STANDARD' },
+  },
 ]
 
-const getLatestStatus = (statuses: { type: string; date: string }[]) =>
-  statuses.length > 0 ? statuses[statuses.length - 1].type : 'NEED_PRICE'
+// Mock vehicle GPS positions for active (IN_TRANSIT) shipments
+const mockVehicleLocations: Record<string, { lat: number; lng: number }> = {
+  'KXWP42TN': { lat: 38.9, lng: 30.2 }, // Kocaeli → Antalya, somewhere around Afyon
+}
+
+const getStatus = (s: YoldaShipment) => s.latestStatus || s.status[s.status.length - 1]?.type || 'NEED_PRICE'
 
 const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'orange'> = {
   NEED_PRICE: 'warning',
@@ -116,9 +179,9 @@ const vehicleLabels: Record<string, string> = {
 
 const statusDistribution = [
   { name: 'Fiyat Bekleniyor', value: 1, color: '#f59e0b' },
+  { name: 'Arac Temin Edildi', value: 4, color: '#3b82f6' },
   { name: 'Yolda', value: 1, color: '#f97316' },
-  { name: 'Arac Temin', value: 1, color: '#3b82f6' },
-  { name: 'Teslim Edildi', value: 3, color: '#10b981' },
+  { name: 'Teslim Edildi', value: 2, color: '#10b981' },
   { name: 'Iptal', value: 1, color: '#ef4444' },
 ]
 
@@ -128,11 +191,17 @@ export default function YoldaDashboard() {
 
   const totalShipments = mockShipments.length
   const activeShipments = mockShipments.filter(s => {
-    const st = getLatestStatus(s.status)
+    const st = getStatus(s)
     return ['IN_TRANSIT', 'VEHICLE_GETTING_SUPPLIED', 'VEHICLE_IS_SUPPLIED', 'APPROVED', 'NEED_PRICE'].includes(st)
   }).length
-  const deliveredShipments = mockShipments.filter(s => getLatestStatus(s.status) === 'DELIVERED').length
-  const cancelledShipments = mockShipments.filter(s => getLatestStatus(s.status) === 'CANCELED').length
+  const deliveredShipments = mockShipments.filter(s => getStatus(s) === 'DELIVERED').length
+  const cancelledShipments = mockShipments.filter(s => getStatus(s) === 'CANCELED').length
+
+  // Active shipments for map (non-DELIVERED, non-CANCELED with coordinates)
+  const activeForMap = mockShipments.filter(s => {
+    const st = getStatus(s)
+    return !['DELIVERED', 'CANCELED'].includes(st) && s.pickup.latitude && s.dropoff.latitude
+  })
 
   return (
     <div className="space-y-6">
@@ -164,6 +233,79 @@ export default function YoldaDashboard() {
         <StatCard label="Aktif Sevkiyat" value={String(activeShipments)} change={3} icon={Truck} color="text-orange-600 bg-orange-50" />
         <StatCard label="Teslim Edildi" value={String(deliveredShipments)} change={8} icon={CheckCircle2} color="text-green-600 bg-green-50" />
         <StatCard label="Iptal Edilen" value={String(cancelledShipments)} change={-1} icon={XCircle} color="text-red-600 bg-red-50" />
+      </div>
+
+      {/* Live Map */}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[15px] font-semibold text-slate-800">Aktif Sevkiyat Haritasi</h3>
+          <div className="flex items-center gap-4 text-[11px] text-slate-500">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500" /> Yuklenme</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-blue-500" /> Teslimat</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-orange-500" style={{ width: 16, height: 16, borderRadius: 5 }} /> Arac</span>
+          </div>
+        </div>
+        <div className="h-[400px] rounded-xl overflow-hidden border border-slate-200">
+          <MapContainer
+            center={[39.5, 32.0]}
+            zoom={6}
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {activeForMap.map(s => (
+              <span key={s.id}>
+                {/* Pickup marker */}
+                {s.pickup.latitude && s.pickup.longitude && (
+                  <Marker position={[s.pickup.latitude, s.pickup.longitude]} icon={pickupIcon}>
+                    <Popup>
+                      <div className="text-[12px]">
+                        <p className="font-semibold">{s.pickup.company}</p>
+                        <p className="text-slate-500">{s.pickup.city}, {s.pickup.district}</p>
+                        <p className="text-orange-600 font-medium mt-1">{s.id}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+                {/* Dropoff marker */}
+                {s.dropoff.latitude && s.dropoff.longitude && (
+                  <Marker position={[s.dropoff.latitude, s.dropoff.longitude]} icon={dropoffIcon}>
+                    <Popup>
+                      <div className="text-[12px]">
+                        <p className="font-semibold">{s.dropoff.company}</p>
+                        <p className="text-slate-500">{s.dropoff.city}, {s.dropoff.district}</p>
+                        <p className="text-orange-600 font-medium mt-1">{s.id}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+                {/* Route line */}
+                {s.pickup.latitude && s.pickup.longitude && s.dropoff.latitude && s.dropoff.longitude && (
+                  <Polyline
+                    positions={[[s.pickup.latitude, s.pickup.longitude], [s.dropoff.latitude, s.dropoff.longitude]]}
+                    pathOptions={{ color: '#f97316', weight: 2, opacity: 0.5, dashArray: '6 4' }}
+                  />
+                )}
+                {/* Vehicle location marker for IN_TRANSIT */}
+                {mockVehicleLocations[s.id] && (
+                  <Marker position={[mockVehicleLocations[s.id].lat, mockVehicleLocations[s.id].lng]} icon={vehicleIcon}>
+                    <Popup>
+                      <div className="text-[12px]">
+                        <p className="font-semibold text-orange-600">{s.id}</p>
+                        <p>{s.pickup.city} → {s.dropoff.city}</p>
+                        <p className="text-slate-500">{vehicleLabels[s.vehicle.type]} | {(s.totalKg / 1000).toFixed(1)}t</p>
+                        <p className="font-medium text-green-600 mt-1">Yolda</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
+              </span>
+            ))}
+          </MapContainer>
+        </div>
       </div>
 
       {/* Charts + Table */}
@@ -212,7 +354,7 @@ export default function YoldaDashboard() {
               </thead>
               <tbody>
                 {mockShipments.map((s) => {
-                  const latestStatus = getLatestStatus(s.status)
+                  const status = getStatus(s)
                   return (
                     <tr key={s.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                       <td className="px-3 py-2.5 text-[12px] font-mono font-medium text-slate-700">{s.id}</td>
@@ -230,7 +372,7 @@ export default function YoldaDashboard() {
                         {s.pricing.total ? `${(s.pricing.total / 1000).toFixed(1)}K TL` : '-'}
                       </td>
                       <td className="px-3 py-2.5 text-center">
-                        <Badge variant={statusVariant[latestStatus] || 'default'}>{statusLabels[latestStatus] || latestStatus}</Badge>
+                        <Badge variant={statusVariant[status] || 'default'}>{statusLabels[status] || status}</Badge>
                       </td>
                       <td className="px-3 py-2.5 text-center">
                         <button
@@ -249,7 +391,7 @@ export default function YoldaDashboard() {
         </div>
       </div>
 
-      {/* Quick Shipment Detail Modal */}
+      {/* Quick Shipment Detail Drawer */}
       {selectedShipment && (
         <>
           <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={() => setSelectedShipment(null)} />

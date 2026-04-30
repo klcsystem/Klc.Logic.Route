@@ -68,6 +68,7 @@ export interface YoldaContactCreate {
 
 export interface YoldaShipment {
   id: string
+  latestStatus?: string
   pickup: {
     company: string
     name: string
@@ -137,6 +138,15 @@ export interface YoldaContact {
   longitude?: number
 }
 
+export interface YoldaVehicleLocation {
+  latitude: number
+  longitude: number
+  speed?: number
+  heading?: number
+  timestamp: string
+  shipmentId: string
+}
+
 export const yoldaApi = {
   getShipments: (page = 1, size = 20) =>
     api.get(`/yolda/shipments`, { params: { page, size } }).then(r => r.data),
@@ -152,6 +162,9 @@ export const yoldaApi = {
 
   createContact: (data: YoldaContactCreate) =>
     api.post('/yolda/contacts', data).then(r => r.data),
+
+  getVehicleLocation: (shipmentId: string) =>
+    api.get(`/yolda/locations/vehicle`, { params: { shipmentId } }).then(r => r.data),
 
   testConnection: () =>
     api.get('/yolda/test').then(r => r.data),
