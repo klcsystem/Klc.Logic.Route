@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: ./src
+      dockerfile: Klc.LogicRoute.Api/Dockerfile
+    container_name: logicroute-api
+    environment:
+      - ConnectionStrings__PostgreSQL=Host=shared-postgres;Port=5432;Database=logicroute_db;Username=logicroute;Password=${POSTGRES_PASSWORD:-logicroute2026}
+      - ConnectionStrings__Redis=shared-redis:6379
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Cors__Origins__0=https://logicroute.klcsystem.com
+      - Jwt__Secret=${JWT_SECRET:-LogicRoute-Super-Secret-Key-2026-Must-Be-At-Least-32-Characters!}
+      - Jwt__Issuer=LogicRoute
+      - Jwt__Audience=LogicRoute
+      - Jwt__ExpirationMinutes=60
+      - RabbitMQ__Host=shared-rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=logicroute
+      - RabbitMQ__Password=${RABBITMQ_PASSWORD:-logicroute2026}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - shared-net
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: logicroute-web
+    depends_on:
+      - api
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    external: true

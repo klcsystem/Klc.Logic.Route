@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Klc.LogicRoute.Application/Klc.LogicRoute.Application.csproj" />
+    <Project Path="src/Klc.LogicRoute.Domain/Klc.LogicRoute.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Klc.LogicRoute.Application.Tests/Klc.LogicRoute.Application.Tests.csproj" />
+    <Project Path="tests/Klc.LogicRoute.Domain.Tests/Klc.LogicRoute.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
