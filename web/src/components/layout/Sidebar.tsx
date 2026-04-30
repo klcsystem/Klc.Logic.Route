@@ -4,9 +4,10 @@ import {
   LayoutDashboard, Package, Truck, MapPin, Route, Building2,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
-  Navigation,
+  Navigation, ShoppingCart, Car, User, Send, TableProperties,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface NavItem {
   to: string
@@ -63,7 +64,80 @@ function CollapsibleGroup({ group, defaultOpen }: { group: NavGroup; defaultOpen
   )
 }
 
-export default function Sidebar() {
+// ── Provider User Sidebar (tamamen farklı menü) ──
+function ProviderSidebar() {
+  const providerGroups: NavGroup[] = [
+    {
+      label: 'Siparişler',
+      icon: ShoppingCart,
+      items: [
+        { to: '/provider-portal', icon: ShoppingCart, label: 'Gelen Siparişler', badge: 4 },
+        { to: '/provider-portal/tariffs', icon: TableProperties, label: 'Tarife Tablosu' },
+      ],
+    },
+    {
+      label: 'Filom',
+      icon: Truck,
+      items: [
+        { to: '/provider-portal/vehicles', icon: Car, label: 'Araçlarım' },
+        { to: '/provider-portal/drivers', icon: User, label: 'Şoförlerim' },
+      ],
+    },
+    {
+      label: 'Operasyon',
+      icon: Send,
+      items: [
+        { to: '/provider-portal/shipments', icon: Send, label: 'Sevkiyatlarım' },
+        { to: '/provider-portal/tracking', icon: MapPin, label: 'Araç Takip' },
+      ],
+    },
+    {
+      label: 'Yönetim',
+      icon: Settings,
+      items: [
+        { to: '/provider-portal/users', icon: Users, label: 'Kullanıcılar' },
+        { to: '/provider-portal/settings', icon: Settings, label: 'Ayarlar' },
+      ],
+    },
+  ]
+
+  return (
+    <>
+      {/* Provider Dashboard */}
+      <div className="px-3 pb-2 space-y-0.5">
+        <NavLink
+          to="/provider-portal"
+          end
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
+              isActive
+                ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-400/10'
+                : 'text-blue-100/70 hover:bg-white/5 hover:text-white'
+            }`
+          }
+        >
+          <LayoutDashboard className="w-[18px] h-[18px]" />
+          Kontrol Paneli
+        </NavLink>
+      </div>
+
+      {/* Divider */}
+      <div className="px-5 py-2">
+        <div className="border-t border-white/[0.06]" />
+      </div>
+
+      {/* Provider Navigation */}
+      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+        {providerGroups.map((group, i) => (
+          <CollapsibleGroup key={group.label} group={group} defaultOpen={i < 3} />
+        ))}
+      </nav>
+    </>
+  )
+}
+
+// ── Customer Sidebar (mevcut tam menü) ──
+function CustomerSidebar() {
   const { t } = useI18n()
 
   const navGroups: NavGroup[] = [
@@ -71,7 +145,6 @@ export default function Sidebar() {
       label: t.sidebar.operations,
       icon: Package,
       items: [
-        { to: '/dashboard', icon: LayoutDashboard, label: t.sidebar.dashboard },
         { to: '/orders', icon: Package, label: t.sidebar.orders },
         { to: '/shipments', icon: Truck, label: t.sidebar.shipments },
         { to: '/tracking', icon: MapPin, label: t.sidebar.liveTracking },
@@ -85,6 +158,7 @@ export default function Sidebar() {
         { to: '/carriers', icon: Building2, label: t.sidebar.carriers },
         { to: '/contracts', icon: FileText, label: t.sidebar.contracts },
         { to: '/rules', icon: Settings2, label: t.sidebar.rules },
+        { to: '/fleet', icon: Truck, label: 'Filo Yönetimi' },
       ],
     },
     {
@@ -95,7 +169,6 @@ export default function Sidebar() {
         { to: '/carrier-scorecard', icon: Star, label: t.sidebar.carrierScorecard },
         { to: '/market-intelligence', icon: TrendingUp, label: t.sidebar.marketIntelligence },
         { to: '/co2', icon: Leaf, label: t.sidebar.co2Report },
-        { to: '/fleet', icon: Truck, label: 'Filo Yönetimi' },
       ],
     },
     {
@@ -110,21 +183,8 @@ export default function Sidebar() {
   ]
 
   return (
-    <aside className="w-[260px] bg-[#111827] text-white min-h-screen flex flex-col border-r border-white/[0.06]">
-      {/* Logo */}
-      <div className="px-5 py-5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-400/10">
-            <Navigation className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-[15px] font-bold tracking-tight text-white">Logic.Route</h1>
-            <p className="text-[10px] text-blue-300/40 uppercase tracking-[0.15em]">{t.sidebar.routeOptimization}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard - Top Level */}
+    <>
+      {/* Dashboard */}
       <div className="px-3 pb-2 space-y-0.5">
         <NavLink
           to="/dashboard"
@@ -138,7 +198,7 @@ export default function Sidebar() {
           }
         >
           <LayoutDashboard className="w-[18px] h-[18px]" />
-          {t.sidebar.dashboard}
+          Dashboard
         </NavLink>
       </div>
 
@@ -147,15 +207,50 @@ export default function Sidebar() {
         <div className="border-t border-white/[0.06]" />
       </div>
 
-      {/* Grouped Navigation */}
+      {/* Navigation */}
       <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
         {navGroups.map((group, i) => (
           <CollapsibleGroup key={group.label} group={group} defaultOpen={i === 0} />
         ))}
       </nav>
+    </>
+  )
+}
 
-      {/* Bottom Spacing */}
-      <div className="p-3" />
+// ── Main Sidebar ──
+export default function Sidebar() {
+  const { user } = useAuth()
+  const isProvider = user?.role === 'ProviderUser'
+
+  return (
+    <aside className="w-[260px] bg-[#111827] text-white min-h-screen flex flex-col border-r border-white/[0.06]">
+      {/* Logo */}
+      <div className="px-5 py-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-400/10">
+            <Navigation className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-[15px] font-bold tracking-tight text-white">Logic.Route</h1>
+            <p className="text-[10px] text-blue-300/40 uppercase tracking-[0.15em]">
+              {isProvider ? 'Taşıyıcı Portalı' : 'Rota Optimizasyonu'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Rol bazlı sidebar */}
+      {isProvider ? <ProviderSidebar /> : <CustomerSidebar />}
+
+      {/* Bottom — Rol göstergesi */}
+      <div className="p-4 border-t border-white/[0.06]">
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isProvider ? 'bg-blue-400' : 'bg-green-400'}`} />
+          <span className="text-[11px] text-blue-300/40">
+            {isProvider ? 'Taşıyıcı Hesabı' : 'Müşteri Hesabı'}
+          </span>
+        </div>
+      </div>
     </aside>
   )
 }
