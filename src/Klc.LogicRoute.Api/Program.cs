@@ -1,4 +1,5 @@
 using System.Text;
+using Klc.LogicRoute.Api.Hubs;
 using Klc.LogicRoute.Api.Middleware;
 using Klc.LogicRoute.Api.Services;
 using Klc.LogicRoute.Application;
@@ -63,6 +64,22 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     options.MapInboundClaims = false;
+
+    // Allow SignalR to receive JWT via query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -89,6 +106,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
+
+// SignalR
+builder.Services.AddSignalR();
 
 // Clean Architecture layers
 builder.Services.AddApplication();
@@ -143,6 +163,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<AuditLogMiddleware>();
 app.MapControllers();
+
+// SignalR Hubs
+app.MapHub<TrackingHub>("/hubs/tracking");
+app.MapHub<NotificationHub>("/hubs/notifications");
+app.MapHub<SimulationHub>("/hubs/simulation");
 
 Log.Information("Klc LogicRoute API starting...");
 app.Run();

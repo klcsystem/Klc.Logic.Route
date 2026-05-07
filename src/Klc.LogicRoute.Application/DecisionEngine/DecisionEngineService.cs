@@ -1,3 +1,4 @@
+using Klc.LogicRoute.Application.ML.Services;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
@@ -7,7 +8,8 @@ namespace Klc.LogicRoute.Application.DecisionEngine;
 public class DecisionEngineService(
     IContractRepository contractRepository,
     IProviderRepository providerRepository,
-    ICarrierPerformanceRepository carrierPerformanceRepository) : IDecisionEngineService
+    ICarrierPerformanceRepository carrierPerformanceRepository,
+    IMLPredictionService mlPredictionService) : IDecisionEngineService
 {
     public async Task<Recommendation> CalculateBestOptionAsync(Shipment shipment, DecisionCriteria criteria, Guid tenantId)
     {
@@ -78,7 +80,17 @@ public class DecisionEngineService(
         foreach (var c in candidates)
         {
             c.ScorePrice = priceRange > 0 ? (1m - (c.TotalPrice - minPrice) / priceRange) : 1m;
-            c.ScoreSpeed = 0.7m; // TODO: integrate actual speed data
+            // ML-powered speed score: use delivery time prediction to derive speed score
+            try
+            {
+                var prediction = mlPredictionService.PredictDeliveryTimeAsync(shipment, tenantId).GetAwaiter().GetResult();
+                // Normalize: faster delivery = higher score (24h baseline)
+                c.ScoreSpeed = Math.Max(0m, Math.Min(1m, 1m - (decimal)prediction.PredictedHours / 24m));
+            }
+            catch
+            {
+                c.ScoreSpeed = 0.7m; // fallback if ML unavailable
+            }
             c.ScoreReliability = c.ReliabilityScore;
             c.OverallScore = c.ScorePrice * criteria.PriceWeight
                            + c.ScoreSpeed * criteria.SpeedWeight

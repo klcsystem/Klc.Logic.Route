@@ -10,4 +10,6 @@ public class Driver : BaseEntity
     public string? LicenseNumber { get; set; }
     public DateTime? LicenseExpiry { get; set; }
     public bool IsActive { get; set; } = true;
+    public Guid? UserId { get; set; }
+    public string? DeviceToken { get; set; }
 }

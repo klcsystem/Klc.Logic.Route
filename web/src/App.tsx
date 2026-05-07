@@ -25,6 +25,10 @@ import FleetPage from './pages/FleetPage'
 import ProviderPortalPage from './pages/ProviderPortalPage'
 import LoginPage from './pages/auth/LoginPage'
 import LandingPage from './pages/LandingPage'
+import CustomerTrackingPage from './pages/public/CustomerTrackingPage'
+import RouteOptimizerPage from './pages/RouteOptimizerPage'
+import MLInsightsPage from './pages/MLInsightsPage'
+import DigitalTwinPage from './pages/DigitalTwinPage'
 
 export default function App() {
   return (
@@ -32,6 +36,7 @@ export default function App() {
       {/* Public */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/tracking/:token" element={<CustomerTrackingPage />} />
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
 
       {/* Protected Main Layout */}
@@ -45,6 +50,7 @@ export default function App() {
 
         {/* KARAR MOTORU */}
         <Route path="/route-optimization" element={<RouteOptimizationPage />} />
+        <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
         <Route path="/carriers" element={<ProvidersPage />} />
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/rules" element={<RoutingRulesPage />} />
@@ -55,6 +61,8 @@ export default function App() {
         <Route path="/carrier-scorecard" element={<CarrierScorecardPage />} />
         <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
         <Route path="/co2" element={<CO2Page />} />
+        <Route path="/ml-insights" element={<MLInsightsPage />} />
+        <Route path="/digital-twin" element={<DigitalTwinPage />} />
 
         {/* YONETIM */}
         <Route path="/settings" element={<SettingsPage />} />

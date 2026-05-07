@@ -1,11 +1,13 @@
 using Klc.LogicRoute.Application.CargoCalculation;
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.CustomerEta.Commands;
 using Klc.LogicRoute.Application.DecisionEngine;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
 using Klc.LogicRoute.Infrastructure.ExternalServices.Providers;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +23,8 @@ public class ShipmentsController(
     IDecisionEngineService decisionEngineService,
     IProviderRepository providerRepository,
     IEnumerable<IProviderApiAdapter> providerAdapters,
-    ITenantProvider tenantProvider) : ControllerBase
+    ITenantProvider tenantProvider,
+    IMediator mediator) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ApiResponse<IEnumerable<Shipment>>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
@@ -199,6 +202,17 @@ public class ShipmentsController(
         var tenantId = tenantProvider.GetTenantId();
         await shipmentRepository.DeleteAsync(id, tenantId);
         return Ok(ApiResponse<bool>.Ok(true));
+    }
+
+    [HttpPost("{id:guid}/notify-customer")]
+    public async Task<ActionResult<ApiResponse<SendEtaNotificationResult>>> NotifyCustomer(Guid id)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userId = tenantProvider.GetUserId();
+        var result = await mediator.Send(new SendEtaNotificationCommand(id, tenantId, userId));
+        if (!result.Success)
+            return BadRequest(ApiResponse<SendEtaNotificationResult>.Fail(result.Message ?? "Bildirim gonderilemedi"));
+        return Ok(ApiResponse<SendEtaNotificationResult>.Ok(result));
     }
 
     [HttpGet("{id:guid}/recommendation")]

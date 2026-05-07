@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Package, Truck, MapPin, Route, Building2,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
-  Navigation, ShoppingCart, Car, User, Send, TableProperties,
+  Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap,
+  Brain, FlaskConical,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
 import { useAuth } from '../../contexts/AuthContext'
@@ -155,6 +156,7 @@ function CustomerSidebar() {
       icon: Route,
       items: [
         { to: '/route-optimization', icon: Route, label: t.sidebar.routeOptimization },
+        { to: '/route-optimizer', icon: Zap, label: t.vrp.sidebarLabel },
         { to: '/carriers', icon: Building2, label: t.sidebar.carriers },
         { to: '/contracts', icon: FileText, label: t.sidebar.contracts },
         { to: '/rules', icon: Settings2, label: t.sidebar.rules },
@@ -169,6 +171,8 @@ function CustomerSidebar() {
         { to: '/carrier-scorecard', icon: Star, label: t.sidebar.carrierScorecard },
         { to: '/market-intelligence', icon: TrendingUp, label: t.sidebar.marketIntelligence },
         { to: '/co2', icon: Leaf, label: t.sidebar.co2Report },
+        { to: '/ml-insights', icon: Brain, label: t.ml.sidebarLabel },
+        { to: '/digital-twin', icon: FlaskConical, label: t.simulation.sidebarLabel },
       ],
     },
     {

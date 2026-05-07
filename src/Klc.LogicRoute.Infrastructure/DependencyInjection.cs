@@ -2,6 +2,17 @@ using Dapper;
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Geocoding;
 using Klc.LogicRoute.Domain.Interfaces;
+using Klc.LogicRoute.Application.CustomerEta.Services;
+using Klc.LogicRoute.Application.ML.Pipeline;
+using Klc.LogicRoute.Application.ML.Services;
+using Klc.LogicRoute.Application.RouteOptimization.Services;
+using Klc.LogicRoute.Application.Simulation.Services;
+using Klc.LogicRoute.Infrastructure.ML;
+using Klc.LogicRoute.Infrastructure.BackgroundJobs;
+using Klc.LogicRoute.Infrastructure.ExternalServices.Email;
+using Klc.LogicRoute.Infrastructure.ExternalServices.Routing;
+using Klc.LogicRoute.Infrastructure.ExternalServices.Sms;
+using Klc.LogicRoute.Infrastructure.Messaging;
 using Klc.LogicRoute.Infrastructure.Persistence;
 using Klc.LogicRoute.Infrastructure.Persistence.Repositories;
 using Klc.LogicRoute.Infrastructure.Services;
@@ -93,6 +104,46 @@ public static class DependencyInjection
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        // Mobile — Driver Location & Proof of Delivery
+        services.AddScoped<IDriverLocationRepository, DriverLocationRepository>();
+        services.AddScoped<IProofOfDeliveryRepository, ProofOfDeliveryRepository>();
+        services.AddScoped<IFileStorageService, FileStorageService>();
+
+        // Customer Tracking
+        services.AddScoped<ICustomerTrackingRepository, CustomerTrackingRepository>();
+        services.AddScoped<IEtaCalculationService, EtaCalculationService>();
+
+        // Route Optimization
+        services.AddScoped<IRouteOptimizationRepository, RouteOptimizationRepository>();
+        services.AddScoped<IVrpSolverService, VrpSolverService>();
+        services.AddHttpClient<OsrmDistanceMatrixProvider>();
+        services.AddScoped<IDistanceMatrixProvider, OsrmDistanceMatrixProvider>();
+
+        // SMS Provider
+        services.AddHttpClient<NetGsmSmsProvider>();
+        services.AddScoped<ISmsProvider, NetGsmSmsProvider>();
+
+        // Email Provider
+        services.AddScoped<IEmailProvider, SmtpEmailProvider>();
+
+        // Event Bus (RabbitMQ)
+        services.AddSingleton<IEventBus, RabbitMqEventBus>();
+
+        // Background Jobs
+        services.AddHostedService<EtaCalculationJob>();
+
+        // ML Services
+        services.AddScoped<IMLModelRepository, MLModelRepository>();
+        services.AddScoped<IPredictionLogRepository, PredictionLogRepository>();
+        services.AddScoped<IMLPredictionService, DeliveryTimePredictionService>();
+        services.AddSingleton<IMLModelStore, MLNetModelStore>();
+        services.AddSingleton<ModelTrainingJob>();
+        services.AddHostedService(sp => sp.GetRequiredService<ModelTrainingJob>());
+
+        // Simulation (Digital Twin)
+        services.AddScoped<ISimulationRepository, SimulationRepository>();
+        services.AddScoped<ISimulationEngine, SimulationEngine>();
 
         return services;
     }
