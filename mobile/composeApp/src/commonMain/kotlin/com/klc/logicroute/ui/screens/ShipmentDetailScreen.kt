@@ -8,10 +8,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,11 +26,13 @@ import com.klc.logicroute.ui.components.StatusBadge
 import com.klc.logicroute.ui.theme.*
 import com.klc.logicroute.util.DateFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShipmentDetailScreen(
     shipment: Shipment?,
     isLoading: Boolean,
     onStatusUpdate: (ShipmentStatus) -> Unit,
+    onDeliveredWithPod: (Shipment) -> Unit,
     onNavigateClick: (Shipment) -> Unit,
     onCallClick: (String) -> Unit,
     onPodClick: (Shipment) -> Unit = {},
@@ -39,7 +43,8 @@ fun ShipmentDetailScreen(
         return
     }
 
-    var showStatusDialog by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    var showStatusSheet by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -215,7 +220,7 @@ fun ShipmentDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Button(
-                onClick = { showStatusDialog = true },
+                onClick = { showStatusSheet = true },
                 modifier = Modifier.weight(1f).height(48.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -244,20 +249,120 @@ fun ShipmentDetailScreen(
                 containerColor = SuccessGreen
             )
         ) {
+            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
             Text("Teslimat Kaniti", fontWeight = FontWeight.SemiBold)
         }
     }
 
-    // Status Update Dialog
-    if (showStatusDialog) {
-        StatusUpdateDialog(
-            currentStatus = shipment.status,
-            onDismiss = { showStatusDialog = false },
-            onStatusSelected = { status ->
-                showStatusDialog = false
-                onStatusUpdate(status)
-            }
+    // Status Update Bottom Sheet
+    if (showStatusSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showStatusSheet = false },
+            sheetState = sheetState,
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        ) {
+            StatusUpdateSheet(
+                currentStatus = shipment.status,
+                onStatusSelected = { status ->
+                    showStatusSheet = false
+                    if (status == ShipmentStatus.Delivered) {
+                        // Auto-redirect to delivery confirmation
+                        onDeliveredWithPod(shipment)
+                    } else {
+                        onStatusUpdate(status)
+                    }
+                },
+                onDismiss = { showStatusSheet = false }
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatusUpdateSheet(
+    currentStatus: ShipmentStatus,
+    onStatusSelected: (ShipmentStatus) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val availableStatuses = listOf(
+        ShipmentStatus.Loaded to "Yuk tamamlandi, araca yuklendi",
+        ShipmentStatus.InTransit to "Yola cikti, teslimat noktasina gidiyor",
+        ShipmentStatus.Delivered to "Teslim edildi (kanit ekrani acilacak)"
+    ).filter { it.first != currentStatus }
+
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = "Durumu Guncelle",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
+
+        Text(
+            text = "Mevcut durum: ${currentStatus.displayName()}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = SlateTextSecondary,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        availableStatuses.forEach { (status, description) ->
+            val colors = when (status) {
+                ShipmentStatus.Loaded -> Pair(Color(0xFFDBEAFE), InfoBlue)
+                ShipmentStatus.InTransit -> Pair(Color(0xFFFEF3C7), Color(0xFFD97706))
+                ShipmentStatus.Delivered -> Pair(Color(0xFFDCFCE7), SuccessGreen)
+                else -> Pair(Color.Transparent, SlateTextSecondary)
+            }
+            val bgColor = colors.first
+            val iconColor = colors.second
+
+            Card(
+                onClick = { onStatusSelected(status) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = bgColor)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(iconColor.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            tint = iconColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = status.displayName(),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SlateTextSecondary
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(4.dp))
+        }
+
+        Spacer(Modifier.height(24.dp))
     }
 }
 
@@ -288,7 +393,7 @@ private fun StatusTimeline(currentStatus: ShipmentStatus) {
             ) {
                 Box(
                     modifier = Modifier
-                        .size(12.dp)
+                        .size(if (index == currentIndex) 16.dp else 12.dp)
                         .clip(CircleShape)
                         .background(dotColor)
                 )
@@ -296,7 +401,8 @@ private fun StatusTimeline(currentStatus: ShipmentStatus) {
                 Text(
                     text = step.displayName(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (isActive) Orange500 else SlateTextSecondary
+                    color = if (isActive) Orange500 else SlateTextSecondary,
+                    fontWeight = if (index == currentIndex) FontWeight.Bold else FontWeight.Normal
                 )
             }
         }
@@ -317,40 +423,4 @@ private fun DetailItem(label: String, value: String) {
             color = SlateTextSecondary
         )
     }
-}
-
-@Composable
-private fun StatusUpdateDialog(
-    currentStatus: ShipmentStatus,
-    onDismiss: () -> Unit,
-    onStatusSelected: (ShipmentStatus) -> Unit
-) {
-    val availableStatuses = listOf(
-        ShipmentStatus.Loaded,
-        ShipmentStatus.InTransit,
-        ShipmentStatus.Delivered
-    ).filter { it != currentStatus }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Durumu Guncelle") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                availableStatuses.forEach { status ->
-                    TextButton(
-                        onClick = { onStatusSelected(status) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(status.displayName())
-                    }
-                }
-            }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Iptal")
-            }
-        }
-    )
 }

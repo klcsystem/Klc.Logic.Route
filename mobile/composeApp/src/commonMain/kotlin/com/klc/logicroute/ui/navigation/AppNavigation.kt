@@ -12,17 +12,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.klc.logicroute.data.local.OfflineQueue
+import com.klc.logicroute.data.local.SyncManager
 import com.klc.logicroute.data.model.Shipment
 import com.klc.logicroute.data.model.ShipmentStatus
 import com.klc.logicroute.data.repository.AuthRepository
 import com.klc.logicroute.data.repository.PodRepository
 import com.klc.logicroute.data.repository.ShipmentRepository
+import com.klc.logicroute.service.LocationService
 import com.klc.logicroute.ui.components.LogicRouteTopBar
+import com.klc.logicroute.ui.components.SignatureLine
 import com.klc.logicroute.ui.screens.*
 import com.klc.logicroute.util.ImagePicker
 import com.klc.logicroute.util.PlatformNavigation
@@ -35,8 +38,8 @@ sealed class Screen(val route: String) {
     data object ShipmentDetail : Screen("shipments/{id}") {
         fun createRoute(id: String) = "shipments/$id"
     }
-    data object ProofOfDelivery : Screen("pod/{id}") {
-        fun createRoute(id: String) = "pod/$id"
+    data object DeliveryConfirm : Screen("delivery/{id}") {
+        fun createRoute(id: String) = "delivery/$id"
     }
     data object Settings : Screen("settings")
 }
@@ -61,19 +64,32 @@ fun AppNavigation() {
     val podRepository: PodRepository = koinInject()
     val imagePicker: ImagePicker = koinInject()
     val platformNavigation: PlatformNavigation = koinInject()
+    val locationService: LocationService = koinInject()
+    val offlineQueue: OfflineQueue = koinInject()
+    val syncManager: SyncManager = koinInject()
     val scope = rememberCoroutineScope()
 
+    // Auth state
     var isLoggedIn by remember { mutableStateOf<Boolean?>(null) }
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+
+    // Shipments state
     var shipments by remember { mutableStateOf<List<Shipment>>(emptyList()) }
     var isLoadingShipments by remember { mutableStateOf(false) }
     var selectedShipment by remember { mutableStateOf<Shipment?>(null) }
     var isLoadingDetail by remember { mutableStateOf(false) }
-    var userName by remember { mutableStateOf("") }
-    var userEmail by remember { mutableStateOf("") }
+
+    // Delivery confirmation state
     var podPhotoBytes by remember { mutableStateOf<ByteArray?>(null) }
+    var signatureLines by remember { mutableStateOf<List<SignatureLine>>(emptyList()) }
     var isPodUploading by remember { mutableStateOf(false) }
     var isPodSuccess by remember { mutableStateOf(false) }
     var podError by remember { mutableStateOf<String?>(null) }
+
+    // Location tracking state
+    val driverLocation by locationService.currentLocation.collectAsState()
+    val pendingCount by syncManager.pendingCount.collectAsState()
 
     // Check login state
     LaunchedEffect(Unit) {
@@ -81,6 +97,7 @@ fun AppNavigation() {
         if (isLoggedIn == true) {
             userName = authRepository.getUserName() ?: ""
             userEmail = authRepository.getUserEmail() ?: ""
+            syncManager.startSync()
         }
     }
 
@@ -107,6 +124,31 @@ fun AppNavigation() {
         }
     }
 
+    fun handleStatusUpdate(shipmentId: String, status: ShipmentStatus) {
+        scope.launch {
+            shipmentRepository.updateStatus(shipmentId, status).fold(
+                onSuccess = { updated ->
+                    selectedShipment = updated
+                    shipments = shipments.map {
+                        if (it.id == updated.id) updated else it
+                    }
+                },
+                onFailure = {
+                    // Save to offline queue
+                    offlineQueue.enqueueStatusUpdate(shipmentId, status)
+                }
+            )
+        }
+    }
+
+    fun navigateToDeliveryConfirm(shipment: Shipment) {
+        podPhotoBytes = null
+        signatureLines = emptyList()
+        podError = null
+        isPodSuccess = false
+        navController.navigate(Screen.DeliveryConfirm.createRoute(shipment.id))
+    }
+
     val startDestination = when (isLoggedIn) {
         true -> Screen.ShipmentList.route
         false -> Screen.Login.route
@@ -127,14 +169,14 @@ fun AppNavigation() {
     val topBarTitle = when (currentRoute) {
         Screen.ShipmentList.route -> "Sevkiyatlar"
         Screen.ShipmentDetail.route -> selectedShipment?.shipmentNumber ?: "Detay"
-        Screen.ProofOfDelivery.route -> "Teslimat Kaniti"
+        Screen.DeliveryConfirm.route -> "Teslimat Onay"
         Screen.Settings.route -> "Ayarlar"
         "map" -> "Harita"
         else -> ""
     }
 
     val showBackButton = currentRoute == Screen.ShipmentDetail.route ||
-            currentRoute == Screen.ProofOfDelivery.route
+            currentRoute == Screen.DeliveryConfirm.route
 
     Scaffold(
         topBar = {
@@ -163,7 +205,17 @@ fun AppNavigation() {
                                     }
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            icon = {
+                                if (item.route == Screen.Settings.route && pendingCount > 0) {
+                                    BadgedBox(badge = {
+                                        Badge { Text("$pendingCount") }
+                                    }) {
+                                        Icon(item.icon, contentDescription = item.label)
+                                    }
+                                } else {
+                                    Icon(item.icon, contentDescription = item.label)
+                                }
+                            },
                             label = { Text(item.label) }
                         )
                     }
@@ -182,6 +234,7 @@ fun AppNavigation() {
                         scope.launch {
                             userName = authRepository.getUserName() ?: ""
                             userEmail = authRepository.getUserEmail() ?: ""
+                            syncManager.startSync()
                         }
                         navController.navigate(Screen.ShipmentList.route) {
                             popUpTo(Screen.Login.route) { inclusive = true }
@@ -215,17 +268,12 @@ fun AppNavigation() {
                     isLoading = isLoadingDetail,
                     onStatusUpdate = { status ->
                         val shipmentId = selectedShipment?.id ?: return@ShipmentDetailScreen
-                        scope.launch {
-                            shipmentRepository.updateStatus(shipmentId, status).fold(
-                                onSuccess = { updated ->
-                                    selectedShipment = updated
-                                    shipments = shipments.map {
-                                        if (it.id == updated.id) updated else it
-                                    }
-                                },
-                                onFailure = { /* handle error */ }
-                            )
-                        }
+                        handleStatusUpdate(shipmentId, status)
+                    },
+                    onDeliveredWithPod = { shipment ->
+                        // Update status to Delivered, then open delivery confirm
+                        handleStatusUpdate(shipment.id, ShipmentStatus.Delivered)
+                        navigateToDeliveryConfirm(shipment)
                     },
                     onNavigateClick = { shipment ->
                         val lat = shipment.destinationLat ?: return@ShipmentDetailScreen
@@ -236,10 +284,7 @@ fun AppNavigation() {
                         platformNavigation.openPhoneDialer(phone)
                     },
                     onPodClick = { shipment ->
-                        podPhotoBytes = null
-                        podError = null
-                        isPodSuccess = false
-                        navController.navigate(Screen.ProofOfDelivery.createRoute(shipment.id))
+                        navigateToDeliveryConfirm(shipment)
                     }
                 )
             }
@@ -250,6 +295,7 @@ fun AppNavigation() {
                 }
                 MapScreen(
                     shipments = shipments,
+                    driverLocation = driverLocation,
                     onShipmentClick = { id ->
                         loadShipmentDetail(id)
                         navController.navigate(Screen.ShipmentDetail.createRoute(id))
@@ -262,8 +308,8 @@ fun AppNavigation() {
                 )
             }
 
-            composable(Screen.ProofOfDelivery.route) {
-                ProofOfDeliveryScreen(
+            composable(Screen.DeliveryConfirm.route) {
+                DeliveryConfirmScreen(
                     shipment = selectedShipment,
                     onTakePhoto = {
                         scope.launch {
@@ -277,8 +323,11 @@ fun AppNavigation() {
                     },
                     hasPhoto = podPhotoBytes != null,
                     onRemovePhoto = { podPhotoBytes = null },
+                    signatureLines = signatureLines,
+                    onSignatureLinesChange = { signatureLines = it },
+                    onClearSignature = { signatureLines = emptyList() },
                     onSubmit = { recipientName, notes ->
-                        val shipmentId = selectedShipment?.id ?: return@ProofOfDeliveryScreen
+                        val shipmentId = selectedShipment?.id ?: return@DeliveryConfirmScreen
                         scope.launch {
                             isPodUploading = true
                             podError = null
@@ -293,8 +342,16 @@ fun AppNavigation() {
                                     isPodSuccess = true
                                 },
                                 onFailure = { e ->
+                                    // Try offline queue
+                                    offlineQueue.enqueuePod(
+                                        shipmentId = shipmentId,
+                                        recipientName = recipientName,
+                                        notes = notes,
+                                        photoBytes = podPhotoBytes,
+                                        signatureBytes = null
+                                    )
                                     isPodUploading = false
-                                    podError = e.message ?: "Yukleme basarisiz"
+                                    isPodSuccess = true // Consider it queued successfully
                                 }
                             )
                         }
@@ -305,7 +362,10 @@ fun AppNavigation() {
                     onDismissSuccess = {
                         isPodSuccess = false
                         podPhotoBytes = null
+                        signatureLines = emptyList()
                         navController.popBackStack()
+                        // Refresh shipments
+                        loadShipments()
                     }
                 )
             }
@@ -316,6 +376,8 @@ fun AppNavigation() {
                     userEmail = userEmail,
                     onLogout = {
                         scope.launch {
+                            locationService.stopTracking()
+                            syncManager.stopSync()
                             authRepository.logout()
                             navController.navigate(Screen.Login.route) {
                                 popUpTo(0) { inclusive = true }
