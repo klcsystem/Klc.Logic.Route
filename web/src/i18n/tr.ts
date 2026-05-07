@@ -170,6 +170,13 @@ const tr: Translations = {
     todayOrders: 'Bugunun Siparisleri',
     pendingAssignment: 'Atama Bekleyen',
     deliveredToday: 'Bugun Teslim',
+    originAddress: 'Cikis Adresi',
+    destinationAddress: 'Varis Adresi',
+    searchAddress: 'Adres aramak icin yazin...',
+    selectOnMap: 'Haritadan sec',
+    mapHint: 'Konum secmek icin haritaya tiklayin',
+    addressLoading: 'Adres yukleniyor...',
+    coordinates: 'Koordinatlar',
   },
 
   contracts: {

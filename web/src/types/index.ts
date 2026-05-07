@@ -63,7 +63,13 @@ export interface Order {
   erpReferenceId: string
   customerName: string
   originCity: string
+  originAddress?: string
+  originLat?: number
+  originLng?: number
   destinationCity: string
+  destinationAddress?: string
+  destinationLat?: number
+  destinationLng?: number
   totalWeightKg: number
   totalVolumeM3: number
   palletCount: number

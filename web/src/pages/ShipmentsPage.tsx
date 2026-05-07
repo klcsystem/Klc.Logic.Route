@@ -1,29 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Plus, Search } from 'lucide-react'
+import { Truck, Plus, Search, Loader2 } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
-import type { Shipment, ShipmentItem, ShipmentEvent, ShipmentStatus } from '../types'
-
-const mockItems: ShipmentItem[] = [
-  { id: 'i1', shipmentId: 's1', productCode: 'PRD-001', productName: 'Sut 1L', quantity: 500, weightKg: 520, volumeM3: 0.8, desiWeight: 160 },
-]
-
-const mockEvents: ShipmentEvent[] = [
-  { id: 'e1', shipmentId: 's1', eventType: 'Created', status: 'Draft', description: 'Sevkiyat olusturuldu', createdAt: '2024-03-15 08:00', createdBy: 'Sistem' },
-  { id: 'e2', shipmentId: 's1', eventType: 'Calculated', status: 'Calculated', description: 'Karar motoru calistirildi', createdAt: '2024-03-15 08:15', createdBy: 'Sistem' },
-  { id: 'e3', shipmentId: 's1', eventType: 'InTransit', status: 'InTransit', description: 'Yola cikti', createdAt: '2024-03-15 12:30', createdBy: 'Sistem' },
-]
-
-const mockShipments: Shipment[] = [
-  { id: 's1', shipmentNumber: 'SHP-2024-0412', orderId: '1', originCity: 'Istanbul', destinationCity: 'Ankara', status: 'InTransit', priority: 'Urgent', totalWeightKg: 735, totalVolumeM3: 1.35, totalDesiWeight: 270, chargeableWeight: 735, palletCount: 4, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Tir', selectedProviderName: 'Yolda', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 8450, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: mockItems, events: mockEvents, recommendation: { selectedProviderName: 'Yolda', calculatedPrice: 8450, savingsAmount: 650, savingsPercent: 7.1, reason: 'Optimal', scorePrice: 78, scoreSpeed: 92, scoreReliability: 85, overallScore: 84, recommendedVehicle: 'Tir', explanation: '' }, createdAt: '2024-03-15' },
-  { id: 's2', shipmentNumber: 'SHP-2024-0411', originCity: 'Istanbul', destinationCity: 'Bursa', status: 'Calculated', priority: 'Normal', totalWeightKg: 520, totalVolumeM3: 2.4, totalDesiWeight: 480, chargeableWeight: 520, palletCount: 3, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyon', selectedProviderName: 'Tırport', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 3200, currency: 'TRY', requestedDeliveryDate: '2024-03-16', items: [], events: [], createdAt: '2024-03-15' },
-  { id: 's3', shipmentNumber: 'SHP-2024-0410', originCity: 'Istanbul', destinationCity: 'Istanbul', status: 'Delivered', priority: 'Normal', totalWeightKg: 210, totalVolumeM3: 0.9, totalDesiWeight: 180, chargeableWeight: 210, palletCount: 1, isHazardous: false, requiresColdChain: false, recommendedVehicle: 'Kamyonet', selectedProviderName: 'Ekol Lojistik', providerIntegrationMode: 'ApiIntegrated', calculatedPrice: 1800, currency: 'TRY', requestedDeliveryDate: '2024-03-14', actualDeliveryDate: '2024-03-14', items: [], events: [], createdAt: '2024-03-14' },
-  { id: 's4', shipmentNumber: 'SHP-2024-0409', originCity: 'Kocaeli', destinationCity: 'Istanbul', status: 'Draft', priority: 'Priority', totalWeightKg: 3200, totalVolumeM3: 12.5, totalDesiWeight: 2500, chargeableWeight: 3200, palletCount: 14, isHazardous: false, requiresColdChain: true, recommendedVehicle: 'Frigorifik', selectedProviderName: 'Murat Lojistik', providerIntegrationMode: 'SelfService', currency: 'TRY', requestedDeliveryDate: '2024-03-17', items: [], events: [], createdAt: '2024-03-15' },
-  { id: 's5', shipmentNumber: 'SHP-2024-0408', originCity: 'Ankara', destinationCity: 'Izmir', status: 'PendingApproval', priority: 'Normal', totalWeightKg: 1500, totalVolumeM3: 6.0, totalDesiWeight: 1200, chargeableWeight: 1500, palletCount: 8, isHazardous: true, requiresColdChain: false, recommendedVehicle: 'Tir', selectedProviderName: 'Horoz Lojistik', providerIntegrationMode: 'Managed', calculatedPrice: 11200, currency: 'TRY', requestedDeliveryDate: '2024-03-18', items: [], events: [], createdAt: '2024-03-15' },
-]
+import { shipmentsApi } from '../api/shipments'
+import { useApi } from '../utils/useApi'
+import type { Shipment, ShipmentStatus } from '../types'
 
 const ALL_STATUSES: ShipmentStatus[] = ['Draft', 'Calculated', 'PendingApproval', 'Approved', 'SentToProvider', 'VehicleAssigned', 'Loading', 'InTransit', 'Delivered', 'Completed', 'Cancelled']
 
@@ -44,6 +28,12 @@ export default function ShipmentsPage() {
   const [shipmentDrawerOpen, setShipmentDrawerOpen] = useState(false)
   const [shipmentForm, setShipmentForm] = useState({ originCity: '', destinationCity: '', totalWeightKg: 0, totalVolumeM3: 0, palletCount: 0, priority: 'Normal', requestedDeliveryDate: '', isHazardous: false, requiresColdChain: false })
 
+  const { data: shipmentsData, isLoading } = useApi(
+    () => shipmentsApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
+    [searchTerm, statusFilter],
+  )
+  const allShipments: Shipment[] = shipmentsData?.items || []
+
   const statusLabels: Record<string, string> = {
     Draft: t.shipments.draft, Calculated: t.shipments.calculated, PendingApproval: t.shipments.pendingApproval,
     Approved: t.shipments.approved, SentToProvider: t.shipments.sentToProvider, VehicleAssigned: t.shipments.vehicleAssigned,
@@ -51,20 +41,22 @@ export default function ShipmentsPage() {
     Completed: t.shipments.completed, Cancelled: t.shipments.cancelled,
   }
 
-  const uniqueProviders = [...new Set(mockShipments.map((s) => s.selectedProviderName).filter(Boolean))] as string[]
+  const uniqueProviders = [...new Set(allShipments.map((s) => s.selectedProviderName).filter(Boolean))] as string[]
 
-  const filtered = mockShipments.filter((s) => {
-    const matchSearch = searchTerm === '' || s.shipmentNumber.toLowerCase().includes(searchTerm.toLowerCase()) || (s.selectedProviderName || '').toLowerCase().includes(searchTerm.toLowerCase())
-    const matchStatus = statusFilter === 'all' || s.status === statusFilter
+  const filtered = allShipments.filter((s) => {
     const matchProvider = providerFilter === 'all' || s.selectedProviderName === providerFilter
-    return matchSearch && matchStatus && matchProvider
+    return matchProvider
   })
 
+  const totalCount = shipmentsData?.totalCount || allShipments.length
+  const activeCount = allShipments.filter(s => ['InTransit', 'Loading', 'SentToProvider', 'VehicleAssigned'].includes(s.status)).length
+  const deliveredCount = allShipments.filter(s => s.status === 'Delivered').length
+
   const kpis = [
-    { label: t.shipments.totalShipments, value: '328', change: 7, icon: Truck, color: 'text-blue-600 bg-blue-50' },
-    { label: t.shipments.activeShipments, value: '24', change: 3, icon: Truck, color: 'text-orange-600 bg-orange-50' },
-    { label: t.shipments.deliveredThisWeek, value: '89', change: 12, icon: Truck, color: 'text-green-600 bg-green-50' },
-    { label: t.shipments.avgCost, value: '6,240 TL', change: -4, icon: Truck, color: 'text-purple-600 bg-purple-50' },
+    { label: t.shipments.totalShipments, value: totalCount.toLocaleString(), change: 0, icon: Truck, color: 'text-blue-600 bg-blue-50' },
+    { label: t.shipments.activeShipments, value: activeCount.toString(), change: 0, icon: Truck, color: 'text-orange-600 bg-orange-50' },
+    { label: t.shipments.deliveredThisWeek, value: deliveredCount.toString(), change: 0, icon: Truck, color: 'text-green-600 bg-green-50' },
+    { label: t.shipments.avgCost, value: '— TL', change: 0, icon: Truck, color: 'text-purple-600 bg-purple-50' },
   ]
 
   return (
@@ -86,7 +78,7 @@ export default function ShipmentsPage() {
       {/* Status Pipeline */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {(['all', ...ALL_STATUSES] as const).map((s) => {
-          const count = s === 'all' ? mockShipments.length : mockShipments.filter((sh) => sh.status === s).length
+          const count = s === 'all' ? allShipments.length : allShipments.filter((sh) => sh.status === s).length
           if (s !== 'all' && count === 0) return null
           return (
             <button key={s} onClick={() => setStatusFilter(s)} className={`px-4 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap transition-colors ${statusFilter === s ? 'bg-orange-400 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
@@ -122,7 +114,8 @@ export default function ShipmentsPage() {
               <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.common.date}</th>
             </tr></thead>
             <tbody>
-              {filtered.map((s) => (
+              {isLoading && <tr><td colSpan={9} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {!isLoading && filtered.map((s) => (
                 <tr key={s.id} onClick={() => navigate(`/shipments/${s.id}`)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
                   <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{s.shipmentNumber}</td>
                   <td className="px-6 py-3.5 text-[12px] text-slate-500">{s.originCity} → {s.destinationCity}</td>
@@ -144,7 +137,7 @@ export default function ShipmentsPage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{s.requestedDeliveryDate || '—'}</td>
                 </tr>
               ))}
-              {filtered.length === 0 && <tr><td colSpan={9} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
+              {!isLoading && filtered.length === 0 && <tr><td colSpan={9} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>

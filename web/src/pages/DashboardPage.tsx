@@ -1,11 +1,13 @@
-import { Truck, Package, Clock, DollarSign, AlertTriangle, CheckCircle2, TrendingUp, Users, MapPin, BarChart3, Leaf, FileText, ArrowRightLeft } from 'lucide-react'
+import { Truck, Package, Clock, DollarSign, AlertTriangle, CheckCircle2, TrendingUp, Users, MapPin, BarChart3, Leaf, FileText, ArrowRightLeft, Loader2 } from 'lucide-react'
 import { BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Line } from 'recharts'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import { useAuth } from '../contexts/AuthContext'
 import { useI18n } from '../i18n'
+import { dashboardApi, type DashboardSummary, type ProviderCostSummary, type MonthlyCostSummary } from '../api/dashboard'
+import { useApi } from '../utils/useApi'
 
-// --- Mock Data ---
+// --- Mock Data (for charts without backend endpoints) ---
 const monthlyShipments = [
   { month: 'Oca', sevkiyat: 245, onceki: 198 },
   { month: 'Şub', sevkiyat: 312, onceki: 267 },
@@ -172,15 +174,21 @@ const integrationModeVariant: Record<string, 'info' | 'success' | 'default'> = {
 
 // --- Dashboard Components ---
 
-function ExecutiveDashboard() {
+const PIE_COLORS = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899', '#eab308', '#6366f1']
+
+function ExecutiveDashboard({ summary, providerCosts, monthlyCosts }: { summary: DashboardSummary | null; providerCosts: ProviderCostSummary[]; monthlyCosts: MonthlyCostSummary[] }) {
+  const monthNames = ['', 'Oca', 'Sub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Agu', 'Eyl', 'Eki', 'Kas', 'Ara']
+  const monthlyCostChart = monthlyCosts.map(m => ({ month: monthNames[m.month] || `${m.month}`, maliyet: Math.round(m.totalCost / 1000), sevkiyat: m.shipmentCount }))
+  const providerCostChart = providerCosts.map((p, i) => ({ name: p.providerName, value: p.totalCost, color: PIE_COLORS[i % PIE_COLORS.length] }))
+
   return (
     <div className="space-y-6">
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Toplam Tasarruf" value="₺1.93M" change={14} icon={TrendingUp} color="text-green-600 bg-green-50" />
-        <StatCard label="Toplam Sevkiyat" value="2,019" change={8} icon={Package} color="text-blue-600 bg-blue-50" />
-        <StatCard label="SLA Uyum Oranı" value="%94.2" change={1.5} icon={CheckCircle2} color="text-emerald-600 bg-emerald-50" />
-        <StatCard label="Toplam Maliyet" value="₺12.3M" change={-3} icon={DollarSign} color="text-purple-600 bg-purple-50" />
+        <StatCard label="Toplam Siparis" value={summary?.totalOrders.toLocaleString() || '—'} change={0} icon={Package} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Toplam Sevkiyat" value={summary?.totalShipments.toLocaleString() || '—'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
+        <StatCard label="Aktif Tasiyici" value={summary?.activeProviders.toString() || '—'} change={0} icon={CheckCircle2} color="text-emerald-600 bg-emerald-50" />
+        <StatCard label="Bu Ay Maliyet" value={summary ? `₺${(summary.totalCostThisMonth / 1000).toFixed(0)}K` : '—'} change={0} icon={DollarSign} color="text-purple-600 bg-purple-50" />
       </div>
 
       {/* Charts Row 1 */}
@@ -212,44 +220,50 @@ function ExecutiveDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Taşıyıcı Maliyet Dağılımı */}
+        {/* Tasiyici Maliyet Dagilimi */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Maliyet Dağılımı</h3>
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie data={carrierCostData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={3}>
-                {carrierCostData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-              </Pie>
-              <Tooltip formatter={(v) => `₺${(Number(v) / 1000).toFixed(0)}K`} contentStyle={{ borderRadius: 12, fontSize: 13 }} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="space-y-2 mt-2">
-            {carrierCostData.map((c) => (
-              <div key={c.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c.color }} />
-                  <span className="text-[12px] text-slate-600">{c.name}</span>
-                </div>
-                <span className="text-[12px] font-semibold text-slate-700">₺{(c.value / 1000).toFixed(0)}K</span>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Maliyet Dagilimi</h3>
+          {providerCostChart.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie data={providerCostChart} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={3}>
+                    {providerCostChart.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  </Pie>
+                  <Tooltip formatter={(v) => `₺${(Number(v) / 1000).toFixed(0)}K`} contentStyle={{ borderRadius: 12, fontSize: 13 }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2 mt-2">
+                {providerCostChart.map((c) => (
+                  <div key={c.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c.color }} />
+                      <span className="text-[12px] text-slate-600">{c.name}</span>
+                    </div>
+                    <span className="text-[12px] font-semibold text-slate-700">₺{(c.value / 1000).toFixed(0)}K</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-[180px] text-[13px] text-slate-400">Veri bekleniyor...</div>
+          )}
         </div>
       </div>
 
       {/* Charts Row 2 */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Maliyet & Tasarruf */}
+        {/* Aylik Maliyet */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Maliyet & Tasarruf (Bin TL)</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Maliyet (Bin TL)</h3>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={monthlyCost}>
+            <BarChart data={monthlyCostChart.length > 0 ? monthlyCostChart : monthlyCost}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <Tooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} formatter={(v) => `₺${v}K`} />
               <Bar dataKey="maliyet" name="Maliyet" fill="#f97316" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="tasarruf" name="Tasarruf" fill="#10b981" radius={[4, 4, 0, 0]} />
+              {monthlyCostChart.length === 0 && <Bar dataKey="tasarruf" name="Tasarruf" fill="#10b981" radius={[4, 4, 0, 0]} />}
               <Legend />
             </BarChart>
           </ResponsiveContainer>
@@ -481,14 +495,14 @@ function ExecutiveDashboard() {
   )
 }
 
-function OperationsDashboard() {
+function OperationsDashboard({ summary }: { summary: DashboardSummary | null }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Bugünün Sevkiyatları" value="18" change={5} icon={Package} color="text-blue-600 bg-blue-50" />
-        <StatCard label="Onay Bekleyen" value="4" change={-1} icon={Clock} color="text-amber-600 bg-amber-50" />
-        <StatCard label="Yoldaki Araçlar" value="12" change={2} icon={Truck} color="text-orange-600 bg-orange-50" />
-        <StatCard label="Geciken Sevkiyat" value="2" change={1} icon={AlertTriangle} color="text-red-600 bg-red-50" />
+        <StatCard label="Toplam Sevkiyat" value={summary?.totalShipments.toString() || '—'} change={0} icon={Package} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Bekleyen Siparis" value={summary?.pendingOrders.toString() || '—'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
+        <StatCard label="Yoldaki Sevkiyat" value={summary?.inTransitShipments.toString() || '—'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
+        <StatCard label="Teslim Edilen" value={summary?.deliveredShipments.toString() || '—'} change={0} icon={CheckCircle2} color="text-green-600 bg-green-50" />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -544,14 +558,14 @@ function OperationsDashboard() {
   )
 }
 
-function FinanceDashboard() {
+function FinanceDashboard({ summary }: { summary: DashboardSummary | null }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Aylık Maliyet" value="₺2.29M" change={-3} icon={DollarSign} color="text-blue-600 bg-blue-50" />
-        <StatCard label="Bekleyen Fatura" value="6" change={-2} icon={FileText} color="text-amber-600 bg-amber-50" />
-        <StatCard label="Bu Ay Tasarruf" value="₺342K" change={18} icon={TrendingUp} color="text-green-600 bg-green-50" />
-        <StatCard label="Bütçe Kullanımı" value="%87" change={-2} icon={BarChart3} color="text-purple-600 bg-purple-50" />
+        <StatCard label="Bu Ay Maliyet" value={summary ? `₺${(summary.totalCostThisMonth / 1000).toFixed(0)}K` : '—'} change={0} icon={DollarSign} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Aktif Anlasma" value={summary?.activeContracts.toString() || '—'} change={0} icon={FileText} color="text-amber-600 bg-amber-50" />
+        <StatCard label="Toplam Sevkiyat" value={summary?.totalShipments.toString() || '—'} change={0} icon={TrendingUp} color="text-green-600 bg-green-50" />
+        <StatCard label="Ort. Teslimat (s)" value={summary ? `${summary.averageDeliveryHours.toFixed(1)}` : '—'} change={0} icon={BarChart3} color="text-purple-600 bg-purple-50" />
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
@@ -590,14 +604,14 @@ function FinanceDashboard() {
   )
 }
 
-function LogisticsManagerDashboard() {
+function LogisticsManagerDashboard({ summary }: { summary: DashboardSummary | null }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Aktif Sevkiyat" value="24" change={3} icon={Truck} color="text-orange-600 bg-orange-50" />
-        <StatCard label="Bekleyen Onay" value="7" change={-2} icon={Clock} color="text-amber-600 bg-amber-50" />
-        <StatCard label="Ort. Maliyet/Sevkiyat" value="₺6,240" change={-4} icon={DollarSign} color="text-green-600 bg-green-50" />
-        <StatCard label="Zamanında Teslimat" value="%94.2" change={1.5} icon={CheckCircle2} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Aktif Sevkiyat" value={summary?.inTransitShipments.toString() || '—'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
+        <StatCard label="Bekleyen Siparis" value={summary?.pendingOrders.toString() || '—'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
+        <StatCard label="Aktif Tasiyici" value={summary?.activeProviders.toString() || '—'} change={0} icon={DollarSign} color="text-green-600 bg-green-50" />
+        <StatCard label="Teslim Edilen" value={summary?.deliveredShipments.toString() || '—'} change={0} icon={CheckCircle2} color="text-blue-600 bg-blue-50" />
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
@@ -642,6 +656,10 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const role = user?.role || 'Admin'
 
+  const { data: summary, isLoading: summaryLoading } = useApi(() => dashboardApi.getSummary())
+  const { data: providerCosts } = useApi(() => dashboardApi.getProviderCosts())
+  const { data: monthlyCosts } = useApi(() => dashboardApi.getMonthlyCosts())
+
   const roleLabels: Record<string, string> = {
     Admin: 'Yönetici', Executive: 'Üst Yönetim', LogisticsManager: 'Lojistik Müdürü',
     OperationsSpecialist: 'Operasyon Uzmanı', Finance: 'Finans',
@@ -669,11 +687,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {(role === 'Executive' || role === 'Admin') && <ExecutiveDashboard />}
-      {role === 'LogisticsManager' && <LogisticsManagerDashboard />}
-      {role === 'OperationsSpecialist' && <OperationsDashboard />}
-      {role === 'Finance' && <FinanceDashboard />}
-      {!['Executive', 'Admin', 'LogisticsManager', 'OperationsSpecialist', 'Finance'].includes(role) && <ExecutiveDashboard />}
+      {summaryLoading && <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-orange-400" /></div>}
+      {!summaryLoading && (role === 'Executive' || role === 'Admin') && <ExecutiveDashboard summary={summary} providerCosts={providerCosts || []} monthlyCosts={monthlyCosts || []} />}
+      {!summaryLoading && role === 'LogisticsManager' && <LogisticsManagerDashboard summary={summary} />}
+      {!summaryLoading && role === 'OperationsSpecialist' && <OperationsDashboard summary={summary} />}
+      {!summaryLoading && role === 'Finance' && <FinanceDashboard summary={summary} />}
+      {!summaryLoading && !['Executive', 'Admin', 'LogisticsManager', 'OperationsSpecialist', 'Finance'].includes(role) && <ExecutiveDashboard summary={summary} providerCosts={providerCosts || []} monthlyCosts={monthlyCosts || []} />}
     </div>
   )
 }

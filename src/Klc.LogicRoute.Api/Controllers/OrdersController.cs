@@ -1,5 +1,6 @@
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.Geocoding;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
@@ -13,7 +14,8 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class OrdersController(
     IOrderRepository orderRepository,
-    ITenantProvider tenantProvider) : ControllerBase
+    ITenantProvider tenantProvider,
+    IGeocodingService geocodingService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ApiResponse<IEnumerable<Order>>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
@@ -41,6 +43,8 @@ public class OrdersController(
         if (string.IsNullOrEmpty(order.OrderNumber))
             order.OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..6].ToUpper()}";
 
+        await geocodingService.EnrichOrderCoordinatesAsync(order);
+
         var id = await orderRepository.InsertAsync(order);
 
         foreach (var line in order.Lines)
@@ -66,6 +70,7 @@ public class OrdersController(
         order.Id = id;
         order.TenantId = tenantId;
         order.UpdatedBy = tenantProvider.GetUserId();
+        await geocodingService.EnrichOrderCoordinatesAsync(order);
         await orderRepository.UpdateAsync(order);
 
         await orderRepository.DeleteLinesAsync(id);

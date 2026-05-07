@@ -168,6 +168,13 @@ const en = {
     todayOrders: "Today's Orders",
     pendingAssignment: 'Pending Assignment',
     deliveredToday: 'Delivered Today',
+    originAddress: 'Origin Address',
+    destinationAddress: 'Destination Address',
+    searchAddress: 'Type to search address...',
+    selectOnMap: 'Select on map',
+    mapHint: 'Click on the map to select a location',
+    addressLoading: 'Loading address...',
+    coordinates: 'Coordinates',
   },
 
   contracts: {

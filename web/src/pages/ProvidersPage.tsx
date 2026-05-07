@@ -1,51 +1,21 @@
 import { useState } from 'react'
-import { Building2, Plus, Search, Power } from 'lucide-react'
+import { Building2, Plus, Search, Power, Loader2 } from 'lucide-react'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
+import { providersApi } from '../api/providers'
+import { useApi } from '../utils/useApi'
 import type { Provider } from '../types'
-
-const mockProviders: Provider[] = [
-  // Dijital Navlun Platformları
-  { id: '1', name: 'Yolda', code: 'YOLDA', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Kamyonet', 'Frigorifik'], contractCount: 5, integrationMode: 'ApiIntegrated', contactEmail: 'api@yolda.io' },
-  { id: '2', name: 'Tırport', code: 'TIRPORT', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Ortadoğu'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Tanker'], contractCount: 4, integrationMode: 'ApiIntegrated', contactEmail: 'info@tirport.com' },
-  { id: '3', name: 'Lojistik360', code: 'L360', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik'], contractCount: 2, integrationMode: 'ApiIntegrated', contactEmail: 'destek@lojistik360.com' },
-
-  // Büyük Lojistik Şirketleri
-  { id: '4', name: 'Ekol Lojistik', code: 'EKOL', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Ortadoğu', 'Orta Asya'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Demiryolu'], contractCount: 6, integrationMode: 'ApiIntegrated', contactEmail: 'info@ekol.com' },
-  { id: '5', name: 'Mars Logistics', code: 'MARS', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Tanker'], contractCount: 3, integrationMode: 'SelfService', contactEmail: 'info@marslogistics.com' },
-  { id: '6', name: 'Horoz Lojistik', code: 'HOROZ', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Parsiyel'], contractCount: 4, integrationMode: 'Managed', contactEmail: 'info@horoz.com.tr' },
-  { id: '7', name: 'Reeder', code: 'REEDER', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner'], contractCount: 3, integrationMode: 'Managed', contactEmail: 'info@reeder.com.tr' },
-  { id: '8', name: 'Omsan Lojistik', code: 'OMSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Lowbed'], contractCount: 5, integrationMode: 'Managed', contactEmail: 'info@omsan.com.tr' },
-  { id: '9', name: 'Netlog Lojistik', code: 'NETLOG', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Balkanlar'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Parsiyel'], contractCount: 2, integrationMode: 'Managed', contactEmail: 'info@netlog.com' },
-  { id: '10', name: 'Borusan Lojistik', code: 'BORUSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Konteyner'], contractCount: 4, integrationMode: 'Managed', contactEmail: 'info@borusanlojistik.com' },
-
-  // Kargo & Parsiyel
-  { id: '11', name: 'Aras Kargo', code: 'ARAS', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 3, integrationMode: 'Managed', contactEmail: 'kurumsal@araskargo.com.tr' },
-  { id: '12', name: 'Yurtiçi Kargo', code: 'YURTICI', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 4, integrationMode: 'Managed', contactEmail: 'kurumsal@yurticikargo.com' },
-  { id: '13', name: 'MNG Kargo', code: 'MNG', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon', 'Parsiyel'], contractCount: 2, integrationMode: 'Managed', contactEmail: 'kurumsal@mngkargo.com.tr' },
-  { id: '14', name: 'Sürat Kargo', code: 'SURAT', type: 'LTL', isActive: false, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Parsiyel'], contractCount: 1, integrationMode: 'Managed', contactEmail: 'kurumsal@suratkargo.com.tr' },
-  { id: '15', name: 'PTT Kargo', code: 'PTT', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Kamyon'], contractCount: 1, integrationMode: 'Managed', contactEmail: 'kurumsal@ptt.gov.tr' },
-  { id: '16', name: 'Sendeo', code: 'SENDEO', type: 'LTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Kamyonet', 'Parsiyel'], contractCount: 2, integrationMode: 'Managed', contactEmail: 'info@sendeo.com.tr' },
-
-  // Uluslararası & Özel Taşımacılık
-  { id: '17', name: 'Ceva Lojistik', code: 'CEVA', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Havayolu'], contractCount: 3, integrationMode: 'ApiIntegrated', contactEmail: 'turkey@cevalogistics.com' },
-  { id: '18', name: 'DB Schenker', code: 'SCHENKER', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Demiryolu', 'Havayolu'], contractCount: 5, integrationMode: 'ApiIntegrated', contactEmail: 'turkey@dbschenker.com' },
-  { id: '19', name: 'DHL Freight', code: 'DHL', type: 'Intermodal', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'Global'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner', 'Havayolu'], contractCount: 4, integrationMode: 'ApiIntegrated', contactEmail: 'turkey@dhl.com' },
-  { id: '20', name: 'Gebrüder Weiss', code: 'GW', type: 'FTL', isActive: false, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Konteyner'], contractCount: 2, integrationMode: 'Managed', contactEmail: 'turkey@gw-world.com' },
-
-  // Özel Araç & ADR
-  { id: '21', name: 'Barsan Global Lojistik', code: 'BARSAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa', 'BDT'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Lowbed', 'Tanker', 'ADR'], contractCount: 3, integrationMode: 'SelfService', contactEmail: 'info@barsan.com' },
-  { id: '22', name: 'Kontrolör Lojistik', code: 'KONTROL', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Tanker', 'ADR', 'Frigorifik'], contractCount: 2, integrationMode: 'SelfService', contactEmail: 'info@kontrolor.com' },
-  { id: '23', name: 'Murat Lojistik', code: 'MURAT', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Kamyonet'], contractCount: 3, integrationMode: 'SelfService', contactEmail: 'info@muratlojistik.com.tr' },
-  { id: '24', name: 'Alışan Lojistik', code: 'ALISAN', type: 'FTL', isActive: true, serviceRegions: ['Tüm Türkiye', 'Avrupa'], supportedVehicleTypes: ['Tır', 'Kamyon', 'Frigorifik', 'Konteyner'], contractCount: 4, integrationMode: 'Managed', contactEmail: 'info@alisan.com' },
-  { id: '25', name: 'UND (Uluslararası Nakliyeciler Derneği)', code: 'UND', type: 'FTL', isActive: false, serviceRegions: ['Avrupa', 'Ortadoğu', 'BDT'], supportedVehicleTypes: ['Tır', 'Konteyner'], contractCount: 1, integrationMode: 'Managed', contactEmail: 'info@und.org.tr' },
-]
 
 export default function ProvidersPage() {
   const { t } = useI18n()
   const [searchTerm, setSearchTerm] = useState('')
-  const [providers, setProviders] = useState(mockProviders)
+
+  const { data: providersData, isLoading, refetch } = useApi(
+    () => providersApi.getAll({ search: searchTerm || undefined }),
+    [searchTerm],
+  )
+  const providers: Provider[] = providersData?.items || (Array.isArray(providersData) ? providersData as unknown as Provider[] : [])
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'detail'>('detail')
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
@@ -55,8 +25,11 @@ export default function ProvidersPage() {
     searchTerm === '' || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.code.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleToggle = (id: string) => {
-    setProviders((prev) => prev.map((p) => p.id === id ? { ...p, isActive: !p.isActive } : p))
+  const handleToggle = async (id: string) => {
+    try {
+      await providersApi.toggleActive(id)
+      refetch()
+    } catch { /* toggle failed */ }
   }
 
   const handleRowClick = (provider: Provider) => {
@@ -107,7 +80,8 @@ export default function ProvidersPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredProviders.map((p) => (
+              {isLoading && <tr><td colSpan={8} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {!isLoading && filteredProviders.map((p) => (
                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                   <td className="px-6 py-3.5 cursor-pointer" onClick={() => handleRowClick(p)}>
                     <div className="flex items-center gap-2">

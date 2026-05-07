@@ -1,5 +1,6 @@
 using Dapper;
 using Klc.LogicRoute.Application.Common.Interfaces;
+using Klc.LogicRoute.Application.Geocoding;
 using Klc.LogicRoute.Domain.Interfaces;
 using Klc.LogicRoute.Infrastructure.Persistence;
 using Klc.LogicRoute.Infrastructure.Persistence.Repositories;
@@ -21,6 +22,7 @@ public static class DependencyInjection
         services.AddSingleton<IPostgresConnectionFactory, PostgresConnectionFactory>();
         services.AddSingleton<DatabaseInitializer>();
         services.AddSingleton<AuthDatabaseInitializer>();
+        services.AddSingleton<SeedDataGenerator>();
 
         // Redis
         var redisConnection = configuration.GetConnectionString("Redis") ?? "localhost:2703";
@@ -74,6 +76,18 @@ public static class DependencyInjection
         // Invoice Audit & Routing Rules
         services.AddScoped<Application.InvoiceAudit.IInvoiceAuditService, Application.InvoiceAudit.InvoiceAuditService>();
         services.AddScoped<Application.RoutingRules.IRoutingRuleEngine, Application.RoutingRules.RoutingRuleEngine>();
+
+        // Geocoding (decorator pattern: CachedGeocodingProvider -> NominatimGeocodingProvider)
+        var nominatimBaseUrl = configuration["Geocoding:NominatimBaseUrl"] ?? "https://nominatim.openstreetmap.org/";
+        services.AddHttpClient<NominatimGeocodingProvider>(client =>
+        {
+            client.BaseAddress = new Uri(nominatimBaseUrl);
+            client.DefaultRequestHeaders.Add("User-Agent", "KlcLogicRoute/1.0");
+            client.DefaultRequestHeaders.Add("Accept-Language", "tr");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+        services.AddScoped<IGeocodingProvider, CachedGeocodingProvider>();
+        services.AddScoped<IGeocodingService, GeocodingService>();
 
         // Services
         services.AddSingleton<IJwtTokenService, JwtTokenService>();

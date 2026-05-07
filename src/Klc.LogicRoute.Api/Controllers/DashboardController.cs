@@ -20,10 +20,10 @@ public class DashboardController(
         var summary = new DashboardSummary
         {
             TotalOrders = await dashboardRepository.GetOrderCountAsync(tenantId),
-            PendingOrders = await dashboardRepository.GetOrderCountAsync(tenantId, 1),
+            PendingOrders = await dashboardRepository.GetOrderCountAsync(tenantId, (int)Domain.Enums.OrderStatus.Pending),
             TotalShipments = await dashboardRepository.GetShipmentCountAsync(tenantId),
-            InTransitShipments = await dashboardRepository.GetShipmentCountAsync(tenantId, 4),
-            DeliveredShipments = await dashboardRepository.GetShipmentCountAsync(tenantId, 6),
+            InTransitShipments = await dashboardRepository.GetShipmentCountAsync(tenantId, (int)Domain.Enums.ShipmentStatus.InTransit),
+            DeliveredShipments = await dashboardRepository.GetShipmentCountAsync(tenantId, (int)Domain.Enums.ShipmentStatus.Delivered),
             ActiveProviders = await dashboardRepository.GetProviderCountAsync(tenantId),
             ActiveContracts = await dashboardRepository.GetActiveContractCountAsync(tenantId),
             TotalCostThisMonth = await dashboardRepository.GetTotalShipmentCostAsync(tenantId, DateTime.UtcNow.Year, DateTime.UtcNow.Month),
