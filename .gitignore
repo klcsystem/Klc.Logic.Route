@@ -24,5 +24,11 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
+# Kotlin/Gradle
+.gradle/
+build/
+local.properties
+*.iml
+
 # Claude
 .claude/
