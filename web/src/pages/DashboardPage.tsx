@@ -26,12 +26,6 @@ const monthlyCost = [
   { month: 'Haz', maliyet: 2290, tasarruf: 342 },
 ]
 
-const carrierCostData = [
-  { name: 'Yolda Lojistik', value: 892000, color: '#f97316' },
-  { name: 'Murat Lojistik', value: 678000, color: '#3b82f6' },
-  { name: 'Tırport', value: 524000, color: '#10b981' },
-  { name: 'Diğer', value: 198000, color: '#8b5cf6' },
-]
 
 const carrierPerfData = [
   { name: 'Yolda', zamaninda: 96.2, hasar: 0.3, ortalamaSure: 18 },
@@ -257,13 +251,12 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts }: { summary:
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
           <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Maliyet (Bin TL)</h3>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={monthlyCostChart.length > 0 ? monthlyCostChart : monthlyCost}>
+            <BarChart data={monthlyCostChart.length > 0 ? monthlyCostChart : (monthlyCost as unknown as typeof monthlyCostChart)}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
               <Tooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} formatter={(v) => `₺${v}K`} />
               <Bar dataKey="maliyet" name="Maliyet" fill="#f97316" radius={[4, 4, 0, 0]} />
-              {monthlyCostChart.length === 0 && <Bar dataKey="tasarruf" name="Tasarruf" fill="#10b981" radius={[4, 4, 0, 0]} />}
               <Legend />
             </BarChart>
           </ResponsiveContainer>

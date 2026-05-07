@@ -51,7 +51,7 @@ export default function CarrierScorecardPage() {
       responseTime: Math.max(75, 96 - i * 2),
       costEfficiency: Math.max(75, 92 - i * 1.5),
       totalShipments: costEntry?.shipmentCount || 0,
-      trend: i < 3 ? 'up' : i < 6 ? 'stable' : 'down',
+      trend: (i < 3 ? 'up' : i < 6 ? 'stable' : 'down') as 'up' | 'down' | 'stable',
       lastUpdated: new Date().toISOString().split('T')[0],
     }
   }).sort((a, b) => b.overallRating - a.overallRating).slice(0, 10)
