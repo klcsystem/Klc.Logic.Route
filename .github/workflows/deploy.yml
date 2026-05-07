@@ -15,8 +15,11 @@ jobs:
           host: 139.59.209.134
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
           script: |
             cd /opt/logicroute
             git pull origin main
-            docker compose build --no-cache
+            docker image prune -f
+            docker compose build --no-cache api
+            docker compose build --no-cache web
             docker compose up -d
