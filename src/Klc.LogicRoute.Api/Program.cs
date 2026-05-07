@@ -119,18 +119,15 @@ using (var scope = app.Services.CreateScope())
         Log.Warning(ex, "PostgreSQL auth initialization skipped - may not be available");
     }
 
-    // Seed realistic Turkish logistics data (development only)
-    if (app.Environment.IsDevelopment())
+    // Seed realistic Turkish logistics data (idempotent — skips if data exists)
+    var seedGenerator = scope.ServiceProvider.GetRequiredService<SeedDataGenerator>();
+    try
     {
-        var seedGenerator = scope.ServiceProvider.GetRequiredService<SeedDataGenerator>();
-        try
-        {
-            await seedGenerator.SeedAsync();
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Seed data generation skipped - may not be available");
-        }
+        await seedGenerator.SeedAsync();
+    }
+    catch (Exception ex)
+    {
+        Log.Warning(ex, "Seed data generation skipped - may not be available");
     }
 }
 
