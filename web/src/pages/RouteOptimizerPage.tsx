@@ -18,7 +18,7 @@ const defaultVehicles: VrpVehicle[] = [
   { id: 'v3', plateNumber: '06 KLC 012', capacityKg: 12000, capacityM3: 60, costPerKm: 15.0, startLat: 39.9334, startLng: 32.8597, available: true },
 ]
 
-function orderToStop(order: Order, index: number): VrpStop | null {
+function orderToStop(order: Order): VrpStop | null {
   const lat = order.destinationLat || order.originLat
   const lng = order.destinationLng || order.originLng
   if (!lat || !lng) return null
@@ -69,8 +69,8 @@ export default function RouteOptimizerPage() {
 
         const newStops: VrpStop[] = []
         const skipped: string[] = []
-        allOrders.forEach((order, i) => {
-          const stop = orderToStop(order, i)
+        allOrders.forEach((order) => {
+          const stop = orderToStop(order)
           if (stop) newStops.push(stop)
           else skipped.push(`${order.orderNumber} (${order.customerName})`)
         })
