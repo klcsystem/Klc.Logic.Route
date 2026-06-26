@@ -20,11 +20,20 @@ public class OrdersController(
     IGeocodingService geocodingService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<Order>>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    public async Task<ActionResult<ApiResponse<object>>> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
     {
         var tenantId = tenantProvider.GetTenantId();
         var orders = await orderRepository.GetAllAsync(tenantId, page, pageSize);
-        return Ok(ApiResponse<IEnumerable<Order>>.Ok(orders));
+        var totalCount = await orderRepository.GetCountAsync(tenantId);
+        var result = new
+        {
+            items = orders,
+            totalCount,
+            page,
+            pageSize,
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        };
+        return Ok(ApiResponse<object>.Ok(result));
     }
 
     [HttpGet("{id:guid}")]
