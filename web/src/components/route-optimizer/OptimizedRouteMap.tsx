@@ -1,4 +1,5 @@
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
+import { useEffect, useState } from 'react'
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import type { VrpRoute, VrpSolution, VrpStop } from '../../api/routeOptimization'
 import 'leaflet/dist/leaflet.css'
@@ -37,6 +38,46 @@ const pendingStopIcon = L.divIcon({
   popupAnchor: [0, -11],
 })
 
+// OSRM routing — gerçek yol güzergahını al
+async function fetchRoadRoute(waypoints: [number, number][]): Promise<[number, number][]> {
+  if (waypoints.length < 2) return waypoints
+  const coords = waypoints.map(([lat, lng]) => `${lng},${lat}`).join(';')
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`
+  try {
+    const res = await fetch(url)
+    const data = await res.json()
+    if (data.code === 'Ok' && data.routes?.[0]?.geometry?.coordinates) {
+      return data.routes[0].geometry.coordinates.map((c: number[]) => [c[1], c[0]] as [number, number])
+    }
+  } catch (e) {
+    console.warn('OSRM route fetch failed, falling back to straight line', e)
+  }
+  return waypoints
+}
+
+// Haritayı otomatik zoom/fit et
+function FitBounds({ points }: { points: [number, number][] }) {
+  const map = useMap()
+  useEffect(() => {
+    if (points.length > 0) {
+      const bounds = L.latLngBounds(points.map(p => L.latLng(p[0], p[1])))
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 })
+    }
+  }, [points, map])
+  return null
+}
+
+// Tek bir rota için OSRM ile gerçek yol çizen bileşen
+function RoadRoutePolyline({ waypoints, color }: { waypoints: [number, number][]; color: string }) {
+  const [roadPoints, setRoadPoints] = useState<[number, number][]>(waypoints)
+
+  useEffect(() => {
+    fetchRoadRoute(waypoints).then(setRoadPoints)
+  }, [waypoints])
+
+  return <Polyline positions={roadPoints} pathOptions={{ color, weight: 4, opacity: 0.85 }} />
+}
+
 interface OptimizedRouteMapProps {
   solution: VrpSolution | null
   stops?: VrpStop[]
@@ -45,6 +86,14 @@ interface OptimizedRouteMapProps {
 }
 
 export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng }: OptimizedRouteMapProps) {
+  // Tüm noktaları topla (harita zoom/fit için)
+  const allPoints: [number, number][] = [[depotLat, depotLng]]
+  if (solution) {
+    solution.routes.forEach(r => r.stops.forEach(s => allPoints.push([s.lat, s.lng])))
+  } else if (stops) {
+    stops.forEach(s => allPoints.push([s.lat, s.lng]))
+  }
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
       <MapContainer
@@ -58,9 +107,12 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {/* Auto fit bounds */}
+        <FitBounds points={allPoints} />
+
         {/* Depot */}
         <Marker position={[depotLat, depotLng]} icon={depotIcon}>
-          <Popup><span className="text-[12px] font-bold">Depo</span></Popup>
+          <Popup><span className="text-[12px] font-bold">Depo (Istanbul)</span></Popup>
         </Marker>
 
         {/* Pending stops (before optimization) */}
@@ -75,10 +127,10 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
           </Marker>
         ))}
 
-        {/* Routes */}
+        {/* Optimized routes — OSRM gerçek yol güzergahı */}
         {solution?.routes.map((route: VrpRoute, routeIdx: number) => {
           const color = ROUTE_COLORS[routeIdx % ROUTE_COLORS.length]
-          const points: [number, number][] = [
+          const waypoints: [number, number][] = [
             [depotLat, depotLng],
             ...route.stops.map(s => [s.lat, s.lng] as [number, number]),
             [depotLat, depotLng],
@@ -86,11 +138,8 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
 
           return (
             <span key={route.vehicleId}>
-              {/* Polyline */}
-              <Polyline
-                positions={points}
-                pathOptions={{ color, weight: 4, opacity: 0.85, dashArray: undefined }}
-              />
+              {/* Gerçek yol güzergahı */}
+              <RoadRoutePolyline waypoints={waypoints} color={color} />
 
               {/* Stop markers */}
               {route.stops.map(stop => (
@@ -123,7 +172,7 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
             <div key={route.vehicleId} className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ROUTE_COLORS[i % ROUTE_COLORS.length] }} />
               <span className="text-[12px] text-slate-600 font-medium">{route.plateNumber}</span>
-              <span className="text-[11px] text-slate-400">({route.stops.length} durak)</span>
+              <span className="text-[11px] text-slate-400">({route.stops.length} durak, {route.totalDistanceKm.toFixed(0)} km)</span>
             </div>
           ))}
         </div>
