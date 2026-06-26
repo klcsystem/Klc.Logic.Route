@@ -55,6 +55,11 @@ public static class DependencyInjection
         services.AddScoped<ICargoDetailRepository, CargoDetailRepository>();
 
         // ERP Adapters
+        services.AddHttpClient("SapOData")
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (_, _, _, _) => true // SAP self-signed certs
+            });
         services.AddScoped<IErpAdapter, ExternalServices.Erp.SapAdapter>();
         services.AddScoped<IErpAdapter, ExternalServices.Erp.GenericErpAdapter>();
 

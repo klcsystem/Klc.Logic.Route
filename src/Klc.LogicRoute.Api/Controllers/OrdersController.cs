@@ -14,6 +14,8 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class OrdersController(
     IOrderRepository orderRepository,
+    IErpConnectionRepository erpConnectionRepository,
+    IEnumerable<IErpAdapter> erpAdapters,
     ITenantProvider tenantProvider,
     IGeocodingService geocodingService) : ControllerBase
 {
@@ -106,6 +108,51 @@ public class OrdersController(
         return Ok(ApiResponse<bool>.Ok(true));
     }
 
+    [HttpPost("sync-erp")]
+    public async Task<ActionResult<ApiResponse<object>>> SyncErp([FromBody] SyncErpRequest? request = null)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userId = tenantProvider.GetUserId();
+
+        // Find ERP connection — use specified or first active one
+        ErpConnection? connection;
+        if (request?.ConnectionId is not null && Guid.TryParse(request.ConnectionId, out var connId))
+        {
+            connection = await erpConnectionRepository.GetByIdAsync(connId, tenantId);
+        }
+        else
+        {
+            var connections = await erpConnectionRepository.GetAllAsync(tenantId);
+            connection = connections.FirstOrDefault(c => c.IsActive);
+        }
+
+        if (connection == null)
+            return NotFound(ApiResponse<object>.Fail("Aktif ERP baglantisi bulunamadi"));
+
+        var adapter = erpAdapters.FirstOrDefault(a => a.SupportedType == connection.ErpType)
+                      ?? erpAdapters.FirstOrDefault(a => a.SupportedType == ErpType.Generic);
+
+        if (adapter == null)
+            return BadRequest(ApiResponse<object>.Fail("ERP adapter bulunamadi"));
+
+        var orders = await adapter.SyncOrdersAsync(connection, connection.LastSyncAt);
+
+        var count = 0;
+        foreach (var order in orders)
+        {
+            order.TenantId = tenantId;
+            order.CreatedBy = userId;
+            await geocodingService.EnrichOrderCoordinatesAsync(order);
+            await orderRepository.InsertAsync(order);
+            count++;
+        }
+
+        await erpConnectionRepository.UpdateSyncStatusAsync(
+            connection.Id, tenantId, $"Synced {count} orders at {DateTime.UtcNow:u}");
+
+        return Ok(ApiResponse<object>.Ok(new { syncedCount = count }));
+    }
+
     [HttpGet("count")]
     public async Task<ActionResult<ApiResponse<int>>> GetCount()
     {
@@ -116,3 +163,4 @@ public class OrdersController(
 }
 
 public record OrderStatusUpdate(OrderStatus Status);
+public record SyncErpRequest(string? ConnectionId);
