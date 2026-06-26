@@ -26,7 +26,6 @@ export default function OrdersPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDrawerOpen, setOrderDrawerOpen] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const { data: ordersData, isLoading, refetch } = useApi(
     () => ordersApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
@@ -56,13 +55,9 @@ export default function OrdersPage() {
     }
   }
   const handleRowClick = (order: Order) => { setSelectedOrder(order); setDrawerOpen(true) }
-  const toggleSelect = (id: string, e: React.MouseEvent) => {
+  const handleRouteClick = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
-  }
-  const handleOptimizeRoute = () => {
-    const ids = Array.from(selectedIds).join(',')
-    navigate(`/route-optimizer?orderIds=${ids}`)
+    navigate(`/route-optimizer?orderIds=${id}`)
   }
 
   const totalCount = ordersData?.totalCount || orders.length
@@ -84,14 +79,6 @@ export default function OrdersPage() {
           <p className="text-[14px] text-slate-400 mt-1">{t.orders.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
-          {selectedIds.size > 0 && (
-            <>
-              <button onClick={handleOptimizeRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[13px] font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/20 transition-all">
-                <Route className="w-4 h-4" /> {selectedIds.size} Siparis — Rota Optimize Et
-              </button>
-              <button onClick={() => setSelectedIds(new Set())} className="px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-500 hover:bg-slate-50">Temizle</button>
-            </>
-          )}
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? t.orders.syncing : t.orders.syncErp}
           </button>
@@ -137,7 +124,7 @@ export default function OrdersPage() {
             <tbody>
               {isLoading && <tr><td colSpan={8} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && orders.map((o) => (
-                <tr key={o.id} onClick={() => handleRowClick(o)} className={`border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer ${selectedIds.has(o.id) ? 'bg-orange-50/60' : ''}`}>
+                <tr key={o.id} onClick={() => handleRowClick(o)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
                   <td className="px-6 py-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] font-medium text-slate-800">{o.orderNumber}</span>
@@ -153,13 +140,9 @@ export default function OrdersPage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{o.requestedDeliveryDate}</td>
                   <td className="w-12 px-2 py-3.5">
                     <button
-                      onClick={(e) => toggleSelect(o.id, e)}
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all border ${
-                        selectedIds.has(o.id)
-                          ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/30'
-                          : 'text-slate-400 border-slate-200 hover:text-blue-500 hover:border-blue-300 hover:bg-blue-50'
-                      }`}
-                      title="Rota icin sec"
+                      onClick={(e) => handleRouteClick(o.id, e)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all border text-slate-400 border-slate-200 hover:text-orange-500 hover:border-orange-300 hover:bg-orange-50 hover:shadow-sm"
+                      title="Rota Optimize Et"
                     >
                       <Route className="w-4 h-4" />
                     </button>
