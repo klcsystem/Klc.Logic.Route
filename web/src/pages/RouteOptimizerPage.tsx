@@ -233,7 +233,7 @@ export default function RouteOptimizerPage() {
         {/* Right Panel — Map + Results */}
         <div className="lg:col-span-2 space-y-6">
           {/* Map */}
-          <OptimizedRouteMap solution={solution} depotLat={depotLat} depotLng={depotLng} />
+          <OptimizedRouteMap solution={solution} stops={stops} depotLat={depotLat} depotLng={depotLng} />
 
           {/* Results Summary */}
           {solution && (

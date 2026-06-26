@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
 import L from 'leaflet'
-import type { VrpRoute, VrpSolution } from '../../api/routeOptimization'
+import type { VrpRoute, VrpSolution, VrpStop } from '../../api/routeOptimization'
 import 'leaflet/dist/leaflet.css'
 
 const ROUTE_COLORS = ['#f97316', '#3b82f6', '#22c55e', '#a855f7', '#ef4444', '#06b6d4', '#eab308', '#ec4899']
@@ -27,13 +27,24 @@ function stopIcon(color: string, sequence: number) {
   })
 }
 
+const pendingStopIcon = L.divIcon({
+  className: '',
+  html: `<div style="background:#94a3b8;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.2)">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><circle cx="12" cy="12" r="3"/></svg>
+  </div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+  popupAnchor: [0, -11],
+})
+
 interface OptimizedRouteMapProps {
   solution: VrpSolution | null
+  stops?: VrpStop[]
   depotLat: number
   depotLng: number
 }
 
-export default function OptimizedRouteMap({ solution, depotLat, depotLng }: OptimizedRouteMapProps) {
+export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng }: OptimizedRouteMapProps) {
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
       <MapContainer
@@ -51,6 +62,18 @@ export default function OptimizedRouteMap({ solution, depotLat, depotLng }: Opti
         <Marker position={[depotLat, depotLng]} icon={depotIcon}>
           <Popup><span className="text-[12px] font-bold">Depo</span></Popup>
         </Marker>
+
+        {/* Pending stops (before optimization) */}
+        {!solution && stops?.map(stop => (
+          <Marker key={stop.id} position={[stop.lat, stop.lng]} icon={pendingStopIcon}>
+            <Popup>
+              <div className="text-[12px] min-w-[140px]">
+                <p className="font-bold text-[13px]">{stop.address}</p>
+                <p className="text-gray-500 mt-1">{stop.demandKg.toLocaleString()} kg / {stop.demandM3} m3</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
 
         {/* Routes */}
         {solution?.routes.map((route: VrpRoute, routeIdx: number) => {

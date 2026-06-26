@@ -60,10 +60,6 @@ export default function OrdersPage() {
     e.stopPropagation()
     setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
   }
-  const toggleSelectAll = () => {
-    if (selectedIds.size === orders.length) setSelectedIds(new Set())
-    else setSelectedIds(new Set(orders.map(o => o.id)))
-  }
   const handleOptimizeRoute = () => {
     const ids = Array.from(selectedIds).join(',')
     navigate(`/route-optimizer?orderIds=${ids}`)
@@ -120,7 +116,6 @@ export default function OrdersPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="w-10 px-3 py-3"><input type="checkbox" checked={orders.length > 0 && selectedIds.size === orders.length} onChange={toggleSelectAll} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /></th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.orderNo}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.customer}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.address}</th>
@@ -128,13 +123,13 @@ export default function OrdersPage() {
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.priority}</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.common.status}</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.common.date}</th>
+                <th className="w-10 px-2 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {isLoading && <tr><td colSpan={8} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && orders.map((o) => (
-                <tr key={o.id} onClick={() => handleRowClick(o)} className={`border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer ${selectedIds.has(o.id) ? 'bg-orange-50/50' : ''}`}>
-                  <td className="w-10 px-3 py-3.5"><input type="checkbox" checked={selectedIds.has(o.id)} onClick={(e) => toggleSelect(o.id, e)} readOnly className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /></td>
+                <tr key={o.id} onClick={() => handleRowClick(o)} className={`border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer ${selectedIds.has(o.id) ? 'bg-orange-50/60' : ''}`}>
                   <td className="px-6 py-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] font-medium text-slate-800">{o.orderNumber}</span>
@@ -148,6 +143,19 @@ export default function OrdersPage() {
                   <td className="px-6 py-3.5 text-center"><Badge variant={priorityVariant[o.priority]}>{o.priority}</Badge></td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[o.status]}>{statusLabels[o.status]}</Badge></td>
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{o.requestedDeliveryDate}</td>
+                  <td className="w-10 px-2 py-3.5">
+                    <button
+                      onClick={(e) => toggleSelect(o.id, e)}
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                        selectedIds.has(o.id)
+                          ? 'bg-orange-500 text-white shadow-sm'
+                          : 'text-slate-300 hover:text-orange-400 hover:bg-orange-50'
+                      }`}
+                      title="Rota icin sec"
+                    >
+                      <Route className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
                 </tr>
               ))}
               {!isLoading && orders.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
@@ -217,125 +225,45 @@ export default function OrdersPage() {
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.orderNo}</label><input type="text" value={orderForm.orderNumber} onChange={(e) => setOrderForm({ ...orderForm, orderNumber: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="ORD-2024-0827" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.customer}</label><input type="text" value={orderForm.customerName} onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Musteri adi" /></div>
 
-          {/* Origin Address with Geocoding */}
           <div className="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-green-500" />
               <span className="text-[13px] font-semibold text-slate-700">{t.orders.originAddress}</span>
             </div>
-            <AddressAutocomplete
-              label=""
-              value={orderForm.originAddress}
-              placeholder={t.orders.searchAddress}
-              onSelect={(result: GeocodingResult) => {
-                setOrderForm({
-                  ...orderForm,
-                  originAddress: result.displayName,
-                  originCity: result.city || orderForm.originCity,
-                  originLat: result.lat,
-                  originLng: result.lng,
-                })
-              }}
-              onClear={() => setOrderForm({ ...orderForm, originAddress: '', originLat: undefined, originLng: undefined })}
-            />
-            <button
-              type="button"
-              onClick={() => setActiveMapField(activeMapField === 'origin' ? null : 'origin')}
-              className={`flex items-center gap-1.5 text-[12px] font-medium transition-colors ${activeMapField === 'origin' ? 'text-orange-500' : 'text-slate-500 hover:text-orange-500'}`}
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              {t.orders.selectOnMap}
-            </button>
-            {activeMapField === 'origin' && (
-              <LocationPicker
-                lat={orderForm.originLat}
-                lng={orderForm.originLng}
-                height={220}
-                onLocationChange={(lat: number, lng: number, address?: ReverseGeocodingResult) => {
-                  setOrderForm({
-                    ...orderForm,
-                    originLat: lat,
-                    originLng: lng,
-                    originAddress: address?.displayName || orderForm.originAddress,
-                    originCity: address?.city || orderForm.originCity,
-                  })
-                }}
-              />
-            )}
+            <AddressAutocomplete label="" value={orderForm.originAddress} placeholder={t.orders.searchAddress} onSelect={(result: GeocodingResult) => { setOrderForm({ ...orderForm, originAddress: result.displayName, originCity: result.city || orderForm.originCity, originLat: result.lat, originLng: result.lng }) }} onClear={() => setOrderForm({ ...orderForm, originAddress: '', originLat: undefined, originLng: undefined })} />
+            <button type="button" onClick={() => setActiveMapField(activeMapField === 'origin' ? null : 'origin')} className={`flex items-center gap-1.5 text-[12px] font-medium transition-colors ${activeMapField === 'origin' ? 'text-orange-500' : 'text-slate-500 hover:text-orange-500'}`}><MapPin className="w-3.5 h-3.5" />{t.orders.selectOnMap}</button>
+            {activeMapField === 'origin' && <LocationPicker lat={orderForm.originLat} lng={orderForm.originLng} height={220} onLocationChange={(lat: number, lng: number, address?: ReverseGeocodingResult) => { setOrderForm({ ...orderForm, originLat: lat, originLng: lng, originAddress: address?.displayName || orderForm.originAddress, originCity: address?.city || orderForm.originCity }) }} />}
           </div>
 
-          {/* Destination Address with Geocoding */}
           <div className="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-red-500" />
               <span className="text-[13px] font-semibold text-slate-700">{t.orders.destinationAddress}</span>
             </div>
-            <AddressAutocomplete
-              label=""
-              value={orderForm.destinationAddress}
-              placeholder={t.orders.searchAddress}
-              onSelect={(result: GeocodingResult) => {
-                setOrderForm({
-                  ...orderForm,
-                  destinationAddress: result.displayName,
-                  destinationCity: result.city || orderForm.destinationCity,
-                  destinationLat: result.lat,
-                  destinationLng: result.lng,
-                })
-              }}
-              onClear={() => setOrderForm({ ...orderForm, destinationAddress: '', destinationLat: undefined, destinationLng: undefined })}
-            />
-            <button
-              type="button"
-              onClick={() => setActiveMapField(activeMapField === 'destination' ? null : 'destination')}
-              className={`flex items-center gap-1.5 text-[12px] font-medium transition-colors ${activeMapField === 'destination' ? 'text-orange-500' : 'text-slate-500 hover:text-orange-500'}`}
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              {t.orders.selectOnMap}
-            </button>
-            {activeMapField === 'destination' && (
-              <LocationPicker
-                lat={orderForm.destinationLat}
-                lng={orderForm.destinationLng}
-                height={220}
-                onLocationChange={(lat: number, lng: number, address?: ReverseGeocodingResult) => {
-                  setOrderForm({
-                    ...orderForm,
-                    destinationLat: lat,
-                    destinationLng: lng,
-                    destinationAddress: address?.displayName || orderForm.destinationAddress,
-                    destinationCity: address?.city || orderForm.destinationCity,
-                  })
-                }}
-              />
-            )}
+            <AddressAutocomplete label="" value={orderForm.destinationAddress} placeholder={t.orders.searchAddress} onSelect={(result: GeocodingResult) => { setOrderForm({ ...orderForm, destinationAddress: result.displayName, destinationCity: result.city || orderForm.destinationCity, destinationLat: result.lat, destinationLng: result.lng }) }} onClear={() => setOrderForm({ ...orderForm, destinationAddress: '', destinationLat: undefined, destinationLng: undefined })} />
+            <button type="button" onClick={() => setActiveMapField(activeMapField === 'destination' ? null : 'destination')} className={`flex items-center gap-1.5 text-[12px] font-medium transition-colors ${activeMapField === 'destination' ? 'text-orange-500' : 'text-slate-500 hover:text-orange-500'}`}><MapPin className="w-3.5 h-3.5" />{t.orders.selectOnMap}</button>
+            {activeMapField === 'destination' && <LocationPicker lat={orderForm.destinationLat} lng={orderForm.destinationLng} height={220} onLocationChange={(lat: number, lng: number, address?: ReverseGeocodingResult) => { setOrderForm({ ...orderForm, destinationLat: lat, destinationLng: lng, destinationAddress: address?.displayName || orderForm.destinationAddress, destinationCity: address?.city || orderForm.destinationCity }) }} />}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.weight}</label><input type="number" value={orderForm.totalWeightKg} onChange={(e) => setOrderForm({ ...orderForm, totalWeightKg: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.volume}</label><input type="number" step="0.1" value={orderForm.totalVolumeM3} onChange={(e) => setOrderForm({ ...orderForm, totalVolumeM3: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.weight}</label><input type="number" value={orderForm.totalWeightKg} onChange={(e) => setOrderForm({ ...orderForm, totalWeightKg: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.volume}</label><input type="number" step="0.1" value={orderForm.totalVolumeM3} onChange={(e) => setOrderForm({ ...orderForm, totalVolumeM3: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.priority}</label>
-              <select value={orderForm.priority} onChange={(e) => setOrderForm({ ...orderForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
+              <select value={orderForm.priority} onChange={(e) => setOrderForm({ ...orderForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
                 <option value="Normal">Normal</option><option value="Priority">Oncelikli</option><option value="Urgent">Acil</option>
               </select>
             </div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Urun Kategorisi</label>
-              <select value={orderForm.productCategory} onChange={(e) => setOrderForm({ ...orderForm, productCategory: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
+              <select value={orderForm.productCategory} onChange={(e) => setOrderForm({ ...orderForm, productCategory: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
                 <option value="Gida">Gida</option><option value="FMCG">FMCG</option><option value="Temizlik">Temizlik</option><option value="Kimyasal">Kimyasal</option><option value="Elektronik">Elektronik</option>
               </select>
             </div>
           </div>
           <div className="flex items-center gap-6 pt-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={orderForm.isHazardous} onChange={(e) => setOrderForm({ ...orderForm, isHazardous: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
-              <span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde (ADR)</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={orderForm.requiresColdChain} onChange={(e) => setOrderForm({ ...orderForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
-              <span className="text-[13px] font-medium text-slate-700">Soguk Zincir</span>
-            </label>
+            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={orderForm.isHazardous} onChange={(e) => setOrderForm({ ...orderForm, isHazardous: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /><span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde (ADR)</span></label>
+            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={orderForm.requiresColdChain} onChange={(e) => setOrderForm({ ...orderForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /><span className="text-[13px] font-medium text-slate-700">Soguk Zincir</span></label>
           </div>
         </div>
       </Drawer>

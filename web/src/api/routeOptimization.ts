@@ -64,8 +64,30 @@ export interface VrpSolution {
 }
 
 export const routeOptimizationApi = {
-  solve: (request: VrpSolveRequest) =>
-    api.post<ApiResponse<VrpSolution>>('/route-optimization/solve', request).then(r => r.data),
+  solve: (request: VrpSolveRequest) => {
+    // Map frontend format to backend format
+    const backendRequest = {
+      vehicles: request.vehicles.map(v => ({
+        id: v.id,
+        plate: v.plateNumber,
+        capacityKg: v.capacityKg,
+        capacityM3: v.capacityM3,
+        depotLat: v.startLat || request.depotLat,
+        depotLng: v.startLng || request.depotLng,
+      })),
+      stops: request.stops.map(s => ({
+        shipmentId: s.id,
+        lat: s.lat,
+        lng: s.lng,
+        weightKg: s.demandKg,
+        volumeM3: s.demandM3,
+        timeWindowStart: s.timeWindowStart ? new Date(`2026-01-01T${s.timeWindowStart}:00Z`).toISOString() : null,
+        timeWindowEnd: s.timeWindowEnd ? new Date(`2026-01-01T${s.timeWindowEnd}:00Z`).toISOString() : null,
+        serviceMinutes: s.serviceDurationMin,
+      })),
+    }
+    return api.post<ApiResponse<VrpSolution>>('/route-optimization/solve', backendRequest).then(r => r.data)
+  },
 
   getVehicles: () =>
     api.get<ApiResponse<VrpVehicle[]>>('/route-optimization/vehicles').then(r => r.data),
