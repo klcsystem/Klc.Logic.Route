@@ -84,6 +84,14 @@ export default function OrdersPage() {
           <p className="text-[14px] text-slate-400 mt-1">{t.orders.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
+          {selectedIds.size > 0 && (
+            <>
+              <button onClick={handleOptimizeRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[13px] font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/20 transition-all">
+                <Route className="w-4 h-4" /> {selectedIds.size} Siparis — Rota Optimize Et
+              </button>
+              <button onClick={() => setSelectedIds(new Set())} className="px-3 py-2 rounded-xl border border-slate-200 text-[12px] text-slate-500 hover:bg-slate-50">Temizle</button>
+            </>
+          )}
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? t.orders.syncing : t.orders.syncErp}
           </button>
@@ -143,17 +151,17 @@ export default function OrdersPage() {
                   <td className="px-6 py-3.5 text-center"><Badge variant={priorityVariant[o.priority]}>{o.priority}</Badge></td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[o.status]}>{statusLabels[o.status]}</Badge></td>
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{o.requestedDeliveryDate}</td>
-                  <td className="w-10 px-2 py-3.5">
+                  <td className="w-12 px-2 py-3.5">
                     <button
                       onClick={(e) => toggleSelect(o.id, e)}
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all border ${
                         selectedIds.has(o.id)
-                          ? 'bg-orange-500 text-white shadow-sm'
-                          : 'text-slate-300 hover:text-orange-400 hover:bg-orange-50'
+                          ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/30'
+                          : 'text-slate-400 border-slate-200 hover:text-blue-500 hover:border-blue-300 hover:bg-blue-50'
                       }`}
                       title="Rota icin sec"
                     >
-                      <Route className="w-3.5 h-3.5" />
+                      <Route className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>
@@ -163,17 +171,6 @@ export default function OrdersPage() {
           </table>
         </div>
       </div>
-
-      {/* Floating action bar when orders selected */}
-      {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-6 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl shadow-slate-900/30">
-          <span className="text-[13px] font-medium">{selectedIds.size} siparis secildi</span>
-          <button onClick={handleOptimizeRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 transition-all">
-            <Route className="w-4 h-4" /> Rota Optimize Et
-          </button>
-          <button onClick={() => setSelectedIds(new Set())} className="text-[12px] text-slate-400 hover:text-white transition-colors">Temizle</button>
-        </div>
-      )}
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={selectedOrder?.orderNumber || ''} width="max-w-xl">
         {selectedOrder && (

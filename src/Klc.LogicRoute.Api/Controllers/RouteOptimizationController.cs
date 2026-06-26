@@ -19,7 +19,7 @@ public class RouteOptimizationController(
     ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpPost("solve")]
-    public async Task<ActionResult<ApiResponse<RouteOptimizationResult>>> Solve([FromBody] VrpRequest request)
+    public async Task<ActionResult<ApiResponse<object>>> Solve([FromBody] VrpRequest request)
     {
         var tenantId = tenantProvider.GetTenantId();
         var userId = tenantProvider.GetUserId();
@@ -97,9 +97,47 @@ public class RouteOptimizationController(
             }
         }
 
-        // Return full result
-        var fullResult = await optimizationRepository.GetByIdAsync(optimization.Id, tenantId);
-        return Ok(ApiResponse<RouteOptimizationResult>.Ok(fullResult!));
+        // Return VRP solution in frontend-expected format
+        var totalCost = vrpResult.Routes.Sum(r => r.TotalDistanceKm * 12.5); // default cost/km
+        var totalCapacity = request.Vehicles.Sum(v => (double)v.CapacityKg);
+        var totalLoad = vrpResult.Routes.Sum(r => (double)r.TotalWeightKg);
+        var utilization = totalCapacity > 0 ? totalLoad / totalCapacity * 100 : 0;
+
+        var frontendSolution = new
+        {
+            routes = vrpResult.Routes.Select((r, idx) => new
+            {
+                vehicleId = r.VehicleId.ToString(),
+                plateNumber = r.VehiclePlate,
+                stops = r.Stops.Select(s => new
+                {
+                    stopId = s.ShipmentId.ToString(),
+                    address = $"Durak #{s.Order}",
+                    lat = s.Lat,
+                    lng = s.Lng,
+                    sequence = s.Order,
+                    arrivalTime = s.EstimatedArrival?.ToString("HH:mm") ?? "",
+                    departureTime = s.EstimatedDeparture?.ToString("HH:mm") ?? "",
+                }),
+                totalDistanceKm = r.TotalDistanceKm,
+                totalDurationMin = r.TotalDurationMinutes,
+                totalCost = r.TotalDistanceKm * 12.5,
+                loadKg = r.TotalWeightKg,
+                loadM3 = r.TotalVolumeM3,
+                utilizationPercent = request.Vehicles
+                    .Where(v => v.Id == r.VehicleId)
+                    .Select(v => v.CapacityKg > 0 ? (double)r.TotalWeightKg / (double)v.CapacityKg * 100 : 0)
+                    .FirstOrDefault(),
+            }),
+            totalDistanceKm = vrpResult.TotalDistance,
+            totalDurationMin = vrpResult.TotalDuration,
+            totalCost,
+            vehicleUtilization = Math.Round(utilization),
+            unassignedStops = vrpResult.UnservedStops.Select(s => s.ShipmentId.ToString()),
+            co2SavedKg = vrpResult.TotalDistance * 0.12, // ~120g CO2/km saved estimate
+        };
+
+        return Ok(ApiResponse<object>.Ok(frontendSolution));
     }
 
     [HttpGet("{id:guid}")]
