@@ -85,11 +85,11 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
           ]
 
           return (
-            <div key={route.vehicleId}>
+            <span key={route.vehicleId}>
               {/* Polyline */}
               <Polyline
                 positions={points}
-                pathOptions={{ color, weight: 3, opacity: 0.8 }}
+                pathOptions={{ color, weight: 4, opacity: 0.85, dashArray: undefined }}
               />
 
               {/* Stop markers */}
@@ -111,7 +111,7 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
                   </Popup>
                 </Marker>
               ))}
-            </div>
+            </span>
           )
         })}
       </MapContainer>

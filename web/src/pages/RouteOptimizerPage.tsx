@@ -13,9 +13,9 @@ import type { VrpVehicle, VrpStop, VrpSolution } from '../api/routeOptimization'
 import type { Order } from '../types'
 
 const defaultVehicles: VrpVehicle[] = [
-  { id: 'v1', plateNumber: '34 KLC 001', capacityKg: 8000, capacityM3: 40, costPerKm: 12.5, startLat: 41.0082, startLng: 28.9784, available: true },
-  { id: 'v2', plateNumber: '34 KLC 003', capacityKg: 5000, capacityM3: 25, costPerKm: 9.0, startLat: 41.0082, startLng: 28.9784, available: true },
-  { id: 'v3', plateNumber: '06 KLC 012', capacityKg: 12000, capacityM3: 60, costPerKm: 15.0, startLat: 39.9334, startLng: 32.8597, available: true },
+  { id: '00000000-0000-0000-0000-000000000001', plateNumber: '34 KLC 001', capacityKg: 8000, capacityM3: 40, costPerKm: 12.5, startLat: 41.0082, startLng: 28.9784, available: true },
+  { id: '00000000-0000-0000-0000-000000000002', plateNumber: '34 KLC 003', capacityKg: 5000, capacityM3: 25, costPerKm: 9.0, startLat: 41.0082, startLng: 28.9784, available: true },
+  { id: '00000000-0000-0000-0000-000000000003', plateNumber: '06 KLC 012', capacityKg: 12000, capacityM3: 60, costPerKm: 15.0, startLat: 39.9334, startLng: 32.8597, available: true },
 ]
 
 function orderToStop(order: Order): VrpStop | null {
@@ -110,8 +110,10 @@ export default function RouteOptimizerPage() {
       } else {
         toast('error', res.message || 'Optimizasyon basarisiz')
       }
-    } catch {
-      toast('error', 'Rota optimizasyonu sirasinda hata olustu')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Bilinmeyen hata'
+      toast('error', `Rota optimizasyonu hatasi: ${msg}`)
+      console.error('VRP solve error:', err)
     } finally {
       setIsOptimizing(false)
     }
