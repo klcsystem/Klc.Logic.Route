@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Package, RefreshCw, Plus, Search, Filter, AlertTriangle, Snowflake, MapPin, Loader2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Package, RefreshCw, Plus, Search, Filter, AlertTriangle, Snowflake, MapPin, Loader2, Route } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
@@ -18,12 +19,14 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' 
 
 export default function OrdersPage() {
   const { t } = useI18n()
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isSyncing, setIsSyncing] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDrawerOpen, setOrderDrawerOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const { data: ordersData, isLoading, refetch } = useApi(
     () => ordersApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
@@ -53,6 +56,18 @@ export default function OrdersPage() {
     }
   }
   const handleRowClick = (order: Order) => { setSelectedOrder(order); setDrawerOpen(true) }
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+  const toggleSelectAll = () => {
+    if (selectedIds.size === orders.length) setSelectedIds(new Set())
+    else setSelectedIds(new Set(orders.map(o => o.id)))
+  }
+  const handleOptimizeRoute = () => {
+    const ids = Array.from(selectedIds).join(',')
+    navigate(`/route-optimizer?orderIds=${ids}`)
+  }
 
   const totalCount = ordersData?.totalCount || orders.length
   const pendingCount = orders.filter(o => o.status === 'Pending').length
@@ -105,6 +120,7 @@ export default function OrdersPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
+                <th className="w-10 px-3 py-3"><input type="checkbox" checked={orders.length > 0 && selectedIds.size === orders.length} onChange={toggleSelectAll} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /></th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.orderNo}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.customer}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.address}</th>
@@ -115,9 +131,10 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {isLoading && <tr><td colSpan={7} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {isLoading && <tr><td colSpan={8} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && orders.map((o) => (
-                <tr key={o.id} onClick={() => handleRowClick(o)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
+                <tr key={o.id} onClick={() => handleRowClick(o)} className={`border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer ${selectedIds.has(o.id) ? 'bg-orange-50/50' : ''}`}>
+                  <td className="w-10 px-3 py-3.5"><input type="checkbox" checked={selectedIds.has(o.id)} onClick={(e) => toggleSelect(o.id, e)} readOnly className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /></td>
                   <td className="px-6 py-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] font-medium text-slate-800">{o.orderNumber}</span>
@@ -133,11 +150,22 @@ export default function OrdersPage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{o.requestedDeliveryDate}</td>
                 </tr>
               ))}
-              {!isLoading && orders.length === 0 && <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
+              {!isLoading && orders.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Floating action bar when orders selected */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-6 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl shadow-slate-900/30">
+          <span className="text-[13px] font-medium">{selectedIds.size} siparis secildi</span>
+          <button onClick={handleOptimizeRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 transition-all">
+            <Route className="w-4 h-4" /> Rota Optimize Et
+          </button>
+          <button onClick={() => setSelectedIds(new Set())} className="text-[12px] text-slate-400 hover:text-white transition-colors">Temizle</button>
+        </div>
+      )}
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={selectedOrder?.orderNumber || ''} width="max-w-xl">
         {selectedOrder && (

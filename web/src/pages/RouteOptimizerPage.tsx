@@ -1,87 +1,120 @@
-import { useState } from 'react'
-import { Loader2, Truck, MapPin, BarChart3, Zap } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Loader2, Truck, MapPin, BarChart3, Zap, AlertCircle } from 'lucide-react'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
 import StopListPanel from '../components/route-optimizer/StopListPanel'
 import OptimizedRouteMap from '../components/route-optimizer/OptimizedRouteMap'
 import ComparisonView from '../components/route-optimizer/ComparisonView'
+import { routeOptimizationApi } from '../api/routeOptimization'
+import { ordersApi } from '../api/orders'
+import { toast } from '../components/ui/Toast'
 import type { VrpVehicle, VrpStop, VrpSolution } from '../api/routeOptimization'
+import type { Order } from '../types'
 
-const mockVehicles: VrpVehicle[] = [
+const defaultVehicles: VrpVehicle[] = [
   { id: 'v1', plateNumber: '34 KLC 001', capacityKg: 8000, capacityM3: 40, costPerKm: 12.5, startLat: 41.0082, startLng: 28.9784, available: true },
   { id: 'v2', plateNumber: '34 KLC 003', capacityKg: 5000, capacityM3: 25, costPerKm: 9.0, startLat: 41.0082, startLng: 28.9784, available: true },
   { id: 'v3', plateNumber: '06 KLC 012', capacityKg: 12000, capacityM3: 60, costPerKm: 15.0, startLat: 39.9334, startLng: 32.8597, available: true },
-  { id: 'v4', plateNumber: '35 KLC 005', capacityKg: 6000, capacityM3: 30, costPerKm: 10.5, startLat: 38.4237, startLng: 27.1428, available: false },
 ]
 
-const mockStops: VrpStop[] = [
-  { id: 's1', address: 'Tuzla OSB, Istanbul', lat: 40.82, lng: 29.30, demandKg: 1200, demandM3: 6, timeWindowStart: '08:00', timeWindowEnd: '12:00', serviceDurationMin: 20 },
-  { id: 's2', address: 'Gebze Organize Sanayi, Kocaeli', lat: 40.80, lng: 29.43, demandKg: 800, demandM3: 4, timeWindowStart: '09:00', timeWindowEnd: '14:00', serviceDurationMin: 15 },
-  { id: 's3', address: 'Nilufer, Bursa', lat: 40.22, lng: 28.87, demandKg: 1500, demandM3: 7, timeWindowStart: '10:00', timeWindowEnd: '16:00', serviceDurationMin: 25 },
-  { id: 's4', address: 'Sincan OSB, Ankara', lat: 39.97, lng: 32.58, demandKg: 2000, demandM3: 10, timeWindowStart: '08:00', timeWindowEnd: '18:00', serviceDurationMin: 30 },
-  { id: 's5', address: 'Ostim OSB, Ankara', lat: 39.97, lng: 32.76, demandKg: 900, demandM3: 5, serviceDurationMin: 15 },
-  { id: 's6', address: 'Bornova, Izmir', lat: 38.47, lng: 27.22, demandKg: 1100, demandM3: 5, timeWindowStart: '09:00', timeWindowEnd: '15:00', serviceDurationMin: 20 },
-  { id: 's7', address: 'Cigli, Izmir', lat: 38.50, lng: 27.08, demandKg: 700, demandM3: 3, serviceDurationMin: 15 },
-  { id: 's8', address: 'Eskisehir Organize Sanayi', lat: 39.78, lng: 30.52, demandKg: 1300, demandM3: 6, timeWindowStart: '08:00', timeWindowEnd: '14:00', serviceDurationMin: 20 },
-]
-
-const mockSolution: VrpSolution = {
-  routes: [
-    {
-      vehicleId: 'v1', plateNumber: '34 KLC 001',
-      stops: [
-        { stopId: 's1', address: 'Tuzla OSB, Istanbul', lat: 40.82, lng: 29.30, sequence: 1, arrivalTime: '08:30', departureTime: '08:50' },
-        { stopId: 's2', address: 'Gebze Organize Sanayi, Kocaeli', lat: 40.80, lng: 29.43, sequence: 2, arrivalTime: '09:20', departureTime: '09:35' },
-        { stopId: 's3', address: 'Nilufer, Bursa', lat: 40.22, lng: 28.87, sequence: 3, arrivalTime: '11:00', departureTime: '11:25' },
-      ],
-      totalDistanceKm: 285, totalDurationMin: 240, totalCost: 3562, loadKg: 3500, loadM3: 17, utilizationPercent: 44,
-    },
-    {
-      vehicleId: 'v2', plateNumber: '34 KLC 003',
-      stops: [
-        { stopId: 's8', address: 'Eskisehir Organize Sanayi', lat: 39.78, lng: 30.52, sequence: 1, arrivalTime: '10:30', departureTime: '10:50' },
-        { stopId: 's4', address: 'Sincan OSB, Ankara', lat: 39.97, lng: 32.58, sequence: 2, arrivalTime: '12:45', departureTime: '13:15' },
-        { stopId: 's5', address: 'Ostim OSB, Ankara', lat: 39.97, lng: 32.76, sequence: 3, arrivalTime: '13:30', departureTime: '13:45' },
-      ],
-      totalDistanceKm: 520, totalDurationMin: 360, totalCost: 4680, loadKg: 4200, loadM3: 21, utilizationPercent: 84,
-    },
-    {
-      vehicleId: 'v3', plateNumber: '06 KLC 012',
-      stops: [
-        { stopId: 's6', address: 'Bornova, Izmir', lat: 38.47, lng: 27.22, sequence: 1, arrivalTime: '13:00', departureTime: '13:20' },
-        { stopId: 's7', address: 'Cigli, Izmir', lat: 38.50, lng: 27.08, sequence: 2, arrivalTime: '13:45', departureTime: '14:00' },
-      ],
-      totalDistanceKm: 580, totalDurationMin: 420, totalCost: 8700, loadKg: 1800, loadM3: 8, utilizationPercent: 15,
-    },
-  ],
-  totalDistanceKm: 1385,
-  totalDurationMin: 1020,
-  totalCost: 16942,
-  vehicleUtilization: 48,
-  unassignedStops: [],
-  co2SavedKg: 145,
+function orderToStop(order: Order, index: number): VrpStop | null {
+  const lat = order.destinationLat || order.originLat
+  const lng = order.destinationLng || order.originLng
+  if (!lat || !lng) return null
+  return {
+    id: order.id,
+    address: `${order.customerName} — ${order.destinationCity || order.originCity || ''}`,
+    lat,
+    lng,
+    demandKg: order.totalWeightKg || 0,
+    demandM3: order.totalVolumeM3 || 0,
+    serviceDurationMin: 15,
+  }
 }
 
 export default function RouteOptimizerPage() {
   const { t } = useI18n()
-  const [vehicles] = useState<VrpVehicle[]>(mockVehicles)
-  const [stops, setStops] = useState<VrpStop[]>(mockStops)
+  const [searchParams] = useSearchParams()
+  const [vehicles] = useState<VrpVehicle[]>(defaultVehicles)
+  const [stops, setStops] = useState<VrpStop[]>([])
   const [solution, setSolution] = useState<VrpSolution | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false)
   const [activeTab, setActiveTab] = useState<'vehicles' | 'stops'>('stops')
+  const [skippedOrders, setSkippedOrders] = useState<string[]>([])
 
   const depotLat = 41.0082
   const depotLng = 28.9784
 
-  const handleOptimize = () => {
+  // Load orders from URL params
+  useEffect(() => {
+    const orderIds = searchParams.get('orderIds')
+    if (!orderIds) return
+
+    const ids = orderIds.split(',').filter(Boolean)
+    if (ids.length === 0) return
+
+    setIsLoadingOrders(true)
+    const loadOrders = async () => {
+      try {
+        const allOrders: Order[] = []
+        // Fetch each order by ID
+        for (const id of ids) {
+          try {
+            const res = await ordersApi.getById(id)
+            if (res.success && res.data) allOrders.push(res.data)
+          } catch { /* skip invalid IDs */ }
+        }
+
+        const newStops: VrpStop[] = []
+        const skipped: string[] = []
+        allOrders.forEach((order, i) => {
+          const stop = orderToStop(order, i)
+          if (stop) newStops.push(stop)
+          else skipped.push(`${order.orderNumber} (${order.customerName})`)
+        })
+
+        setStops(newStops)
+        setSkippedOrders(skipped)
+
+        if (skipped.length > 0) {
+          toast('warning', `${skipped.length} siparis koordinat bilgisi eksik oldugu icin atlanadi`)
+        }
+        if (newStops.length > 0) {
+          toast('success', `${newStops.length} siparis rota optimizasyonuna eklendi`)
+        }
+      } catch {
+        toast('error', 'Siparisler yuklenirken hata olustu')
+      } finally {
+        setIsLoadingOrders(false)
+      }
+    }
+    loadOrders()
+  }, [searchParams])
+
+  const handleOptimize = async () => {
     setIsOptimizing(true)
     setSolution(null)
-    // TODO: Replace with real API call
-    // routeOptimizationApi.solve({ vehicles, stops, depotLat, depotLng }).then(r => { if (r.success) setSolution(r.data) })
-    setTimeout(() => {
-      setSolution(mockSolution)
+    try {
+      const request = {
+        vehicles: vehicles.filter(v => v.available),
+        stops,
+        depotLat,
+        depotLng,
+      }
+      const res = await routeOptimizationApi.solve(request)
+      if (res.success && res.data) {
+        setSolution(res.data)
+        toast('success', 'Rota optimizasyonu tamamlandi!')
+      } else {
+        toast('error', res.message || 'Optimizasyon basarisiz')
+      }
+    } catch {
+      toast('error', 'Rota optimizasyonu sirasinda hata olustu')
+    } finally {
       setIsOptimizing(false)
-    }, 2500)
+    }
   }
 
   const availableVehicles = vehicles.filter(v => v.available)
@@ -92,6 +125,24 @@ export default function RouteOptimizerPage() {
         <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">{t.vrp.title}</h1>
         <p className="text-[14px] text-slate-400 mt-1">{t.vrp.subtitle}</p>
       </div>
+
+      {/* Skipped orders warning */}
+      {skippedOrders.length > 0 && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[13px] font-semibold text-amber-800">Koordinat bilgisi eksik siparisler ({skippedOrders.length})</p>
+            <p className="text-[12px] text-amber-600 mt-1">{skippedOrders.join(', ')}</p>
+          </div>
+        </div>
+      )}
+
+      {isLoadingOrders && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-orange-400 mr-3" />
+          <span className="text-[14px] text-slate-500">Siparisler yukleniyor...</span>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Left Panel */}
@@ -136,7 +187,6 @@ export default function RouteOptimizerPage() {
                       <span>{v.capacityM3} m3</span>
                       <span>{v.costPerKm} TRY/km</span>
                     </div>
-                    {/* Utilization bar from solution */}
                     {solution && (() => {
                       const route = solution.routes.find(r => r.vehicleId === v.id)
                       if (!route) return null
@@ -188,7 +238,6 @@ export default function RouteOptimizerPage() {
           {/* Results Summary */}
           {solution && (
             <>
-              {/* KPIs */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
                   { label: t.vrp.totalDistance, value: `${solution.totalDistanceKm.toLocaleString()} km`, icon: MapPin, color: 'text-blue-600 bg-blue-50' },
@@ -205,18 +254,15 @@ export default function RouteOptimizerPage() {
                   </div>
                 ))}
               </div>
-
-              {/* Comparison */}
               <ComparisonView optimized={solution} />
             </>
           )}
 
-          {/* Empty state */}
           {!solution && !isOptimizing && (
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-12 text-center">
               <Zap className="w-16 h-16 text-slate-200 mx-auto mb-4" />
               <p className="text-[15px] font-medium text-slate-400 mb-2">{t.vrp.title}</p>
-              <p className="text-[13px] text-slate-300">{t.vrp.emptyState}</p>
+              <p className="text-[13px] text-slate-300">{stops.length > 0 ? `${stops.length} durak yuklendi — Optimize Et butonuna basin` : t.vrp.emptyState}</p>
             </div>
           )}
         </div>
