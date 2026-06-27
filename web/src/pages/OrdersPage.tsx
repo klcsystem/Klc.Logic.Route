@@ -26,6 +26,7 @@ export default function OrdersPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDrawerOpen, setOrderDrawerOpen] = useState(false)
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
 
   const { data: ordersData, isLoading, refetch } = useApi(
     () => ordersApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
@@ -59,6 +60,13 @@ export default function OrdersPage() {
     e.stopPropagation()
     navigate(`/route-optimizer?orderIds=${id}`)
   }
+  const toggleCheck = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    setCheckedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+  const handleBulkRoute = () => {
+    navigate(`/route-optimizer?orderIds=${Array.from(checkedIds).join(',')}`)
+  }
 
   const totalCount = ordersData?.totalCount || orders.length
   const pendingCount = orders.filter(o => o.status === 'Pending').length
@@ -79,6 +87,11 @@ export default function OrdersPage() {
           <p className="text-[14px] text-slate-400 mt-1">{t.orders.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
+          {checkedIds.size > 1 && (
+            <button onClick={handleBulkRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[13px] font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/20 transition-all">
+              <Route className="w-4 h-4" /> {checkedIds.size} Siparis Rota Optimize Et
+            </button>
+          )}
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? t.orders.syncing : t.orders.syncErp}
           </button>
@@ -111,6 +124,7 @@ export default function OrdersPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
+                <th className="w-8 px-2 py-3"><input type="checkbox" checked={orders.length > 0 && checkedIds.size === orders.length} onChange={() => { if (checkedIds.size === orders.length) setCheckedIds(new Set()); else setCheckedIds(new Set(orders.map(o => o.id))) }} className="w-3.5 h-3.5 rounded border-slate-300 text-blue-500 focus:ring-blue-400/20" /></th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.orderNo}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.customer}</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.address}</th>
@@ -122,9 +136,10 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {isLoading && <tr><td colSpan={8} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {isLoading && <tr><td colSpan={9} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && orders.map((o) => (
-                <tr key={o.id} onClick={() => handleRowClick(o)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
+                <tr key={o.id} onClick={() => handleRowClick(o)} className={`border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer ${checkedIds.has(o.id) ? 'bg-blue-50/40' : ''}`}>
+                  <td className="w-8 px-2 py-3.5" onClick={e => e.stopPropagation()}><input type="checkbox" checked={checkedIds.has(o.id)} onChange={(e) => toggleCheck(o.id, e)} className="w-3.5 h-3.5 rounded border-slate-300 text-blue-500 focus:ring-blue-400/20" /></td>
                   <td className="px-6 py-3.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[13px] font-medium text-slate-800">{o.orderNumber}</span>
@@ -149,7 +164,7 @@ export default function OrdersPage() {
                   </td>
                 </tr>
               ))}
-              {!isLoading && orders.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
+              {!isLoading && orders.length === 0 && <tr><td colSpan={9} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>
