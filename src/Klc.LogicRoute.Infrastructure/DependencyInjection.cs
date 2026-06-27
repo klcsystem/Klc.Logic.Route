@@ -89,6 +89,9 @@ public static class DependencyInjection
         services.AddScoped<Application.CO2.ICO2CalculationService, Application.CO2.CO2CalculationService>();
         services.AddScoped<Application.Notifications.INotificationService, Application.Notifications.NotificationService>();
 
+        // Geofencing
+        services.AddScoped<Application.Geofencing.IGeofenceService, Application.Geofencing.GeofenceService>();
+
         // Invoice Audit & Routing Rules
         services.AddScoped<Application.InvoiceAudit.IInvoiceAuditService, Application.InvoiceAudit.InvoiceAuditService>();
         services.AddScoped<Application.RoutingRules.IRoutingRuleEngine, Application.RoutingRules.RoutingRuleEngine>();
@@ -121,7 +124,7 @@ public static class DependencyInjection
 
         // Route Optimization
         services.AddScoped<IRouteOptimizationRepository, RouteOptimizationRepository>();
-        services.AddScoped<IVrpSolverService, VrpSolverService>();
+        services.AddScoped<IVrpSolverService, OrToolsVrpSolverService>();
         services.AddHttpClient<OsrmDistanceMatrixProvider>();
         services.AddScoped<IDistanceMatrixProvider, OsrmDistanceMatrixProvider>();
 
