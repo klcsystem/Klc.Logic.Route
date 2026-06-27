@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Loader2, Truck, MapPin, BarChart3, Zap, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
@@ -32,6 +32,7 @@ function orderToStop(order: Order): VrpStop | null {
 export default function RouteOptimizerPage() {
   const { t } = useI18n()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [vehicles, setVehicles] = useState<VrpVehicle[]>([])
   const [stops, setStops] = useState<VrpStop[]>([])
   const [solution, setSolution] = useState<VrpSolution | null>(null)
