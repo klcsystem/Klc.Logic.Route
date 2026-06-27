@@ -11,6 +11,7 @@ public interface IShipmentRepository
     Task UpdateAsync(Shipment shipment);
     Task UpdateStatusAsync(Guid id, Guid tenantId, int status);
     Task DeleteAsync(Guid id, Guid tenantId);
+    Task<IEnumerable<Shipment>> GetByIdsAsync(IEnumerable<Guid> ids, Guid tenantId);
     Task<IEnumerable<ShipmentItem>> GetItemsAsync(Guid shipmentId);
     Task InsertItemAsync(ShipmentItem item);
     Task DeleteItemsAsync(Guid shipmentId);

@@ -145,4 +145,18 @@ public class ShipmentRepository(IPostgresConnectionFactory connectionFactory) : 
         await conn.ExecuteAsync("DELETE FROM logistics.shipment_items WHERE shipment_id = @ShipmentId",
             new { ShipmentId = shipmentId });
     }
+
+    public async Task<IEnumerable<Shipment>> GetByIdsAsync(IEnumerable<Guid> ids, Guid tenantId)
+    {
+        var idArray = ids.ToArray();
+        if (idArray.Length == 0)
+            return [];
+
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        return await conn.QueryAsync<Shipment>(
+            @"SELECT * FROM logistics.shipments
+              WHERE id = ANY(@Ids) AND tenant_id = @TenantId AND is_deleted = FALSE",
+            new { Ids = idArray, TenantId = tenantId });
+    }
 }

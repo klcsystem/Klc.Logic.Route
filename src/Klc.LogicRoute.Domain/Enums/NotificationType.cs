@@ -12,5 +12,7 @@ public enum NotificationType
     ShipmentDelivered = 21,
     ShipmentDelayed = 22,
     ContractExpiring = 30,
-    PerformanceAlert = 40
+    PerformanceAlert = 40,
+    GeofenceArrived = 50,
+    GeofenceDeparted = 51
 }

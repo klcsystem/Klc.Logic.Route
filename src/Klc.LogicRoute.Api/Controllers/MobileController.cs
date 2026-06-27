@@ -1,8 +1,11 @@
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.Geofencing;
 using Klc.LogicRoute.Application.Mobile.Commands;
 using Klc.LogicRoute.Application.Mobile.Queries;
+using Klc.LogicRoute.Application.Notifications;
 using Klc.LogicRoute.Domain.Entities;
+using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
 using Klc.LogicRoute.Infrastructure.Services;
 using MediatR;
@@ -24,7 +27,8 @@ public class MobileController(
     IShipmentRepository shipmentRepository,
     IJwtTokenService jwtTokenService,
     IFileStorageService fileStorageService,
-    IHubContext<TrackingHub> trackingHub) : ControllerBase
+    IHubContext<TrackingHub> trackingHub,
+    INotificationService notificationService) : ControllerBase
 {
     [HttpPost("auth/login")]
     [AllowAnonymous]
@@ -155,6 +159,40 @@ public class MobileController(
                         timestamp = DateTime.UtcNow
                     });
             }
+        }
+
+        // Broadcast geofence events via SignalR and send notifications
+        foreach (var geofenceEvent in result.GeofenceEvents)
+        {
+            var eventName = geofenceEvent.EventType == GeofenceEventType.Arrived
+                ? "GeofenceArrived"
+                : "GeofenceDeparted";
+
+            await trackingHub.Clients
+                .Group($"shipment-{geofenceEvent.ShipmentId}")
+                .SendAsync(eventName, new
+                {
+                    shipmentId = geofenceEvent.ShipmentId,
+                    driverId = geofenceEvent.DriverId,
+                    eventType = geofenceEvent.EventType.ToString(),
+                    distanceMeters = geofenceEvent.DistanceMeters,
+                    lat = geofenceEvent.DriverLat,
+                    lng = geofenceEvent.DriverLng,
+                    occurredAt = geofenceEvent.OccurredAt
+                });
+
+            var notifType = geofenceEvent.EventType == GeofenceEventType.Arrived
+                ? NotificationType.GeofenceArrived
+                : NotificationType.GeofenceDeparted;
+
+            var title = geofenceEvent.EventType == GeofenceEventType.Arrived
+                ? "Surucu teslimat noktasina ulasti"
+                : "Surucu teslimat noktasindan ayrildi";
+
+            await notificationService.SendToAllAsync(
+                tenantId, title,
+                $"Sevkiyat {geofenceEvent.ShipmentId}: Surucu {geofenceEvent.DistanceMeters:F0}m mesafede",
+                notifType);
         }
 
         return Ok(ApiResponse<UpdateDriverLocationResult>.Ok(result));

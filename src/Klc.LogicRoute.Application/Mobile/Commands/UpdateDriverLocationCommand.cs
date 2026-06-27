@@ -1,3 +1,4 @@
+using Klc.LogicRoute.Application.Geofencing;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Interfaces;
 using MediatR;
@@ -18,10 +19,14 @@ public record LocationPoint(
     double? Accuracy,
     DateTime? RecordedAt);
 
-public record UpdateDriverLocationResult(bool Success, int SavedCount);
+public record UpdateDriverLocationResult(
+    bool Success,
+    int SavedCount,
+    IReadOnlyList<GeofenceEvent> GeofenceEvents);
 
 public class UpdateDriverLocationHandler(
-    IDriverLocationRepository driverLocationRepository) : IRequestHandler<UpdateDriverLocationCommand, UpdateDriverLocationResult>
+    IDriverLocationRepository driverLocationRepository,
+    IGeofenceService geofenceService) : IRequestHandler<UpdateDriverLocationCommand, UpdateDriverLocationResult>
 {
     public async Task<UpdateDriverLocationResult> Handle(UpdateDriverLocationCommand request, CancellationToken cancellationToken)
     {
@@ -40,6 +45,20 @@ public class UpdateDriverLocationHandler(
 
         await driverLocationRepository.CreateBatchAsync(locations);
 
-        return new UpdateDriverLocationResult(true, locations.Count);
+        // Check geofences for the latest location point
+        var allGeofenceEvents = new List<GeofenceEvent>();
+        if (request.Points.Count > 0)
+        {
+            var latest = request.Points.Last();
+            var events = await geofenceService.CheckLocationAsync(
+                request.DriverId,
+                request.TenantId,
+                latest.Lat,
+                latest.Lng,
+                latest.ShipmentId);
+            allGeofenceEvents.AddRange(events);
+        }
+
+        return new UpdateDriverLocationResult(true, locations.Count, allGeofenceEvents);
     }
 }

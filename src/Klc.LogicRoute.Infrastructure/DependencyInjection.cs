@@ -127,6 +127,7 @@ public static class DependencyInjection
         services.AddScoped<IVrpSolverService, OrToolsVrpSolverService>();
         services.AddHttpClient<OsrmDistanceMatrixProvider>();
         services.AddScoped<IDistanceMatrixProvider, OsrmDistanceMatrixProvider>();
+        services.AddScoped<IPlannedVsActualService, PlannedVsActualService>();
 
         // SMS Provider
         services.AddHttpClient<NetGsmSmsProvider>();

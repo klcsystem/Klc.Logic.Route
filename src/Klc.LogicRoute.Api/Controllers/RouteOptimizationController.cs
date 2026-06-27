@@ -16,6 +16,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class RouteOptimizationController(
     IVrpSolverService vrpSolverService,
+    IPlannedVsActualService plannedVsActualService,
     IRouteOptimizationRepository optimizationRepository,
     IVehicleRepository vehicleRepository,
     ITenantProvider tenantProvider) : ControllerBase
@@ -211,5 +212,15 @@ public class RouteOptimizationController(
         };
 
         return Ok(ApiResponse<object>.Ok(comparison));
+    }
+
+    [HttpGet("planned-vs-actual/{id:guid}")]
+    public async Task<ActionResult<ApiResponse<PlannedVsActualReport>>> PlannedVsActual(Guid id)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var report = await plannedVsActualService.GenerateReportAsync(id, tenantId);
+        if (report == null)
+            return NotFound(ApiResponse<PlannedVsActualReport>.Fail("Optimizasyon bulunamadi"));
+        return Ok(ApiResponse<PlannedVsActualReport>.Ok(report));
     }
 }

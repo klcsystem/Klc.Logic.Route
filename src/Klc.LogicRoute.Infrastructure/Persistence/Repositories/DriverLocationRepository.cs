@@ -32,4 +32,19 @@ public class DriverLocationRepository(IPostgresConnectionFactory connectionFacto
               ORDER BY recorded_at DESC LIMIT 1",
             new { DriverId = driverId, TenantId = tenantId });
     }
+
+    public async Task<IEnumerable<DriverLocation>> GetByShipmentIdsAsync(IEnumerable<Guid> shipmentIds, Guid tenantId)
+    {
+        var ids = shipmentIds.ToArray();
+        if (ids.Length == 0)
+            return [];
+
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        return await conn.QueryAsync<DriverLocation>(
+            @"SELECT * FROM logistics.driver_locations
+              WHERE shipment_id = ANY(@Ids) AND tenant_id = @TenantId AND is_deleted = FALSE
+              ORDER BY shipment_id, recorded_at",
+            new { Ids = ids, TenantId = tenantId });
+    }
 }
