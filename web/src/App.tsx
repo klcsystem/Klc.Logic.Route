@@ -29,6 +29,7 @@ import CustomerTrackingPage from './pages/public/CustomerTrackingPage'
 import RouteOptimizerPage from './pages/RouteOptimizerPage'
 import MLInsightsPage from './pages/MLInsightsPage'
 import DigitalTwinPage from './pages/DigitalTwinPage'
+import PlannedVsActualPage from './pages/PlannedVsActualPage'
 
 export default function App() {
   return (
@@ -51,6 +52,7 @@ export default function App() {
         {/* KARAR MOTORU */}
         <Route path="/route-optimization" element={<RouteOptimizationPage />} />
         <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
+        <Route path="/route-optimization/:id/planned-vs-actual" element={<PlannedVsActualPage />} />
         <Route path="/carriers" element={<ProvidersPage />} />
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/rules" element={<RoutingRulesPage />} />
