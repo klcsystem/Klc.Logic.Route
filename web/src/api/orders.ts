@@ -11,6 +11,9 @@ export const ordersApi = {
   syncErp: (connectionId?: string) =>
     api.post<ApiResponse<{ syncedCount: number }>>('/orders/sync-erp', { connectionId }).then(r => r.data),
 
+  updateStatus: (id: string, status: string) =>
+    api.patch<ApiResponse<boolean>>(`/orders/${id}/status`, { status }).then(r => r.data),
+
   importOrder: (data: Partial<Order>) =>
     api.post<ApiResponse<Order>>('/orders', data).then(r => r.data),
 }

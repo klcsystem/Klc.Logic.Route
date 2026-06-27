@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Loader2, Truck, MapPin, BarChart3, Zap, AlertCircle } from 'lucide-react'
+import { Loader2, Truck, MapPin, BarChart3, Zap, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
 import StopListPanel from '../components/route-optimizer/StopListPanel'
@@ -36,6 +36,8 @@ export default function RouteOptimizerPage() {
   const [stops, setStops] = useState<VrpStop[]>([])
   const [solution, setSolution] = useState<VrpSolution | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [isConfirming, setIsConfirming] = useState(false)
+  const [isConfirmed, setIsConfirmed] = useState(false)
   const [isLoadingOrders, setIsLoadingOrders] = useState(false)
   const [activeTab, setActiveTab] = useState<'vehicles' | 'stops'>('stops')
   const [skippedOrders, setSkippedOrders] = useState<string[]>([])
@@ -123,6 +125,26 @@ export default function RouteOptimizerPage() {
       console.error('VRP solve error:', err)
     } finally {
       setIsOptimizing(false)
+    }
+  }
+
+  const handleConfirmRoute = async () => {
+    if (!solution) return
+    setIsConfirming(true)
+    try {
+      // Siparislerin durumunu "Assigned" yap
+      const orderIds = searchParams.get('orderIds')?.split(',').filter(Boolean) || []
+      for (const id of orderIds) {
+        try {
+          await ordersApi.updateStatus(id, 'Assigned')
+        } catch { /* skip */ }
+      }
+      setIsConfirmed(true)
+      toast('success', `Rota onaylandi! ${solution.routes.length} arac, ${solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak atandi.`)
+    } catch {
+      toast('error', 'Rota onaylama hatasi')
+    } finally {
+      setIsConfirming(false)
     }
   }
 
@@ -226,17 +248,50 @@ export default function RouteOptimizerPage() {
           )}
 
           {/* Optimize Button */}
-          <button
-            onClick={handleOptimize}
-            disabled={isOptimizing || stops.length === 0 || availableVehicles.length === 0}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[14px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all"
-          >
-            {isOptimizing ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> {t.vrp.optimizing}</>
-            ) : (
-              <><Zap className="w-5 h-5" /> {t.vrp.optimize}</>
-            )}
-          </button>
+          {!isConfirmed && (
+            <button
+              onClick={handleOptimize}
+              disabled={isOptimizing || stops.length === 0 || availableVehicles.length === 0}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[14px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all"
+            >
+              {isOptimizing ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> {t.vrp.optimizing}</>
+              ) : (
+                <><Zap className="w-5 h-5" /> {solution ? 'Tekrar Optimize Et' : t.vrp.optimize}</>
+              )}
+            </button>
+          )}
+
+          {/* Confirm Route Button — optimizasyon sonrasi gorunur */}
+          {solution && !isConfirmed && (
+            <button
+              onClick={handleConfirmRoute}
+              disabled={isConfirming}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-[14px] font-semibold hover:from-green-600 hover:to-green-700 disabled:opacity-50 shadow-lg shadow-green-500/10 transition-all"
+            >
+              {isConfirming ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Onaylaniyor...</>
+              ) : (
+                <><CheckCircle2 className="w-5 h-5" /> Rotayi Onayla & Ata</>
+              )}
+            </button>
+          )}
+
+          {/* Confirmed state */}
+          {isConfirmed && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <span className="text-[13px] font-semibold text-green-700">Rota onaylandi ve atandi!</span>
+              </div>
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50"
+              >
+                <ArrowLeft className="w-4 h-4" /> Siparislere Don
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Right Panel — Map + Results */}
