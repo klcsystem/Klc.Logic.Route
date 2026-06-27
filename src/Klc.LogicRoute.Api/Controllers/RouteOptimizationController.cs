@@ -4,6 +4,7 @@ using Klc.LogicRoute.Application.Common.Models;
 using Klc.LogicRoute.Application.RouteOptimization.Models;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
 using Klc.LogicRoute.Domain.Entities;
+using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,37 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class RouteOptimizationController(
     IVrpSolverService vrpSolverService,
     IRouteOptimizationRepository optimizationRepository,
+    IVehicleRepository vehicleRepository,
     ITenantProvider tenantProvider) : ControllerBase
 {
+    [HttpGet("vehicles")]
+    public async Task<ActionResult<ApiResponse<object>>> GetVehicles()
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var vehicles = await vehicleRepository.GetAllAsync(tenantId);
+        var result = vehicles.Select(v => new
+        {
+            id = v.Id.ToString(),
+            plateNumber = v.PlateNumber,
+            capacityKg = v.Tonnage ?? 5000m,
+            capacityM3 = (v.Tonnage ?? 5000m) * 0.005m,
+            costPerKm = v.VehicleType switch
+            {
+                VehicleCategory.Tir => 18.0,
+                VehicleCategory.Kamyon => 12.5,
+                VehicleCategory.Kamyonet => 8.0,
+                VehicleCategory.Frigorifik => 16.0,
+                _ => 10.0
+            },
+            startLat = 41.0082,
+            startLng = 28.9784,
+            available = v.IsActive,
+            vehicleType = v.VehicleType.ToString(),
+            bodyType = v.BodyType,
+        });
+        return Ok(ApiResponse<object>.Ok(result));
+    }
+
     [HttpPost("solve")]
     public async Task<ActionResult<ApiResponse<object>>> Solve([FromBody] VrpRequest request)
     {

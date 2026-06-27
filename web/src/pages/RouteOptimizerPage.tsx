@@ -12,11 +12,7 @@ import { toast } from '../components/ui/Toast'
 import type { VrpVehicle, VrpStop, VrpSolution } from '../api/routeOptimization'
 import type { Order } from '../types'
 
-const defaultVehicles: VrpVehicle[] = [
-  { id: '00000000-0000-0000-0000-000000000001', plateNumber: '34 KLC 001', capacityKg: 8000, capacityM3: 40, costPerKm: 12.5, startLat: 41.0082, startLng: 28.9784, available: true },
-  { id: '00000000-0000-0000-0000-000000000002', plateNumber: '34 KLC 003', capacityKg: 5000, capacityM3: 25, costPerKm: 9.0, startLat: 41.0082, startLng: 28.9784, available: true },
-  { id: '00000000-0000-0000-0000-000000000003', plateNumber: '06 KLC 012', capacityKg: 12000, capacityM3: 60, costPerKm: 15.0, startLat: 39.9334, startLng: 32.8597, available: true },
-]
+// Araçlar API'den yüklenecek, fallback olarak boş liste
 
 function orderToStop(order: Order): VrpStop | null {
   const lat = order.destinationLat || order.originLat
@@ -36,7 +32,7 @@ function orderToStop(order: Order): VrpStop | null {
 export default function RouteOptimizerPage() {
   const { t } = useI18n()
   const [searchParams] = useSearchParams()
-  const [vehicles] = useState<VrpVehicle[]>(defaultVehicles)
+  const [vehicles, setVehicles] = useState<VrpVehicle[]>([])
   const [stops, setStops] = useState<VrpStop[]>([])
   const [solution, setSolution] = useState<VrpSolution | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
@@ -92,6 +88,17 @@ export default function RouteOptimizerPage() {
     }
     loadOrders()
   }, [searchParams])
+
+  // Load vehicles from API
+  useEffect(() => {
+    routeOptimizationApi.getVehicles()
+      .then(res => {
+        if (res.success && res.data) {
+          setVehicles(Array.isArray(res.data) ? res.data : [])
+        }
+      })
+      .catch(() => { /* fallback: empty */ })
+  }, [])
 
   const handleOptimize = async () => {
     setIsOptimizing(true)
