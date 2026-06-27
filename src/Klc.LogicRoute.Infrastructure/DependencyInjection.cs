@@ -90,6 +90,11 @@ public static class DependencyInjection
         // CO2 & Notifications
         services.AddScoped<Application.CO2.ICO2CalculationService, Application.CO2.CO2CalculationService>();
         services.AddScoped<Application.Notifications.INotificationService, Application.Notifications.NotificationService>();
+        services.AddScoped<Application.Notifications.ICustomerNotificationService, Application.Notifications.CustomerNotificationService>();
+
+        // Notification Templates & Delivery Feedback
+        services.AddScoped<INotificationTemplateRepository, NotificationTemplateRepository>();
+        services.AddScoped<IDeliveryFeedbackRepository, DeliveryFeedbackRepository>();
 
         // Geofencing
         services.AddScoped<Application.Geofencing.IGeofenceService, Application.Geofencing.GeofenceService>();
@@ -165,6 +170,12 @@ public static class DependencyInjection
 
         // Territory Planning (K-means clustering)
         services.AddScoped<ITerritoryPlanningService, TerritoryPlanningService>();
+
+        // Driver Skill Matching
+        services.AddScoped<IDriverSkillMatcher, DriverSkillMatcher>();
+
+        // Return/Reverse Logistics
+        services.AddScoped<IReturnRequestRepository, ReturnRequestRepository>();
 
         return services;
     }

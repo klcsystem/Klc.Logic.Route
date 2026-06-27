@@ -1,5 +1,6 @@
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.DriverSkillMatching;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class DriversController(IDriverRepository driverRepository, ITenantProvider tenantProvider) : ControllerBase
+public class DriversController(IDriverRepository driverRepository, IDriverSkillMatcher driverSkillMatcher, ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] Guid? providerId)
@@ -47,5 +48,29 @@ public class DriversController(IDriverRepository driverRepository, ITenantProvid
     {
         await driverRepository.DeleteAsync(id);
         return Ok(ApiResponse<string>.Ok("Deleted"));
+    }
+
+    /// <summary>
+    /// Matches drivers to stops based on required certifications (ADR, Frigo, Heavy).
+    /// </summary>
+    [HttpPost("match-skills")]
+    public async Task<IActionResult> MatchSkills([FromBody] List<DriverStopRequirement> stops)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var drivers = await driverRepository.GetAllAsync(tenantId);
+        var result = driverSkillMatcher.MatchDriversToStops(stops, drivers);
+        return Ok(ApiResponse<DriverMatchResult>.Ok(result));
+    }
+
+    /// <summary>
+    /// Gets eligible drivers for a shipment based on hazardous/cold-chain/heavy flags.
+    /// </summary>
+    [HttpGet("eligible")]
+    public async Task<IActionResult> GetEligible([FromQuery] bool isHazardous = false, [FromQuery] bool requiresColdChain = false, [FromQuery] bool isHeavy = false)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var drivers = await driverRepository.GetAllAsync(tenantId);
+        var eligible = driverSkillMatcher.GetEligibleDrivers(isHazardous, requiresColdChain, isHeavy, drivers);
+        return Ok(ApiResponse<List<Driver>>.Ok(eligible));
     }
 }

@@ -32,8 +32,8 @@ public class DriverRepository(IPostgresConnectionFactory connectionFactory) : ID
         driver.Id = Guid.NewGuid();
         driver.CreatedAt = DateTime.UtcNow;
         await conn.ExecuteAsync(@"
-            INSERT INTO logistics.drivers (id, tenant_id, provider_id, full_name, phone, license_number, license_expiry, is_active, created_at, is_deleted)
-            VALUES (@Id, @TenantId, @ProviderId, @FullName, @Phone, @LicenseNumber, @LicenseExpiry, @IsActive, @CreatedAt, FALSE)", driver);
+            INSERT INTO logistics.drivers (id, tenant_id, provider_id, full_name, phone, license_number, license_expiry, is_active, skills, certifications, max_working_hours, preferred_zones, created_at, is_deleted)
+            VALUES (@Id, @TenantId, @ProviderId, @FullName, @Phone, @LicenseNumber, @LicenseExpiry, @IsActive, @Skills, @Certifications, @MaxWorkingHours, @PreferredZones, @CreatedAt, FALSE)", driver);
         return driver.Id;
     }
 
@@ -43,7 +43,8 @@ public class DriverRepository(IPostgresConnectionFactory connectionFactory) : ID
         await conn.OpenAsync();
         driver.UpdatedAt = DateTime.UtcNow;
         await conn.ExecuteAsync(@"
-            UPDATE logistics.drivers SET full_name = @FullName, phone = @Phone, license_number = @LicenseNumber, license_expiry = @LicenseExpiry, is_active = @IsActive, updated_at = @UpdatedAt
+            UPDATE logistics.drivers SET full_name = @FullName, phone = @Phone, license_number = @LicenseNumber, license_expiry = @LicenseExpiry,
+                   is_active = @IsActive, skills = @Skills, certifications = @Certifications, max_working_hours = @MaxWorkingHours, preferred_zones = @PreferredZones, updated_at = @UpdatedAt
             WHERE id = @Id", driver);
     }
 
