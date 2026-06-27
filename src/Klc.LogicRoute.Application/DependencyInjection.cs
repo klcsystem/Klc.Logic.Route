@@ -1,5 +1,7 @@
 using FluentValidation;
+using Klc.LogicRoute.Application.Analytics;
 using Klc.LogicRoute.Application.Common.Behaviors;
+using Klc.LogicRoute.Application.RouteOptimization.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +17,12 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        // Analytics
+        services.AddScoped<IDemandForecastService, DemandForecastService>();
+
+        // Truck routing constraints
+        services.AddScoped<ITruckRoutingService, TruckRoutingService>();
 
         return services;
     }

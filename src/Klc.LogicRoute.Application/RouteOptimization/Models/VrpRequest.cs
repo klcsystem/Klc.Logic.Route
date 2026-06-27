@@ -10,7 +10,8 @@ public record VrpVehicle(
     decimal CapacityKg,
     decimal CapacityM3,
     double DepotLat,
-    double DepotLng);
+    double DepotLng,
+    VehicleConstraints? Constraints = null);
 
 public record VrpStop(
     Guid ShipmentId,
