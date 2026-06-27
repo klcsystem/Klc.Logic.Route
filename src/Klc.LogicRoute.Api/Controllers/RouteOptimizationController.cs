@@ -17,6 +17,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class RouteOptimizationController(
     IVrpSolverService vrpSolverService,
     IPlannedVsActualService plannedVsActualService,
+    IDynamicRerouteService dynamicRerouteService,
     IRouteOptimizationRepository optimizationRepository,
     IVehicleRepository vehicleRepository,
     ITenantProvider tenantProvider) : ControllerBase
@@ -222,5 +223,44 @@ public class RouteOptimizationController(
         if (report == null)
             return NotFound(ApiResponse<PlannedVsActualReport>.Fail("Optimizasyon bulunamadi"));
         return Ok(ApiResponse<PlannedVsActualReport>.Ok(report));
+    }
+
+    [HttpPost("reroute")]
+    public async Task<ActionResult<ApiResponse<object>>> Reroute([FromBody] RerouteRequest request)
+    {
+        try
+        {
+            var result = await dynamicRerouteService.RerouteAsync(request);
+
+            var response = new
+            {
+                vehicleId = result.Route.VehicleId.ToString(),
+                plateNumber = result.Route.VehiclePlate,
+                stops = result.Route.Stops.Select(s => new
+                {
+                    stopId = s.ShipmentId.ToString(),
+                    address = $"Durak #{s.Order}",
+                    lat = s.Lat,
+                    lng = s.Lng,
+                    sequence = s.Order,
+                    arrivalTime = s.EstimatedArrival?.ToString("HH:mm") ?? "",
+                    departureTime = s.EstimatedDeparture?.ToString("HH:mm") ?? "",
+                    distanceFromPrevKm = s.DistanceFromPrevKm,
+                    durationFromPrevMin = s.DurationFromPrevMinutes,
+                }),
+                totalDistanceKm = result.TotalDistanceKm,
+                totalDurationMin = result.TotalDurationMinutes,
+                stopsAdded = result.StopsAdded,
+                stopsRemoved = result.StopsRemoved,
+                reason = result.Reason,
+                unassignedStops = result.UnservedStops.Select(s => s.ShipmentId.ToString()),
+            };
+
+            return Ok(ApiResponse<object>.Ok(response));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse<object>.Fail($"Reroute basarisiz: {ex.Message}"));
+        }
     }
 }
