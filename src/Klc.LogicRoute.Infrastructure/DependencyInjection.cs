@@ -7,6 +7,7 @@ using Klc.LogicRoute.Application.ML.Pipeline;
 using Klc.LogicRoute.Application.ML.Services;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
 using Klc.LogicRoute.Application.Simulation.Services;
+using Klc.LogicRoute.Application.TerritoryPlanning;
 using Klc.LogicRoute.Infrastructure.ML;
 using Klc.LogicRoute.Infrastructure.BackgroundJobs;
 using Klc.LogicRoute.Infrastructure.ExternalServices.Email;
@@ -124,10 +125,13 @@ public static class DependencyInjection
 
         // Route Optimization
         services.AddScoped<IRouteOptimizationRepository, RouteOptimizationRepository>();
+        services.AddScoped<IRecurringRouteRepository, RecurringRouteRepository>();
         services.AddScoped<IVrpSolverService, OrToolsVrpSolverService>();
         services.AddHttpClient<OsrmDistanceMatrixProvider>();
-        services.AddScoped<IDistanceMatrixProvider, OsrmDistanceMatrixProvider>();
+        services.AddScoped<OsrmDistanceMatrixProvider>();
+        services.AddScoped<IDistanceMatrixProvider, TrafficAwareDistanceProvider>();
         services.AddScoped<IPlannedVsActualService, PlannedVsActualService>();
+        services.AddScoped<IDynamicRerouteService, DynamicRerouteService>();
 
         // SMS Provider
         services.AddHttpClient<NetGsmSmsProvider>();
@@ -153,6 +157,9 @@ public static class DependencyInjection
         // Simulation (Digital Twin)
         services.AddScoped<ISimulationRepository, SimulationRepository>();
         services.AddScoped<ISimulationEngine, SimulationEngine>();
+
+        // Territory Planning (K-means clustering)
+        services.AddScoped<ITerritoryPlanningService, TerritoryPlanningService>();
 
         return services;
     }
