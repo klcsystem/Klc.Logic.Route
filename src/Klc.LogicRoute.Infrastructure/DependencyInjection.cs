@@ -7,6 +7,7 @@ using Klc.LogicRoute.Application.ML.Pipeline;
 using Klc.LogicRoute.Application.ML.Services;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
 using Klc.LogicRoute.Application.Simulation.Services;
+using Klc.LogicRoute.Application.DriverSkillMatching;
 using Klc.LogicRoute.Application.TerritoryPlanning;
 using Klc.LogicRoute.Infrastructure.ML;
 using Klc.LogicRoute.Infrastructure.BackgroundJobs;
@@ -114,10 +115,14 @@ public static class DependencyInjection
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-        // Mobile — Driver Location & Proof of Delivery
+        // Mobile — Driver Location, Proof of Delivery, Package Scanning
         services.AddScoped<IDriverLocationRepository, DriverLocationRepository>();
         services.AddScoped<IProofOfDeliveryRepository, ProofOfDeliveryRepository>();
+        services.AddScoped<IPackageScanRepository, PackageScanRepository>();
         services.AddScoped<IFileStorageService, FileStorageService>();
+
+        // Delivery Slots
+        services.AddScoped<IDeliverySlotRepository, DeliverySlotRepository>();
 
         // Customer Tracking
         services.AddScoped<ICustomerTrackingRepository, CustomerTrackingRepository>();

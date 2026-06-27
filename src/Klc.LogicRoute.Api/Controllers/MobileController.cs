@@ -25,6 +25,7 @@ public class MobileController(
     IRoleRepository roleRepository,
     IDriverRepository driverRepository,
     IShipmentRepository shipmentRepository,
+    IPackageScanRepository packageScanRepository,
     IJwtTokenService jwtTokenService,
     IFileStorageService fileStorageService,
     IHubContext<TrackingHub> trackingHub,
@@ -197,7 +198,49 @@ public class MobileController(
 
         return Ok(ApiResponse<UpdateDriverLocationResult>.Ok(result));
     }
+
+    [HttpPost("scan")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<Guid>>> RecordScan([FromBody] MobileScanRequest request)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var scan = new PackageScan
+        {
+            TenantId = tenantId,
+            ShipmentId = request.ShipmentId,
+            OrderId = request.OrderId,
+            DriverId = request.DriverId,
+            BarcodeValue = request.BarcodeValue,
+            ScanType = request.ScanType,
+            ScannedAt = request.ScannedAt ?? DateTime.UtcNow,
+            Lat = request.Lat,
+            Lng = request.Lng,
+            CreatedBy = tenantProvider.GetUserId().ToString()
+        };
+
+        var id = await packageScanRepository.CreateAsync(scan);
+        return Ok(ApiResponse<Guid>.Ok(id));
+    }
+
+    [HttpGet("shipment/{id:guid}/scans")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<IEnumerable<PackageScan>>>> GetShipmentScans(Guid id)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var scans = await packageScanRepository.GetByShipmentIdAsync(id, tenantId);
+        return Ok(ApiResponse<IEnumerable<PackageScan>>.Ok(scans));
+    }
 }
+
+public record MobileScanRequest(
+    Guid ShipmentId,
+    Guid? OrderId,
+    Guid DriverId,
+    string BarcodeValue,
+    Domain.Enums.ScanType ScanType,
+    DateTime? ScannedAt = null,
+    double? Lat = null,
+    double? Lng = null);
 
 public record MobileLoginRequest(string Email, string Password);
 
