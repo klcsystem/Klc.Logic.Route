@@ -6,6 +6,7 @@ import OrdersPage from './pages/OrdersPage'
 import ContractsPage from './pages/ContractsPage'
 import ProvidersPage from './pages/ProvidersPage'
 import OnboardingWizard from './pages/OnboardingWizard'
+import OnboardingPage from './pages/OnboardingPage'
 import ShipmentsPage from './pages/ShipmentsPage'
 import ShipmentDetailPage from './pages/ShipmentDetailPage'
 import RouteOptimizationPage from './pages/RouteOptimizationPage'
@@ -42,6 +43,7 @@ import FeedbackPage from './pages/FeedbackPage'
 import ReturnsPage from './pages/ReturnsPage'
 import LearningPage from './pages/LearningPage'
 import PipelinePage from './pages/PipelinePage'
+import PlanOptimizePage from './pages/PlanOptimizePage'
 
 export default function App() {
   return (
@@ -50,12 +52,14 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/tracking/:token" element={<CustomerTrackingPage />} />
-      <Route path="/onboarding" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
+      <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
+      <Route path="/onboarding/setup" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
 
       {/* Protected Main Layout */}
       <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
         {/* OPERASYONLAR */}
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/plan" element={<PlanOptimizePage />} />
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/shipments" element={<ShipmentsPage />} />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />

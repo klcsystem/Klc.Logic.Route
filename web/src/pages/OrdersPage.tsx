@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Package, RefreshCw, Plus, Search, Filter, AlertTriangle, Snowflake, MapPin, Loader2, Route } from 'lucide-react'
+import { Package, RefreshCw, Plus, Search, Filter, AlertTriangle, Snowflake, MapPin, Loader2, Route, Upload } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
 import { toast } from '../components/ui/Toast'
 import AddressAutocomplete from '../components/map/AddressAutocomplete'
+import ImportOrdersModal from '../components/ImportOrdersModal'
 import LocationPicker from '../components/map/LocationPicker'
 import { ordersApi } from '../api/orders'
 import { useApi } from '../utils/useApi'
@@ -27,6 +28,7 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDrawerOpen, setOrderDrawerOpen] = useState(false)
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set())
+  const [importModalOpen, setImportModalOpen] = useState(false)
 
   const { data: ordersData, isLoading, refetch } = useApi(
     () => ordersApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
@@ -94,6 +96,9 @@ export default function OrdersPage() {
           )}
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? t.orders.syncing : t.orders.syncErp}
+          </button>
+          <button onClick={() => setImportModalOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+            <Upload className="w-4 h-4" /> Import
           </button>
           <button onClick={() => { setOrderForm({ orderNumber: '', customerName: '', originCity: '', originAddress: '', originLat: undefined, originLng: undefined, destinationCity: '', destinationAddress: '', destinationLat: undefined, destinationLng: undefined, totalWeightKg: 0, totalVolumeM3: 0, priority: 'Normal', productCategory: 'FMCG', isHazardous: false, requiresColdChain: false }); setActiveMapField(null); setOrderDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
             <Plus className="w-4 h-4" /> {t.orders.newOrder}
@@ -208,6 +213,8 @@ export default function OrdersPage() {
           </div>
         )}
       </Drawer>
+
+      <ImportOrdersModal isOpen={importModalOpen} onClose={() => setImportModalOpen(false)} onImportComplete={() => refetch()} />
 
       {/* New Order Drawer */}
       <Drawer isOpen={orderDrawerOpen} onClose={() => setOrderDrawerOpen(false)} title={t.orders.newOrder} width="max-w-xl" footer={
