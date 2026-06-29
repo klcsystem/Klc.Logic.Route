@@ -5,7 +5,8 @@ import {
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
   Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap,
-  Brain, FlaskConical,
+  Brain, FlaskConical, Map, RefreshCw, Shield, ShieldCheck, Store,
+  MessageSquare, RotateCcw, Workflow,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
 import { useAuth } from '../../contexts/AuthContext'
@@ -149,6 +150,7 @@ function CustomerSidebar() {
         { to: '/orders', icon: Package, label: t.sidebar.orders },
         { to: '/shipments', icon: Truck, label: t.sidebar.shipments },
         { to: '/tracking', icon: MapPin, label: t.sidebar.liveTracking },
+        { to: '/delivery-slots', icon: Package, label: 'Teslimat Slotları' },
       ],
     },
     {
@@ -161,6 +163,8 @@ function CustomerSidebar() {
         { to: '/contracts', icon: FileText, label: t.sidebar.contracts },
         { to: '/rules', icon: Settings2, label: t.sidebar.rules },
         { to: '/fleet', icon: Truck, label: 'Filo Yönetimi' },
+        { to: '/territory-planning', icon: Map, label: 'Bölge Planlama' },
+        { to: '/recurring-routes', icon: RefreshCw, label: 'Tekrarlayan Rotalar' },
       ],
     },
     {
@@ -173,6 +177,19 @@ function CustomerSidebar() {
         { to: '/co2', icon: Leaf, label: t.sidebar.co2Report },
         { to: '/ml-insights', icon: Brain, label: t.ml.sidebarLabel },
         { to: '/digital-twin', icon: FlaskConical, label: t.simulation.sidebarLabel },
+        { to: '/demand-forecast', icon: TrendingUp, label: 'Talep Tahmini' },
+        { to: '/sustainability', icon: Leaf, label: 'Sürdürülebilirlik' },
+        { to: '/safety', icon: Shield, label: 'Sürücü Güvenlik' },
+      ],
+    },
+    {
+      label: 'PLATFORM',
+      icon: Store,
+      items: [
+        { to: '/insurance', icon: ShieldCheck, label: 'Sigorta' },
+        { to: '/marketplace', icon: Store, label: 'Kapasite Pazarı' },
+        { to: '/feedback', icon: MessageSquare, label: 'Geri Bildirim' },
+        { to: '/returns', icon: RotateCcw, label: 'İade Yönetimi' },
       ],
     },
     {
@@ -182,6 +199,8 @@ function CustomerSidebar() {
         { to: '/settings', icon: Settings, label: t.sidebar.settings },
         { to: '/users', icon: Users, label: t.sidebar.users },
         { to: '/notifications', icon: Bell, label: t.sidebar.notifications },
+        { to: '/learning', icon: Brain, label: 'Öğrenme Motoru' },
+        { to: '/pipeline', icon: Workflow, label: 'Pipeline' },
       ],
     },
   ]

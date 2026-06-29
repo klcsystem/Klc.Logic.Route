@@ -30,6 +30,18 @@ import RouteOptimizerPage from './pages/RouteOptimizerPage'
 import MLInsightsPage from './pages/MLInsightsPage'
 import DigitalTwinPage from './pages/DigitalTwinPage'
 import PlannedVsActualPage from './pages/PlannedVsActualPage'
+import DeliverySlotsPage from './pages/DeliverySlotsPage'
+import TerritoryPlanningPage from './pages/TerritoryPlanningPage'
+import RecurringRoutesPage from './pages/RecurringRoutesPage'
+import DemandForecastPage from './pages/DemandForecastPage'
+import SustainabilityPage from './pages/SustainabilityPage'
+import SafetyDashboardPage from './pages/SafetyDashboardPage'
+import InsurancePage from './pages/InsurancePage'
+import MarketplacePage from './pages/MarketplacePage'
+import FeedbackPage from './pages/FeedbackPage'
+import ReturnsPage from './pages/ReturnsPage'
+import LearningPage from './pages/LearningPage'
+import PipelinePage from './pages/PipelinePage'
 
 export default function App() {
   return (
@@ -48,6 +60,7 @@ export default function App() {
         <Route path="/shipments" element={<ShipmentsPage />} />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />
         <Route path="/tracking" element={<LiveTrackingPage />} />
+        <Route path="/delivery-slots" element={<DeliverySlotsPage />} />
 
         {/* KARAR MOTORU */}
         <Route path="/route-optimization" element={<RouteOptimizationPage />} />
@@ -57,6 +70,8 @@ export default function App() {
         <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/rules" element={<RoutingRulesPage />} />
         <Route path="/fleet" element={<FleetPage />} />
+        <Route path="/territory-planning" element={<TerritoryPlanningPage />} />
+        <Route path="/recurring-routes" element={<RecurringRoutesPage />} />
 
         {/* ANALITIK */}
         <Route path="/reports" element={<ReportsPage />} />
@@ -65,6 +80,15 @@ export default function App() {
         <Route path="/co2" element={<CO2Page />} />
         <Route path="/ml-insights" element={<MLInsightsPage />} />
         <Route path="/digital-twin" element={<DigitalTwinPage />} />
+        <Route path="/demand-forecast" element={<DemandForecastPage />} />
+        <Route path="/sustainability" element={<SustainabilityPage />} />
+        <Route path="/safety" element={<SafetyDashboardPage />} />
+
+        {/* PLATFORM */}
+        <Route path="/insurance" element={<InsurancePage />} />
+        <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/returns" element={<ReturnsPage />} />
 
         {/* YONETIM */}
         <Route path="/settings" element={<SettingsPage />} />
@@ -73,6 +97,8 @@ export default function App() {
         <Route path="/audit-logs" element={<AuditLogPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/learning" element={<LearningPage />} />
+        <Route path="/pipeline" element={<PipelinePage />} />
 
         {/* PROVIDER PORTAL */}
         <Route path="/provider-portal" element={<ProviderPortalPage />} />
