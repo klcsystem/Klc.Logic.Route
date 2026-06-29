@@ -6,7 +6,7 @@ import {
   Settings, Users, Bell, ChevronDown, ChevronRight,
   Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap,
   Brain, FlaskConical, Map, RefreshCw, Shield, ShieldCheck, Store,
-  MessageSquare, RotateCcw, Workflow,
+  MessageSquare, RotateCcw, Workflow, FileCheck, Smartphone, Database,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
 import { useAuth } from '../../contexts/AuthContext'
@@ -147,6 +147,7 @@ function CustomerSidebar() {
       label: t.sidebar.operations,
       icon: Package,
       items: [
+        { to: '/plan', icon: Zap, label: 'Plan & Optimize' },
         { to: '/orders', icon: Package, label: t.sidebar.orders },
         { to: '/shipments', icon: Truck, label: t.sidebar.shipments },
         { to: '/tracking', icon: MapPin, label: t.sidebar.liveTracking },

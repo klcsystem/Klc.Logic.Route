@@ -22,6 +22,11 @@ import SettingsPage from './pages/SettingsPage'
 import InvoiceVerificationPage from './pages/InvoiceVerificationPage'
 import AuditLogPage from './pages/AuditLogPage'
 import ErpConnectionPage from './pages/settings/ErpConnectionPage'
+import RoutingProfilesPage from './pages/settings/RoutingProfilesPage'
+import DepotPage from './pages/settings/DepotPage'
+import LocationDirectoryPage from './pages/settings/LocationDirectoryPage'
+import PodSettingsPage from './pages/settings/PodSettingsPage'
+import DriverAppConfigPage from './pages/settings/DriverAppConfigPage'
 import FleetPage from './pages/FleetPage'
 import ProviderPortalPage from './pages/ProviderPortalPage'
 import LoginPage from './pages/auth/LoginPage'
@@ -97,6 +102,11 @@ export default function App() {
         {/* YONETIM */}
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/erp" element={<ErpConnectionPage />} />
+        <Route path="/settings/routing-profiles" element={<RoutingProfilesPage />} />
+        <Route path="/settings/depot" element={<DepotPage />} />
+        <Route path="/settings/locations" element={<LocationDirectoryPage />} />
+        <Route path="/settings/pod" element={<PodSettingsPage />} />
+        <Route path="/settings/driver-app" element={<DriverAppConfigPage />} />
         <Route path="/invoices" element={<InvoiceVerificationPage />} />
         <Route path="/audit-logs" element={<AuditLogPage />} />
         <Route path="/users" element={<UsersPage />} />
