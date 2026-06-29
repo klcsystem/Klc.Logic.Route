@@ -14,5 +14,9 @@ public enum NotificationType
     ContractExpiring = 30,
     PerformanceAlert = 40,
     GeofenceArrived = 50,
-    GeofenceDeparted = 51
+    GeofenceDeparted = 51,
+    RouteDeviation = 60,
+    DelayWarning = 70,
+    DelayHigh = 71,
+    DelayCritical = 72
 }

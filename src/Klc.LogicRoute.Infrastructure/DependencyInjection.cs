@@ -100,6 +100,10 @@ public static class DependencyInjection
         // Geofencing
         services.AddScoped<Application.Geofencing.IGeofenceService, Application.Geofencing.GeofenceService>();
 
+        // Route Deviation & Delay Prediction (Faz B — Autonomous Logistics)
+        services.AddScoped<Application.Tracking.IRouteDeviationService, Application.Tracking.RouteDeviationService>();
+        services.AddScoped<Application.Tracking.IDelayPredictionService, Application.Tracking.DelayPredictionService>();
+
         // Invoice Audit & Routing Rules
         services.AddScoped<Application.InvoiceAudit.IInvoiceAuditService, Application.InvoiceAudit.InvoiceAuditService>();
         services.AddScoped<Application.RoutingRules.IRoutingRuleEngine, Application.RoutingRules.RoutingRuleEngine>();
@@ -158,6 +162,7 @@ public static class DependencyInjection
         services.AddHostedService<EtaCalculationJob>();
         services.AddHostedService<ErpAutoSyncJob>();
         services.AddHostedService<AutoBatchJob>();
+        services.AddHostedService<DelayMonitorJob>();
 
         // Pipeline Services
         services.AddSingleton<IAutoBatchService, AutoBatchService>();

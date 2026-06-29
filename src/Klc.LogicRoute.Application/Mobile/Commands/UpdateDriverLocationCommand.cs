@@ -1,4 +1,6 @@
 using Klc.LogicRoute.Application.Geofencing;
+using Klc.LogicRoute.Application.Tracking;
+using Klc.LogicRoute.Application.Tracking.Models;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Interfaces;
 using MediatR;
@@ -22,11 +24,13 @@ public record LocationPoint(
 public record UpdateDriverLocationResult(
     bool Success,
     int SavedCount,
-    IReadOnlyList<GeofenceEvent> GeofenceEvents);
+    IReadOnlyList<GeofenceEvent> GeofenceEvents,
+    DeviationAlert? DeviationAlert = null);
 
 public class UpdateDriverLocationHandler(
     IDriverLocationRepository driverLocationRepository,
-    IGeofenceService geofenceService) : IRequestHandler<UpdateDriverLocationCommand, UpdateDriverLocationResult>
+    IGeofenceService geofenceService,
+    IRouteDeviationService routeDeviationService) : IRequestHandler<UpdateDriverLocationCommand, UpdateDriverLocationResult>
 {
     public async Task<UpdateDriverLocationResult> Handle(UpdateDriverLocationCommand request, CancellationToken cancellationToken)
     {
@@ -45,11 +49,15 @@ public class UpdateDriverLocationHandler(
 
         await driverLocationRepository.CreateBatchAsync(locations);
 
-        // Check geofences for the latest location point
+        // Check geofences and route deviation for the latest location point
         var allGeofenceEvents = new List<GeofenceEvent>();
+        DeviationAlert? deviationAlert = null;
+
         if (request.Points.Count > 0)
         {
             var latest = request.Points.Last();
+
+            // Geofence check
             var events = await geofenceService.CheckLocationAsync(
                 request.DriverId,
                 request.TenantId,
@@ -57,8 +65,16 @@ public class UpdateDriverLocationHandler(
                 latest.Lng,
                 latest.ShipmentId);
             allGeofenceEvents.AddRange(events);
+
+            // Route deviation check
+            deviationAlert = await routeDeviationService.CheckDeviationAsync(
+                request.DriverId,
+                request.TenantId,
+                latest.Lat,
+                latest.Lng,
+                latest.ShipmentId);
         }
 
-        return new UpdateDriverLocationResult(true, locations.Count, allGeofenceEvents);
+        return new UpdateDriverLocationResult(true, locations.Count, allGeofenceEvents, deviationAlert);
     }
 }
