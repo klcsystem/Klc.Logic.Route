@@ -142,7 +142,6 @@ export default function PlanOptimizePage() {
   // Computed
   const pendingOrders = useMemo(() => orders.filter(o => o.status === 'Pending'), [orders])
   const scheduledOrders = useMemo(() => orders.filter(o => o.status === 'Assigned'), [orders])
-  const availableDrivers = useMemo(() => vehicles.filter(v => v.available), [vehicles])
 
   const scheduledCount = scheduledOrders.length
   const unscheduledCount = pendingOrders.length

@@ -220,7 +220,7 @@ export default function PlannedVsActualPage() {
             </thead>
             <tbody>
               {report.routes.map(route =>
-                route.stops.map((stop, i) => (
+                route.stops.map((stop) => (
                   <tr key={stop.stopId} className="border-t border-slate-100 hover:bg-slate-50/50">
                     <td className="px-4 py-3 text-slate-400">{stop.stopOrder}</td>
                     <td className="px-4 py-3 font-medium text-slate-700">{route.vehiclePlate || '-'}</td>

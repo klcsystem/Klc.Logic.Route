@@ -20,7 +20,6 @@ const statusLabels: Record<string, string> = {
   Calculated: 'Hesaplandi', Approved: 'Onaylandi', SentToProvider: 'Gonderildi', VehicleAssigned: 'Arac Atandi', Completed: 'Tamamlandi', Cancelled: 'Iptal',
 }
 
-const activityColors: Record<string, string> = { info: 'bg-blue-400', success: 'bg-green-400', warning: 'bg-orange-400', error: 'bg-red-400' }
 
 const integrationModeLabels: Record<string, string> = {
   ApiIntegrated: 'API Entegre',

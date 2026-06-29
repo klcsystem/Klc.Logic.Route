@@ -1,5 +1,5 @@
 import { Leaf, TrendingDown, Loader2 } from 'lucide-react'
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import { useApi } from '../utils/useApi'

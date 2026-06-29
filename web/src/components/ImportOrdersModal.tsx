@@ -171,7 +171,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
             destinationAddress: mapping.destinationAddress ? row[mapping.destinationAddress] : '',
             destinationCity: mapping.destinationCity ? row[mapping.destinationCity] : '',
             totalWeightKg: mapping.totalWeightKg ? Number(row[mapping.totalWeightKg]) || 0 : 0,
-            priority: mapping.priority ? row[mapping.priority] || 'Normal' : 'Normal',
+            priority: (mapping.priority ? row[mapping.priority] || 'Normal' : 'Normal') as 'Normal' | 'Priority' | 'Urgent',
             requestedDeliveryDate: planningDate,
             serviceDurationMinutes: serviceDuration,
           }
