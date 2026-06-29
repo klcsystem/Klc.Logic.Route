@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Database, Key, Webhook, Globe, Building2, Bell, Route } from 'lucide-react'
+import { Database, Key, Webhook, Globe, Building2, Bell, Route, MapPin, FileCheck, Smartphone, Map } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n'
 
@@ -14,6 +14,11 @@ export default function SettingsPage() {
   const sections = [
     { icon: Building2, title: t.settings.general, desc: 'Sirket bilgileri, logo, saat dilimi', path: '', clickable: false },
     { icon: Database, title: t.settings.erp, desc: 'ERP sistem entegrasyonlari', path: '/settings/erp', clickable: true },
+    { icon: Route, title: 'Rotalama Profilleri', desc: 'Arac tipi, yol tercihleri, surucu yaklasimi', path: '/settings/routing-profiles', clickable: true },
+    { icon: MapPin, title: 'Depo / Ana Konum', desc: 'Rota baslangic noktasi ayari', path: '/settings/depot', clickable: true },
+    { icon: Map, title: 'Lokasyon Dizini', desc: 'Teslimat ve toplama noktalarini yonetin', path: '/settings/locations', clickable: true },
+    { icon: FileCheck, title: 'POD Ayarlari', desc: 'Teslimat kaniti gereksinimleri', path: '/settings/pod', clickable: true },
+    { icon: Smartphone, title: 'Surucu Uygulama', desc: 'Mobil uygulama yapilandirmasi', path: '/settings/driver-app', clickable: true },
     { icon: Key, title: t.settings.api, desc: 'API anahtar yonetimi', path: '', clickable: false },
     { icon: Webhook, title: t.settings.webhooks, desc: 'Webhook konfigurasyonu', path: '', clickable: false },
     { icon: Globe, title: t.settings.language, desc: 'Dil ve bolgesel ayarlar', path: '', clickable: false },

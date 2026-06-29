@@ -198,6 +198,12 @@ function CustomerSidebar() {
       icon: Settings,
       items: [
         { to: '/settings', icon: Settings, label: t.sidebar.settings },
+        { to: '/settings/routing-profiles', icon: Route, label: 'Rotalama Profilleri' },
+        { to: '/settings/depot', icon: MapPin, label: 'Depo / Konum' },
+        { to: '/settings/locations', icon: Map, label: 'Lokasyon Dizini' },
+        { to: '/settings/pod', icon: FileCheck, label: 'POD Ayarları' },
+        { to: '/settings/driver-app', icon: Smartphone, label: 'Sürücü Uygulama' },
+        { to: '/settings/erp', icon: Database, label: 'ERP Bağlantıları' },
         { to: '/users', icon: Users, label: t.sidebar.users },
         { to: '/notifications', icon: Bell, label: t.sidebar.notifications },
         { to: '/learning', icon: Brain, label: 'Öğrenme Motoru' },
