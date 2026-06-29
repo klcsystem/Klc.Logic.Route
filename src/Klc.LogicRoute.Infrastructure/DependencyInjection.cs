@@ -203,6 +203,12 @@ public static class DependencyInjection
         // E3: Driver Wellness & Safety
         services.AddScoped<Application.Safety.IDriverWellnessService, Application.Safety.DriverWellnessService>();
 
+        // Faz F: Collaborative Logistics — Capacity Marketplace
+        services.AddScoped<ICapacityListingRepository, CapacityListingRepository>();
+
+        // Faz H1: Insurance Marketplace
+        services.AddScoped<IInsuranceRepository, InsuranceRepository>();
+
         return services;
     }
 }

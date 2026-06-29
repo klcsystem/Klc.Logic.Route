@@ -1,8 +1,11 @@
 using FluentValidation;
 using Klc.LogicRoute.Application.Analytics;
 using Klc.LogicRoute.Application.Common.Behaviors;
+using Klc.LogicRoute.Application.Insurance;
 using Klc.LogicRoute.Application.Learning;
+using Klc.LogicRoute.Application.Marketplace;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
+using Klc.LogicRoute.Application.Sustainability;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,6 +33,16 @@ public static class DependencyInjection
         services.AddScoped<AddressLearningService>();
         services.AddScoped<TrafficPatternLearningService>();
         services.AddScoped<ILearningService, LearningService>();
+
+        // Faz F: Collaborative Logistics — Capacity Marketplace
+        services.AddScoped<ICapacityMatchingService, CapacityMatchingService>();
+
+        // Faz G: Carbon Credits — Sustainability & ESG
+        services.AddScoped<ICarbonCreditService, CarbonCreditService>();
+
+        // Faz H1: Insurance Marketplace
+        services.AddScoped<IRiskScoringService, RiskScoringService>();
+        services.AddScoped<IInsuranceService, InsuranceService>();
 
         return services;
     }
