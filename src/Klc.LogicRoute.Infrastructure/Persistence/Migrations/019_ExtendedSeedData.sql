@@ -565,11 +565,11 @@ SELECT
     ROUND(((0.95 + (row_number() OVER (ORDER BY s.created_at) % 15) * 0.01) - 1) * 100, 2),
     'TRY',
     CASE (row_number() OVER (ORDER BY s.created_at)) % 5
-        WHEN 0 THEN 'Approved'
-        WHEN 1 THEN 'Approved'
-        WHEN 2 THEN 'Flagged'
-        WHEN 3 THEN 'Pending'
-        ELSE 'Rejected'
+        WHEN 0 THEN 3  -- Approved
+        WHEN 1 THEN 3  -- Approved
+        WHEN 2 THEN 2  -- Flagged
+        WHEN 3 THEN 0  -- Pending
+        ELSE 1          -- NeedsReview
     END,
     CASE (row_number() OVER (ORDER BY s.created_at)) % 5
         WHEN 0 THEN 'Fatura tutari sozlesme fiyatlariyla uyumlu.'
