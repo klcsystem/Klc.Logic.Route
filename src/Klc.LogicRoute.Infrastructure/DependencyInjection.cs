@@ -195,6 +195,14 @@ public static class DependencyInjection
         services.AddSingleton<LearningOrchestrator>();
         services.AddHostedService(sp => sp.GetRequiredService<LearningOrchestrator>());
 
+        // Faz E — Teslimat Zekasi
+        // E1: NDR Prediction
+        services.AddScoped<Application.Prediction.INdrPredictionService, Application.Prediction.NdrPredictionService>();
+        // E2: Smart Slot
+        services.AddScoped<ISmartSlotService, SmartSlotService>();
+        // E3: Driver Wellness & Safety
+        services.AddScoped<Application.Safety.IDriverWellnessService, Application.Safety.DriverWellnessService>();
+
         return services;
     }
 }

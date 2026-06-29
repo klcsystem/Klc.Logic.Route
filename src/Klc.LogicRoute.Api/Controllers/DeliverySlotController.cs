@@ -1,5 +1,7 @@
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.Pipeline;
+using Klc.LogicRoute.Application.Pipeline.Models;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
@@ -13,6 +15,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class DeliverySlotController(
     IDeliverySlotRepository deliverySlotRepository,
+    ISmartSlotService smartSlotService,
     ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpGet("available")]
@@ -62,6 +65,22 @@ public class DeliverySlotController(
 
         await deliverySlotRepository.ConfirmAsync(id, tenantId);
         return Ok(ApiResponse<Guid>.Ok(id));
+    }
+    [HttpGet("smart")]
+    public async Task<ActionResult<ApiResponse<List<SmartSlot>>>> GetSmartSlots(
+        [FromQuery] Guid orderId, [FromQuery] DateOnly date)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+
+        try
+        {
+            var slots = await smartSlotService.SuggestSlotsAsync(orderId, date, tenantId);
+            return Ok(ApiResponse<List<SmartSlot>>.Ok(slots));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ApiResponse<List<SmartSlot>>.Fail(ex.Message));
+        }
     }
 }
 
