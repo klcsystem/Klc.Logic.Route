@@ -1,32 +1,19 @@
 import { useState } from 'react'
-import { FileText, Plus, Search, Trash2 } from 'lucide-react'
+import { FileText, Plus, Search, Trash2, Loader2, Filter } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
+import { contractsApi } from '../api/contracts'
+import { useApi } from '../utils/useApi'
 import type { Contract, ContractRate } from '../types'
-
-const mockRates: ContractRate[] = [
-  { id: 'r1', contractId: '1', originRegion: 'Marmara', destinationRegion: 'Ic Anadolu', vehicleCategory: 'Tir', minWeightKg: 0, maxWeightKg: 20000, pricePerUnit: 42.50, pricingUnit: 'km', currency: 'TRY', urgentSurchargePercent: 25, adrSurchargePercent: 15, frigoSurchargePercent: 20 },
-  { id: 'r2', contractId: '1', originRegion: 'Marmara', destinationRegion: 'Ege', vehicleCategory: 'Kamyon', minWeightKg: 0, maxWeightKg: 10000, pricePerUnit: 35.00, pricingUnit: 'km', currency: 'TRY', urgentSurchargePercent: 20 },
-]
-
-const mockContracts: Contract[] = [
-  { id: '1', providerId: '1', providerName: 'Yolda', contractNumber: 'CNT-2026-001', startDate: '2026-01-01', endDate: '2026-12-31', status: 'Active', rates: mockRates },
-  { id: '2', providerId: '2', providerName: 'Tırport', contractNumber: 'CNT-2026-002', startDate: '2026-02-01', endDate: '2027-01-31', status: 'Active', rates: [] },
-  { id: '3', providerId: '4', providerName: 'Ekol Lojistik', contractNumber: 'CNT-2026-003', startDate: '2026-01-15', endDate: '2026-12-31', status: 'Active', rates: [] },
-  { id: '4', providerId: '5', providerName: 'Mars Logistics', contractNumber: 'CNT-2026-004', startDate: '2026-03-01', endDate: '2027-02-28', status: 'Active', rates: [] },
-  { id: '5', providerId: '6', providerName: 'Horoz Lojistik', contractNumber: 'CNT-2026-005', startDate: '2026-01-01', endDate: '2026-06-30', status: 'Active', rates: [] },
-  { id: '6', providerId: '8', providerName: 'Omsan Lojistik', contractNumber: 'CNT-2025-042', startDate: '2025-06-01', endDate: '2026-01-31', status: 'Expired', rates: [] },
-  { id: '7', providerId: '17', providerName: 'Ceva Lojistik', contractNumber: 'CNT-2026-006', startDate: '2026-04-01', endDate: '2027-03-31', status: 'Draft', rates: [] },
-  { id: '8', providerId: '23', providerName: 'Murat Lojistik', contractNumber: 'CNT-2026-007', startDate: '2026-01-01', endDate: '2026-12-31', status: 'Active', rates: [] },
-]
 
 const statusVariant: Record<string, 'success' | 'error' | 'warning' | 'default'> = { Active: 'success', Expired: 'error', Draft: 'warning', Suspended: 'default' }
 
 export default function ContractsPage() {
   const { t } = useI18n()
   const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false)
   const [rateDrawerOpen, setRateDrawerOpen] = useState(false)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
@@ -34,19 +21,30 @@ export default function ContractsPage() {
   const [contractDrawerOpen, setContractDrawerOpen] = useState(false)
   const [contractForm, setContractForm] = useState({ providerName: '', contractNumber: '', startDate: '', endDate: '', status: 'Draft' })
 
+  const { data: contractsData, isLoading } = useApi(
+    () => contractsApi.getAll({ status: statusFilter !== 'all' ? statusFilter : undefined }),
+    [statusFilter],
+  )
+  const contracts: Contract[] = contractsData?.items || (Array.isArray(contractsData) ? contractsData as unknown as Contract[] : [])
+
   const statusLabels: Record<string, string> = { Active: t.contracts.active, Expired: t.contracts.expired, Draft: t.contracts.draft, Suspended: 'Askiya Alindi' }
 
-  const filteredContracts = mockContracts.filter((c) =>
+  const filteredContracts = contracts.filter((c) =>
     searchTerm === '' || c.providerName.toLowerCase().includes(searchTerm.toLowerCase()) || c.contractNumber.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const handleRowClick = (contract: Contract) => { setSelectedContract(contract); setDetailDrawerOpen(true) }
 
+  const totalCount = contracts.length
+  const activeCount = contracts.filter(c => c.status === 'Active').length
+  const draftCount = contracts.filter(c => c.status === 'Draft').length
+  const expiredCount = contracts.filter(c => c.status === 'Expired').length
+
   const kpis = [
-    { label: t.contracts.totalContracts, value: '24', change: 4, icon: FileText, color: 'text-blue-600 bg-blue-50' },
-    { label: t.contracts.activeContracts, value: '18', change: 2, icon: FileText, color: 'text-green-600 bg-green-50' },
-    { label: t.contracts.expiringThisMonth, value: '3', change: -1, icon: FileText, color: 'text-amber-600 bg-amber-50' },
-    { label: t.contracts.avgTariff, value: '38.65 TL', change: -3, icon: FileText, color: 'text-purple-600 bg-purple-50' },
+    { label: t.contracts.totalContracts, value: totalCount.toString(), change: 0, icon: FileText, color: 'text-blue-600 bg-blue-50' },
+    { label: t.contracts.activeContracts, value: activeCount.toString(), change: 0, icon: FileText, color: 'text-green-600 bg-green-50' },
+    { label: t.contracts.draft, value: draftCount.toString(), change: 0, icon: FileText, color: 'text-amber-600 bg-amber-50' },
+    { label: t.contracts.expired, value: expiredCount.toString(), change: 0, icon: FileText, color: 'text-red-600 bg-red-50' },
   ]
 
   const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white'
@@ -67,9 +65,20 @@ export default function ContractsPage() {
         {kpis.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
+        </div>
+        <div className="relative">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 appearance-none">
+            <option value="all">{t.common.all}</option>
+            <option value="Active">{t.contracts.active}</option>
+            <option value="Draft">{t.contracts.draft}</option>
+            <option value="Expired">{t.contracts.expired}</option>
+          </select>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
@@ -86,7 +95,8 @@ export default function ContractsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredContracts.map((c) => (
+              {isLoading && <tr><td colSpan={6} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {!isLoading && filteredContracts.map((c) => (
                 <tr key={c.id} onClick={() => handleRowClick(c)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
                   <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{c.contractNumber}</td>
                   <td className="px-6 py-3.5 text-[13px] text-slate-700">{c.providerName}</td>
@@ -96,6 +106,7 @@ export default function ContractsPage() {
                   <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[c.status]}>{statusLabels[c.status]}</Badge></td>
                 </tr>
               ))}
+              {!isLoading && filteredContracts.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>
@@ -134,9 +145,9 @@ export default function ContractsPage() {
                       <th className="w-10"></th>
                     </tr></thead>
                     <tbody>
-                      {selectedContract.rates.map((rate) => (
+                      {selectedContract.rates.map((rate: ContractRate) => (
                         <tr key={rate.id} className="border-b border-slate-100 last:border-0">
-                          <td className="px-4 py-2 text-[13px] text-slate-700">{rate.originRegion} → {rate.destinationRegion}</td>
+                          <td className="px-4 py-2 text-[13px] text-slate-700">{rate.originRegion} &rarr; {rate.destinationRegion}</td>
                           <td className="px-4 py-2 text-center"><Badge variant="info">{rate.vehicleCategory}</Badge></td>
                           <td className="px-4 py-2 text-center text-[12px] text-slate-500">{rate.minWeightKg}-{rate.maxWeightKg.toLocaleString()} kg</td>
                           <td className="px-4 py-2 text-right text-[13px] font-medium text-slate-800">{rate.pricePerUnit.toFixed(2)} {rate.currency}/{rate.pricingUnit}</td>
@@ -170,23 +181,23 @@ export default function ContractsPage() {
       }>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Bölge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Bölge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="İç Anadolu" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Cikis Bolge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varis Bolge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="Ic Anadolu" /></div>
           </div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Araç Tipi</label>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Arac Tipi</label>
             <select value={rateForm.vehicleCategory} onChange={(e) => setRateForm({ ...rateForm, vehicleCategory: e.target.value })} className={inputClass}>
-              <option value="Tir">Tır</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
+              <option value="Tir">Tir</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Ağırlık (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Ağırlık (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Agirlik (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Agirlik (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Birim Fiyat</label><input type="number" step="0.01" value={rateForm.pricePerUnit} onChange={(e) => setRateForm({ ...rateForm, pricePerUnit: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Birim</label>
               <select value={rateForm.pricingUnit} onChange={(e) => setRateForm({ ...rateForm, pricingUnit: e.target.value })} className={inputClass}>
-                <option value="kg">kg</option><option value="m3">m³</option><option value="pallet">Palet</option><option value="trip">Sefer</option><option value="km">km</option>
+                <option value="kg">kg</option><option value="m3">m3</option><option value="pallet">Palet</option><option value="trip">Sefer</option><option value="km">km</option>
               </select>
             </div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Para Birimi</label>
@@ -195,7 +206,7 @@ export default function ContractsPage() {
               </select>
             </div>
           </div>
-          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ücretler (%)</h4>
+          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ucretler (%)</h4>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[12px] text-slate-500 mb-1">Acil</label><input type="number" value={rateForm.urgentSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, urgentSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[12px] text-slate-500 mb-1">ADR</label><input type="number" value={rateForm.adrSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, adrSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
@@ -213,7 +224,7 @@ export default function ContractsPage() {
         </div>
       }>
         <div className="space-y-4">
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.carrier}</label><input type="text" value={contractForm.providerName} onChange={(e) => setContractForm({ ...contractForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adı" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.carrier}</label><input type="text" value={contractForm.providerName} onChange={(e) => setContractForm({ ...contractForm, providerName: e.target.value })} className={inputClass} placeholder="Tasiyici adi" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.contractNo}</label><input type="text" value={contractForm.contractNumber} onChange={(e) => setContractForm({ ...contractForm, contractNumber: e.target.value })} className={inputClass} placeholder="CNT-2024-006" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.startDate}</label><input type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} className={inputClass} /></div>
@@ -223,7 +234,7 @@ export default function ContractsPage() {
             <select value={contractForm.status} onChange={(e) => setContractForm({ ...contractForm, status: e.target.value })} className={inputClass}>
               <option value="Draft">{t.contracts.draft}</option>
               <option value="Active">{t.contracts.active}</option>
-              <option value="Suspended">Askıya Alındı</option>
+              <option value="Suspended">Askiya Alindi</option>
             </select>
           </div>
         </div>

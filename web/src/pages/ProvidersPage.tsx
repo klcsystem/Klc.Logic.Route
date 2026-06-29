@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Building2, Plus, Search, Power, Loader2 } from 'lucide-react'
+import { Building2, Plus, Search, Power, Loader2, Truck, Wifi, Settings } from 'lucide-react'
 import { useI18n } from '../i18n'
+import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
 import { providersApi } from '../api/providers'
@@ -24,6 +25,18 @@ export default function ProvidersPage() {
   const filteredProviders = providers.filter((p) =>
     searchTerm === '' || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.code.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  const totalCount = providers.length
+  const activeCount = providers.filter(p => p.isActive).length
+  const apiCount = providers.filter(p => p.integrationMode === 'ApiIntegrated').length
+  const managedCount = providers.filter(p => p.integrationMode === 'Managed').length
+
+  const kpis = [
+    { label: 'Toplam Tasiyici', value: totalCount.toString(), change: 0, icon: Building2, color: 'text-blue-600 bg-blue-50' },
+    { label: t.common.active, value: activeCount.toString(), change: 0, icon: Truck, color: 'text-green-600 bg-green-50' },
+    { label: 'API Entegre', value: apiCount.toString(), change: 0, icon: Wifi, color: 'text-orange-600 bg-orange-50' },
+    { label: 'Yonetilen', value: managedCount.toString(), change: 0, icon: Settings, color: 'text-purple-600 bg-purple-50' },
+  ]
 
   const handleToggle = async (id: string) => {
     try {
@@ -59,6 +72,10 @@ export default function ProvidersPage() {
         </button>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
+      </div>
+
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
@@ -92,9 +109,9 @@ export default function ProvidersPage() {
                   <td className="px-6 py-3.5 text-[13px] text-slate-600">{p.code}</td>
                   <td className="px-6 py-3.5"><Badge variant="info">{p.type}</Badge></td>
                   <td className="px-6 py-3.5">
-                    {p.integrationMode === 'ApiIntegrated' && <Badge variant="orange">🔗 API</Badge>}
-                    {p.integrationMode === 'SelfService' && <Badge variant="info">👤 Self-Service</Badge>}
-                    {p.integrationMode === 'Managed' && <Badge variant="default">📝 Yönetilen</Badge>}
+                    {p.integrationMode === 'ApiIntegrated' && <Badge variant="orange">API</Badge>}
+                    {p.integrationMode === 'SelfService' && <Badge variant="info">Self-Service</Badge>}
+                    {p.integrationMode === 'Managed' && <Badge variant="default">Yonetilen</Badge>}
                   </td>
                   <td className="px-6 py-3.5 text-[12px] text-slate-500">{p.serviceRegions.join(', ')}</td>
                   <td className="px-6 py-3.5 text-center text-[13px] font-semibold text-slate-700">{p.contractCount}</td>
@@ -108,6 +125,7 @@ export default function ProvidersPage() {
                   </td>
                 </tr>
               ))}
+              {!isLoading && filteredProviders.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>
@@ -144,7 +162,8 @@ export default function ProvidersPage() {
               <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Anlasma Sayisi</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contractCount}</p></div>
               <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Hizmet Bolgeleri</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.serviceRegions.join(', ')}</p></div>
               <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Arac Tipleri</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.supportedVehicleTypes.join(', ')}</p></div>
-              {selectedProvider.contactEmail && <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Iletisim</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactEmail}</p></div>}
+              {selectedProvider.contactEmail && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">E-posta</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactEmail}</p></div>}
+              {selectedProvider.contactPhone && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Telefon</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactPhone}</p></div>}
             </div>
           </div>
         ) : null}
