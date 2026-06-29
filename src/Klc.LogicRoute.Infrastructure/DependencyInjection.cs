@@ -191,6 +191,10 @@ public static class DependencyInjection
         // Return/Reverse Logistics
         services.AddScoped<IReturnRequestRepository, ReturnRequestRepository>();
 
+        // Self-Learning Engine (background job)
+        services.AddSingleton<LearningOrchestrator>();
+        services.AddHostedService(sp => sp.GetRequiredService<LearningOrchestrator>());
+
         return services;
     }
 }

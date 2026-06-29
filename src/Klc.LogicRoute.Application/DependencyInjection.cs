@@ -1,6 +1,7 @@
 using FluentValidation;
 using Klc.LogicRoute.Application.Analytics;
 using Klc.LogicRoute.Application.Common.Behaviors;
+using Klc.LogicRoute.Application.Learning;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,12 @@ public static class DependencyInjection
 
         // Truck routing constraints
         services.AddScoped<ITruckRoutingService, TruckRoutingService>();
+
+        // Self-Learning Engine
+        services.AddScoped<ServiceTimeLearningService>();
+        services.AddScoped<AddressLearningService>();
+        services.AddScoped<TrafficPatternLearningService>();
+        services.AddScoped<ILearningService, LearningService>();
 
         return services;
     }

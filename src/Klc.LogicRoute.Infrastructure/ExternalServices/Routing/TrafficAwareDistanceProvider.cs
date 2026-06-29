@@ -1,3 +1,4 @@
+using Klc.LogicRoute.Application.Learning;
 using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -7,17 +8,23 @@ namespace Klc.LogicRoute.Infrastructure.ExternalServices.Routing;
 /// Wraps the OSRM distance matrix provider and applies time-of-day traffic multipliers
 /// to duration estimates. For solve operations OSRM is used as-is (fast, free).
 /// For more accurate ETAs, durations are scaled based on rush hour patterns.
+///
+/// Self-Learning: checks learned traffic multipliers first (from TrafficPatternLearningService),
+/// falling back to hardcoded multipliers when no learned data is available.
 /// </summary>
 public class TrafficAwareDistanceProvider : IDistanceMatrixProvider
 {
     private readonly OsrmDistanceMatrixProvider _osrmProvider;
+    private readonly TrafficPatternLearningService _trafficLearning;
     private readonly ILogger<TrafficAwareDistanceProvider> _logger;
 
     public TrafficAwareDistanceProvider(
         OsrmDistanceMatrixProvider osrmProvider,
+        TrafficPatternLearningService trafficLearning,
         ILogger<TrafficAwareDistanceProvider> logger)
     {
         _osrmProvider = osrmProvider;
+        _trafficLearning = trafficLearning;
         _logger = logger;
     }
 
@@ -26,7 +33,8 @@ public class TrafficAwareDistanceProvider : IDistanceMatrixProvider
     {
         var baseResult = await _osrmProvider.GetDistanceMatrixAsync(points, cancellationToken);
 
-        var multiplier = GetTrafficMultiplier(DateTime.UtcNow);
+        var now = DateTime.UtcNow;
+        var multiplier = await GetTrafficMultiplierWithLearningAsync(now);
 
         if (Math.Abs(multiplier - 1.0) < 0.001)
         {
@@ -49,6 +57,34 @@ public class TrafficAwareDistanceProvider : IDistanceMatrixProvider
         }
 
         return new DistanceMatrixResult(baseResult.Distances, adjustedDurations);
+    }
+
+    /// <summary>
+    /// Checks learned traffic multiplier first, falls back to hardcoded values.
+    /// </summary>
+    private async Task<double> GetTrafficMultiplierWithLearningAsync(DateTime utcNow)
+    {
+        var localTime = utcNow.AddHours(3); // Turkey time (UTC+3)
+        var day = localTime.DayOfWeek;
+        var hour = localTime.Hour;
+
+        try
+        {
+            var learned = await _trafficLearning.GetMultiplierAsync(day, hour);
+            if (learned.HasValue)
+            {
+                _logger.LogDebug(
+                    "Using learned traffic multiplier {Multiplier:F3} for {Day} {Hour}:00",
+                    learned.Value, day, hour);
+                return learned.Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to get learned traffic multiplier, using hardcoded fallback");
+        }
+
+        return GetTrafficMultiplier(utcNow);
     }
 
     /// <summary>
