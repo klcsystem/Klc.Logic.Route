@@ -11,21 +11,21 @@ DO $$
 DECLARE
     tid UUID := '00000000-0000-0000-0000-000000000001';
 
-    -- Provider IDs (must match 006_SeedData)
-    p_yolda    UUID := 'a0000000-0000-0000-0000-000000000001';
-    p_tirport  UUID := 'a0000000-0000-0000-0000-000000000002';
-    p_ekol     UUID := 'a0000000-0000-0000-0000-000000000003';
-    p_horoz    UUID := 'a0000000-0000-0000-0000-000000000004';
-    p_surat    UUID := 'a0000000-0000-0000-0000-000000000005';
-    p_aras     UUID := 'a0000000-0000-0000-0000-000000000006';
+    -- Provider IDs (dynamic lookup from DB)
+    p_yolda    UUID;
+    p_tirport  UUID;
+    p_ekol     UUID;
+    p_horoz    UUID;
+    p_surat    UUID;
+    p_aras     UUID;
 
-    -- Contract IDs (must match 006_SeedData)
-    c_yolda2   UUID := 'b0000000-0000-0000-0000-000000000002';
-    c_tirport1 UUID := 'b0000000-0000-0000-0000-000000000003';
-    c_ekol2    UUID := 'b0000000-0000-0000-0000-000000000006';
-    c_horoz1   UUID := 'b0000000-0000-0000-0000-000000000007';
-    c_surat1   UUID := 'b0000000-0000-0000-0000-000000000008';
-    c_aras1    UUID := 'b0000000-0000-0000-0000-000000000010';
+    -- Contract IDs (dynamic lookup)
+    c_yolda2   UUID;
+    c_tirport1 UUID;
+    c_ekol2    UUID;
+    c_horoz1   UUID;
+    c_surat1   UUID;
+    c_aras1    UUID;
 
     -- Fixed vehicle IDs for FK references
     v01 UUID := 'c1000000-0000-0000-0000-000000000001';
@@ -112,6 +112,30 @@ DECLARE
     rr03 UUID := 'c5000000-0000-0000-0000-000000000003';
 
 BEGIN
+
+-- Dynamic provider lookup (handles both seed-generated and real IDs)
+SELECT id INTO p_yolda FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at LIMIT 1;
+SELECT id INTO p_tirport FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at OFFSET 1 LIMIT 1;
+SELECT id INTO p_ekol FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at OFFSET 2 LIMIT 1;
+SELECT id INTO p_horoz FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at OFFSET 3 LIMIT 1;
+SELECT id INTO p_surat FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at OFFSET 4 LIMIT 1;
+SELECT id INTO p_aras FROM logistics.providers WHERE tenant_id = tid AND is_deleted = FALSE ORDER BY created_at OFFSET 5 LIMIT 1;
+
+-- Fallback: if any provider is null, use first one
+p_yolda   := COALESCE(p_yolda, p_tirport, p_ekol);
+p_tirport := COALESCE(p_tirport, p_yolda);
+p_ekol    := COALESCE(p_ekol, p_yolda);
+p_horoz   := COALESCE(p_horoz, p_yolda);
+p_surat   := COALESCE(p_surat, p_yolda);
+p_aras    := COALESCE(p_aras, p_yolda);
+
+-- Dynamic contract lookup
+SELECT id INTO c_yolda2 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_yolda AND is_deleted = FALSE LIMIT 1;
+SELECT id INTO c_tirport1 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_tirport AND is_deleted = FALSE LIMIT 1;
+SELECT id INTO c_ekol2 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_ekol AND is_deleted = FALSE LIMIT 1;
+SELECT id INTO c_horoz1 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_horoz AND is_deleted = FALSE LIMIT 1;
+SELECT id INTO c_surat1 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_surat AND is_deleted = FALSE LIMIT 1;
+SELECT id INTO c_aras1 FROM logistics.contracts WHERE tenant_id = tid AND provider_id = p_aras AND is_deleted = FALSE LIMIT 1;
 
 -- ============================================================
 -- 1. VEHICLES (16 additional)
@@ -521,14 +545,14 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 INSERT INTO logistics.invoice_audits (id, tenant_id, shipment_id, provider_id, contract_id, invoice_number, invoice_amount, expected_amount, difference, difference_percent, currency, status, audit_notes, reviewed_at, reviewed_by, is_deleted, created_by, created_at)
 SELECT
-    gen_random_uuid(), tid, s.id, s.selected_provider_id,
+    gen_random_uuid(), tid, s.id, s.provider_id,
     CASE
-        WHEN s.selected_provider_id = p_yolda   THEN c_yolda2
-        WHEN s.selected_provider_id = p_tirport  THEN c_tirport1
-        WHEN s.selected_provider_id = p_ekol     THEN c_ekol2
-        WHEN s.selected_provider_id = p_horoz    THEN c_horoz1
-        WHEN s.selected_provider_id = p_surat    THEN c_surat1
-        WHEN s.selected_provider_id = p_aras     THEN c_aras1
+        WHEN s.provider_id = p_yolda   THEN c_yolda2
+        WHEN s.provider_id = p_tirport  THEN c_tirport1
+        WHEN s.provider_id = p_ekol     THEN c_ekol2
+        WHEN s.provider_id = p_horoz    THEN c_horoz1
+        WHEN s.provider_id = p_surat    THEN c_surat1
+        WHEN s.provider_id = p_aras     THEN c_aras1
         ELSE c_yolda2
     END,
     'FTR-2026-' || LPAD((row_number() OVER (ORDER BY s.created_at))::TEXT, 5, '0'),
