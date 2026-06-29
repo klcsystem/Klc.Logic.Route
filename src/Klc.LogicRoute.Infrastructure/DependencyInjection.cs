@@ -5,6 +5,7 @@ using Klc.LogicRoute.Domain.Interfaces;
 using Klc.LogicRoute.Application.CustomerEta.Services;
 using Klc.LogicRoute.Application.ML.Pipeline;
 using Klc.LogicRoute.Application.ML.Services;
+using Klc.LogicRoute.Application.Pipeline;
 using Klc.LogicRoute.Application.RouteOptimization.Services;
 using Klc.LogicRoute.Application.Simulation.Services;
 using Klc.LogicRoute.Application.DriverSkillMatching;
@@ -155,6 +156,14 @@ public static class DependencyInjection
 
         // Background Jobs
         services.AddHostedService<EtaCalculationJob>();
+        services.AddHostedService<ErpAutoSyncJob>();
+        services.AddHostedService<AutoBatchJob>();
+
+        // Pipeline Services
+        services.AddSingleton<IAutoBatchService, AutoBatchService>();
+        services.AddScoped<IAutoRouteService, AutoRouteService>();
+        services.AddScoped<IAutoAssignService, AutoAssignService>();
+        services.AddHostedService<LogisticsPipelineOrchestrator>();
 
         // ML Services
         services.AddScoped<IMLModelRepository, MLModelRepository>();

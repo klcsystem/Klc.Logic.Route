@@ -31,6 +31,7 @@ public class Order : BaseEntity
     public decimal? TotalAmount { get; set; }
     public string? Currency { get; set; } = "TRY";
     public string? Notes { get; set; }
+    public string? BatchReference { get; set; }
     public Guid? ContractId { get; set; }
     public Guid? ProviderId { get; set; }
 
