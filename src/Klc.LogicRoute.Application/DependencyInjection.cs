@@ -1,6 +1,7 @@
 using FluentValidation;
 using Klc.LogicRoute.Application.Analytics;
 using Klc.LogicRoute.Application.Common.Behaviors;
+using Klc.LogicRoute.Application.Fleet;
 using Klc.LogicRoute.Application.Insurance;
 using Klc.LogicRoute.Application.Learning;
 using Klc.LogicRoute.Application.Marketplace;
@@ -34,6 +35,12 @@ public static class DependencyInjection
         services.AddScoped<TrafficPatternLearningService>();
         services.AddScoped<ILearningService, LearningService>();
 
+        // Driver Familiarity Learning
+        services.AddScoped<IDriverFamiliarityService, DriverFamiliarityService>();
+
+        // Mid-Route Stop Addition
+        services.AddScoped<IMidRouteStopService, MidRouteStopService>();
+
         // Faz F: Collaborative Logistics — Capacity Marketplace
         services.AddScoped<ICapacityMatchingService, CapacityMatchingService>();
 
@@ -43,6 +50,9 @@ public static class DependencyInjection
         // Faz H1: Insurance Marketplace
         services.AddScoped<IRiskScoringService, RiskScoringService>();
         services.AddScoped<IInsuranceService, InsuranceService>();
+
+        // Hybrid Fleet / 3P Carrier Network
+        services.AddScoped<IHybridFleetService, HybridFleetService>();
 
         return services;
     }

@@ -85,6 +85,7 @@ public static class DependencyInjection
         // Repositories — Audit, Webhook, Invoice, Routing
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IInvoiceAuditRepository, InvoiceAuditRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IWebhookEventRepository, WebhookEventRepository>();
         services.AddScoped<IRoutingRuleRepository, RoutingRuleRepository>();
 
@@ -213,6 +214,15 @@ public static class DependencyInjection
         // Vehicle Profiles & Optimization Presets
         services.AddScoped<IVehicleProfileRepository, VehicleProfileRepository>();
         services.AddScoped<IOptimizationPresetRepository, OptimizationPresetRepository>();
+
+        // Cross-Docking Support
+        services.AddScoped<ICrossDockRepository, CrossDockRepository>();
+
+        // Cold Chain IoT Monitoring
+        services.AddScoped<ITemperatureReadingRepository, TemperatureReadingRepository>();
+
+        // Hybrid Fleet / 3P Carrier Network
+        services.AddScoped<ICarrierNetworkRepository, CarrierNetworkRepository>();
 
         return services;
     }
