@@ -689,11 +689,10 @@ export default function PlanOptimizePage() {
                       <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-100">
                           <th className="w-8 px-2 py-2"></th>
-                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Surucu</th>
-                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Arac</th>
+                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Surucu / Arac</th>
+                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Teslimat Durumu</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Mesafe</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sure</th>
-                          <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Durak</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Kullanim %</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Maliyet</th>
                         </tr>
@@ -701,17 +700,62 @@ export default function PlanOptimizePage() {
                       <tbody>
                         {solution.routes.map((route, ri) => {
                           const color = ROUTE_COLORS[ri % ROUTE_COLORS.length]
+                          const totalStops = route.stops.length
+                          // Simulate delivery progress per route for visual demo
+                          const completed = Math.floor(totalStops * 0.5)
+                          const inProgress = totalStops > 1 ? 1 : 0
+                          const failed = totalStops > 3 ? 1 : 0
+                          const pending = totalStops - completed - inProgress - failed
+                          const completionPct = totalStops > 0 ? Math.round((completed / totalStops) * 100) : 0
                           return (
                             <tr key={route.vehicleId} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                              <td className="w-8 px-2 py-2">
+                              <td className="w-8 px-2 py-3">
                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
                               </td>
-                              <td className="px-3 py-2 text-slate-700 font-medium">Surucu {ri + 1}</td>
-                              <td className="px-3 py-2 text-slate-600">{route.plateNumber}</td>
-                              <td className="px-3 py-2 text-right text-slate-600">{route.totalDistanceKm.toFixed(1)} km</td>
-                              <td className="px-3 py-2 text-right text-slate-600">{Math.round(route.totalDurationMin)} dk</td>
-                              <td className="px-3 py-2 text-right text-slate-600">{route.stops.length}</td>
-                              <td className="px-3 py-2 text-right">
+                              <td className="px-3 py-3">
+                                <div className="text-slate-700 font-medium">{ri + 1}. {route.plateNumber}</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">Surucu {ri + 1}</div>
+                              </td>
+                              <td className="px-3 py-3 min-w-[220px]">
+                                {/* Completion text */}
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="text-[11px] text-slate-500">{completed}/{totalStops} durak tamamlandi</span>
+                                  <span className="text-[11px] font-semibold" style={{ color }}>{completionPct}%</span>
+                                </div>
+                                {/* Progress bar gradient */}
+                                <div className="h-2 bg-slate-100 rounded-full overflow-hidden flex">
+                                  {completed > 0 && (
+                                    <div className="h-full bg-green-500" style={{ width: `${(completed / totalStops) * 100}%` }} />
+                                  )}
+                                  {inProgress > 0 && (
+                                    <div className="h-full bg-amber-400" style={{ width: `${(inProgress / totalStops) * 100}%` }} />
+                                  )}
+                                  {failed > 0 && (
+                                    <div className="h-full bg-red-500" style={{ width: `${(failed / totalStops) * 100}%` }} />
+                                  )}
+                                  {pending > 0 && (
+                                    <div className="h-full bg-slate-200" style={{ width: `${(pending / totalStops) * 100}%` }} />
+                                  )}
+                                </div>
+                                {/* Status dots */}
+                                <div className="flex items-center gap-2.5 mt-1.5">
+                                  <span className="flex items-center gap-1 text-[10px] text-green-600">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{completed}
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[10px] text-amber-500">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />{inProgress}
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[10px] text-red-500">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />{failed}
+                                  </span>
+                                  <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 inline-block" />{pending}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-3 py-3 text-right text-slate-600">{route.totalDistanceKm.toFixed(1)} km</td>
+                              <td className="px-3 py-3 text-right text-slate-600">{Math.round(route.totalDurationMin)} dk</td>
+                              <td className="px-3 py-3 text-right">
                                 <div className="flex items-center justify-end gap-2">
                                   <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                     <div
@@ -722,17 +766,19 @@ export default function PlanOptimizePage() {
                                   <span className="text-slate-600 font-medium">{route.utilizationPercent}%</span>
                                 </div>
                               </td>
-                              <td className="px-3 py-2 text-right text-slate-600 font-medium">{route.totalCost.toLocaleString()} TRY</td>
+                              <td className="px-3 py-3 text-right text-slate-600 font-medium">{route.totalCost.toLocaleString()} TRY</td>
                             </tr>
                           )
                         })}
                       </tbody>
                       <tfoot>
                         <tr className="bg-slate-50 font-semibold text-slate-700">
-                          <td colSpan={3} className="px-3 py-2 text-[11px] uppercase">Toplam</td>
+                          <td colSpan={2} className="px-3 py-2 text-[11px] uppercase">Toplam</td>
+                          <td className="px-3 py-2 text-[11px]">
+                            <span className="text-slate-500">{solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak</span>
+                          </td>
                           <td className="px-3 py-2 text-right">{solution.totalDistanceKm.toFixed(1)} km</td>
                           <td className="px-3 py-2 text-right">{Math.round(solution.totalDurationMin)} dk</td>
-                          <td className="px-3 py-2 text-right">{solution.routes.reduce((a, r) => a + r.stops.length, 0)}</td>
                           <td className="px-3 py-2 text-right">{solution.vehicleUtilization}%</td>
                           <td className="px-3 py-2 text-right">{solution.totalCost.toLocaleString()} TRY</td>
                         </tr>

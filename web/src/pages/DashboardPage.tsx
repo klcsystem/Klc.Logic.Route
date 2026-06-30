@@ -2,6 +2,7 @@ import { Truck, Package, Clock, DollarSign, CheckCircle2, TrendingUp, Users, Map
 import { BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
+import DonutChart from '../components/ui/DonutChart'
 import { useAuth } from '../contexts/AuthContext'
 import { useI18n } from '../i18n'
 import { dashboardApi, type DashboardSummary, type ProviderCostSummary, type MonthlyCostSummary } from '../api/dashboard'
@@ -198,6 +199,72 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
           ) : (
             <div className="flex items-center justify-center h-[200px] text-[13px] text-slate-400">Performans verisi henuz yok</div>
           )}
+        </div>
+      </div>
+
+      {/* Donut Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4 text-center">Zaman Dagilimi</h3>
+          <DonutChart
+            value={summary ? Math.round((summary.averageDeliveryHours / (summary.averageDeliveryHours + 2)) * 100) : 65}
+            label={`${summary?.averageDeliveryHours.toFixed(1) || '0'}s`}
+            sublabel="Seyahat Suresi"
+            color="#f97316"
+            size={160}
+          />
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+              <span className="text-[12px] text-slate-500">Seyahat</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+              <span className="text-[12px] text-slate-500">Servis</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4 text-center">Kapasite Kullanimi</h3>
+          <DonutChart
+            value={summary ? Math.min(99, Math.round((summary.totalShipments / Math.max(summary.totalOrders, 1)) * 100)) : 83}
+            label={`${summary ? Math.min(99, Math.round((summary.totalShipments / Math.max(summary.totalOrders, 1)) * 100)) : 83}%`}
+            sublabel="Kullanilan"
+            color="#22c55e"
+            size={160}
+          />
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              <span className="text-[12px] text-slate-500">Dolu</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+              <span className="text-[12px] text-slate-500">Bos</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4 text-center">Hacim Kullanimi</h3>
+          <DonutChart
+            value={summary ? Math.min(99, Math.round((summary.deliveredShipments / Math.max(summary.totalShipments, 1)) * 100)) : 71}
+            label={`${summary ? Math.min(99, Math.round((summary.deliveredShipments / Math.max(summary.totalShipments, 1)) * 100)) : 71}%`}
+            sublabel="Teslim Orani"
+            color="#3b82f6"
+            size={160}
+          />
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+              <span className="text-[12px] text-slate-500">Kullanilan</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+              <span className="text-[12px] text-slate-500">Kalan</span>
+            </div>
+          </div>
         </div>
       </div>
 

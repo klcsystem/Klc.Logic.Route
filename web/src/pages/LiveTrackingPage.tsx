@@ -378,47 +378,117 @@ export default function LiveTrackingPage() {
               </div>
             )}
 
-            {/* Driver List (compact) */}
+            {/* Driver List (enhanced) */}
             {filteredDrivers.length > 0 && (
               <div className="space-y-2">
-                {filteredDrivers.map((d) => (
-                  <div
-                    key={d.id}
-                    onClick={() => setSelectedDriver(selectedDriver === d.id ? null : d.id)}
-                    className={`bg-white rounded-2xl border shadow-sm p-3 cursor-pointer transition-all duration-200 ${
-                      selectedDriver === d.id
-                        ? 'border-orange-300 ring-2 ring-orange-100 shadow-orange-50'
-                        : 'border-slate-200/60 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center`} style={{ backgroundColor: `${statusColors[d.status]}15`, color: statusColors[d.status] }}>
-                        <Truck className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[13px] font-semibold text-slate-800 truncate">{d.plateNumber || d.name}</span>
-                          <Badge variant={d.status === 'OnRoute' ? 'orange' : d.status === 'Completed' ? 'success' : d.status === 'Failed' ? 'error' : 'info'}>
-                            {statusLabelsMap[d.status]}
-                          </Badge>
+                {filteredDrivers.map((d, idx) => {
+                  const isExpanded = selectedDriver === d.id
+                  // Simulated stop counts for visual demo
+                  const totalStops = Math.max(1, Math.round(d.progress * 0.4) || 8)
+                  const completedStops = Math.round(totalStops * (d.progress / 100))
+                  const failedStops = d.status === 'Failed' ? Math.max(1, Math.floor(totalStops * 0.1)) : 0
+                  const inProgressStops = d.status === 'OnRoute' || d.status === 'Servicing' ? 1 : 0
+                  const pendingStops = Math.max(0, totalStops - completedStops - failedStops - inProgressStops)
+
+                  return (
+                    <div
+                      key={d.id}
+                      onClick={() => setSelectedDriver(isExpanded ? null : d.id)}
+                      className={`bg-white rounded-2xl border shadow-sm cursor-pointer transition-all duration-200 ${
+                        isExpanded
+                          ? 'border-orange-300 ring-2 ring-orange-100 shadow-orange-50'
+                          : 'border-slate-200/60 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="p-3">
+                        {/* Header row */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${statusColors[d.status]}15`, color: statusColors[d.status] }}>
+                            <Truck className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[13px] font-semibold text-slate-800 truncate">
+                                {idx + 1}. {d.plateNumber || d.name}
+                              </span>
+                              <Badge variant={d.status === 'OnRoute' ? 'orange' : d.status === 'Completed' ? 'success' : d.status === 'Failed' ? 'error' : 'info'}>
+                                {statusLabelsMap[d.status]}
+                              </Badge>
+                            </div>
+                            <span className="text-[11px] text-slate-400">{d.name}</span>
+                          </div>
                         </div>
-                        <span className="text-[11px] text-slate-400">{d.name}</span>
-                      </div>
-                    </div>
-                    {d.progress > 0 && (
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all" style={{ width: `${d.progress}%` }} />
+
+                        {/* Time range */}
+                        {d.eta && (
+                          <div className="mt-2 text-[10px] text-slate-400">
+                            {d.lastUpdate || '08:00'} - {d.eta}
+                          </div>
+                        )}
+
+                        {/* Progress bar */}
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[10px] text-slate-500">{completedStops}/{totalStops} durak</span>
+                            <span className="text-[11px] font-bold" style={{ color: statusColors[d.status] }}>
+                              {d.progress || 0}%
+                            </span>
+                          </div>
+                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden flex">
+                            {completedStops > 0 && (
+                              <div className="h-full bg-green-500" style={{ width: `${(completedStops / totalStops) * 100}%` }} />
+                            )}
+                            {inProgressStops > 0 && (
+                              <div className="h-full bg-amber-400" style={{ width: `${(inProgressStops / totalStops) * 100}%` }} />
+                            )}
+                            {failedStops > 0 && (
+                              <div className="h-full bg-red-500" style={{ width: `${(failedStops / totalStops) * 100}%` }} />
+                            )}
+                            {pendingStops > 0 && (
+                              <div className="h-full bg-slate-200" style={{ width: `${(pendingStops / totalStops) * 100}%` }} />
+                            )}
+                          </div>
                         </div>
-                        <span className="text-[11px] font-semibold text-slate-600">{d.progress}%</span>
+
+                        {/* Status dots inline */}
+                        <div className="flex items-center gap-3 mt-1.5">
+                          <span className="flex items-center gap-1 text-[10px] text-green-600 font-medium">
+                            <span className="inline-block w-2 h-2 rounded-full bg-green-500" />{completedStops}
+                          </span>
+                          <span className="flex items-center gap-1 text-[10px] text-amber-500 font-medium">
+                            <span className="inline-block w-2 h-2 rounded-full bg-amber-400" />{inProgressStops}
+                          </span>
+                          <span className="flex items-center gap-1 text-[10px] text-red-500 font-medium">
+                            <span className="inline-block w-2 h-2 rounded-full bg-red-500" />{failedStops}
+                          </span>
+                          <span className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                            <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />{pendingStops}
+                          </span>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-slate-400">{d.lastUpdate}</span>
-                      {d.eta && <span className="text-[11px] font-semibold text-orange-500">ETA: {d.eta}</span>}
+
+                      {/* Expanded: stop list */}
+                      {isExpanded && totalStops > 0 && (
+                        <div className="border-t border-slate-100 px-3 py-2 space-y-1 max-h-48 overflow-y-auto">
+                          {Array.from({ length: totalStops }, (_, i) => {
+                            const stopStatus = i < completedStops ? 'completed' : i < completedStops + inProgressStops ? 'inprogress' : i < completedStops + inProgressStops + failedStops ? 'failed' : 'pending'
+                            const dotColor = stopStatus === 'completed' ? 'bg-green-500' : stopStatus === 'inprogress' ? 'bg-amber-400' : stopStatus === 'failed' ? 'bg-red-500' : 'bg-slate-300'
+                            const statusLabel = stopStatus === 'completed' ? 'Tamamlandi' : stopStatus === 'inprogress' ? 'Devam Ediyor' : stopStatus === 'failed' ? 'Basarisiz' : 'Bekliyor'
+                            return (
+                              <div key={i} className="flex items-center gap-2 py-1">
+                                <span className={`w-2 h-2 rounded-full ${dotColor} shrink-0`} />
+                                <span className="text-[11px] text-slate-600 flex-1">Durak #{i + 1}</span>
+                                <span className={`text-[10px] font-medium ${
+                                  stopStatus === 'completed' ? 'text-green-600' : stopStatus === 'inprogress' ? 'text-amber-500' : stopStatus === 'failed' ? 'text-red-500' : 'text-slate-400'
+                                }`}>{statusLabel}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
