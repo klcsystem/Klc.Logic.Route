@@ -648,7 +648,7 @@ export default function DashboardPage() {
   const { data: savingsSummary } = useApi(() => sustainabilityApi.getSavingsSummary())
 
   const carrierPerfs: CarrierPerformance[] = carrierPerfsData || []
-  const recentShipments: Shipment[] = shipmentsData?.items || []
+  const recentShipments: Shipment[] = shipmentsData?.items || (Array.isArray(shipmentsData) ? shipmentsData as unknown as Shipment[] : [])
   const co2SavedTons = savingsSummary?.totalCO2SavedTons || 0
 
   const roleLabels: Record<string, string> = {

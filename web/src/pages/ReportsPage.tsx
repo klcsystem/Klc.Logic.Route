@@ -42,8 +42,8 @@ export default function ReportsPage() {
   const { data: shipmentsData } = useApi(() => shipmentsApi.getAll({ pageSize: 200 }))
 
   const carrierPerfs: CarrierPerformance[] = carrierPerfsData || []
-  const orders: Order[] = ordersData?.items || []
-  const shipments: Shipment[] = shipmentsData?.items || []
+  const orders: Order[] = ordersData?.items || (Array.isArray(ordersData) ? ordersData as unknown as Order[] : [])
+  const shipments: Shipment[] = shipmentsData?.items || (Array.isArray(shipmentsData) ? shipmentsData as unknown as Shipment[] : [])
 
   // Filter by time period
   const dateRange = useMemo(() => getDateRange(period), [period])

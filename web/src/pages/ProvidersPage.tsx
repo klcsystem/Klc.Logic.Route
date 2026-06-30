@@ -17,6 +17,13 @@ export default function ProvidersPage() {
     [searchTerm],
   )
   const providers: Provider[] = providersData?.items || (Array.isArray(providersData) ? providersData as unknown as Provider[] : [])
+
+  // Helper to convert comma-separated string fields to arrays
+  const toArray = (val: string | string[] | undefined | null): string[] => {
+    if (!val) return []
+    if (Array.isArray(val)) return val
+    return val.split(',').map(s => s.trim()).filter(Boolean)
+  }
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'detail'>('detail')
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
@@ -120,8 +127,8 @@ export default function ProvidersPage() {
                     {p.integrationMode === 'SelfService' && <Badge variant="info">Self-Service</Badge>}
                     {p.integrationMode === 'Managed' && <Badge variant="default">Yönetilen</Badge>}
                   </td>
-                  <td className="px-6 py-3.5 text-[12px] text-slate-500">{p.serviceRegions.join(', ')}</td>
-                  <td className="px-6 py-3.5 text-center text-[13px] font-semibold text-slate-700">{p.contractCount}</td>
+                  <td className="px-6 py-3.5 text-[12px] text-slate-500">{toArray(p.serviceRegions).join(', ')}</td>
+                  <td className="px-6 py-3.5 text-center text-[13px] font-semibold text-slate-700">{p.contracts?.length ?? p.contractCount ?? 0}</td>
                   <td className="px-6 py-3.5 text-center">
                     <Badge variant={p.isActive ? 'success' : 'default'}>{p.isActive ? t.common.active : t.common.inactive}</Badge>
                   </td>
@@ -166,11 +173,13 @@ export default function ProvidersPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Kod</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.code}</p></div>
-              <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Anlaşma Sayısı</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contractCount}</p></div>
-              <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Hizmet Bölgeleri</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.serviceRegions.join(', ')}</p></div>
-              <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Araç Tipleri</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.supportedVehicleTypes.join(', ')}</p></div>
-              {selectedProvider.contactEmail && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">E-posta</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactEmail}</p></div>}
-              {selectedProvider.contactPhone && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Telefon</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactPhone}</p></div>}
+              <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Anlaşma Sayısı</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contracts?.length ?? selectedProvider.contractCount ?? 0}</p></div>
+              <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Hizmet Bölgeleri</span><p className="text-[14px] text-slate-800 mt-1">{toArray(selectedProvider.serviceRegions).join(', ')}</p></div>
+              <div className="col-span-2"><span className="text-[11px] font-semibold text-slate-400 uppercase">Araç Tipleri</span><p className="text-[14px] text-slate-800 mt-1">{toArray(selectedProvider.supportedVehicleTypes).join(', ')}</p></div>
+              {(selectedProvider.email || selectedProvider.contactEmail) && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">E-posta</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.email || selectedProvider.contactEmail}</p></div>}
+              {(selectedProvider.phone || selectedProvider.contactPhone) && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Telefon</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.phone || selectedProvider.contactPhone}</p></div>}
+              {selectedProvider.contactPerson && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">İletişim Kişisi</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.contactPerson}</p></div>}
+              {selectedProvider.city && <div><span className="text-[11px] font-semibold text-slate-400 uppercase">Şehir</span><p className="text-[14px] text-slate-800 mt-1">{selectedProvider.city}</p></div>}
             </div>
           </div>
         ) : null}

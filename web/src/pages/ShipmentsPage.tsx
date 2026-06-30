@@ -34,7 +34,7 @@ export default function ShipmentsPage() {
     () => shipmentsApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
     [searchTerm, statusFilter],
   )
-  const allShipments: Shipment[] = shipmentsData?.items || []
+  const allShipments: Shipment[] = shipmentsData?.items || (Array.isArray(shipmentsData) ? shipmentsData as unknown as Shipment[] : [])
 
   const statusLabels: Record<string, string> = {
     Draft: t.shipments.draft, Calculated: t.shipments.calculated, PendingApproval: t.shipments.pendingApproval,
@@ -139,8 +139,8 @@ export default function ShipmentsPage() {
                     ) : '--'}
                   </td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[s.status]}>{statusLabels[s.status]}</Badge></td>
-                  <td className="px-6 py-3.5 text-[13px] text-slate-600">{s.originCity}</td>
-                  <td className="px-6 py-3.5 text-[13px] text-slate-600">{s.destinationCity}</td>
+                  <td className="px-6 py-3.5 text-[13px] text-slate-600">{s.originCity || '--'}</td>
+                  <td className="px-6 py-3.5 text-[13px] text-slate-600">{s.destinationCity || '--'}</td>
                   <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{s.totalWeightKg.toLocaleString()} kg</td>
                   <td className="px-6 py-3.5 text-right text-[13px] font-medium text-slate-800">{s.calculatedPrice ? `${s.calculatedPrice.toLocaleString()} ${s.currency}` : '--'}</td>
                   <td className="px-6 py-3.5 text-center"><Badge variant="info">{s.recommendedVehicle}</Badge></td>
@@ -166,8 +166,8 @@ export default function ShipmentsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               {([
-                ['Cikis', selectedShipment.originCity],
-                ['Varis', selectedShipment.destinationCity],
+                ['Cikis', selectedShipment.originCity || '--'],
+                ['Varis', selectedShipment.destinationCity || '--'],
                 [t.shipments.weight, `${selectedShipment.totalWeightKg.toLocaleString()} kg`],
                 ['Hacim', `${selectedShipment.totalVolumeM3} m3`],
                 ['Palet', `${selectedShipment.palletCount}`],
@@ -180,11 +180,11 @@ export default function ShipmentsPage() {
             </div>
 
             {/* Tracking Events */}
-            {selectedShipment.events.length > 0 && (
+            {(selectedShipment.events || []).length > 0 && (
               <div>
                 <h4 className="text-[13px] font-semibold text-slate-700 mb-3">Takip Olaylari</h4>
                 <div className="space-y-3">
-                  {selectedShipment.events.map((event) => (
+                  {(selectedShipment.events || []).map((event) => (
                     <div key={event.id} className="flex gap-3 items-start">
                       <div className="w-2 h-2 mt-1.5 rounded-full bg-orange-400 flex-shrink-0" />
                       <div>

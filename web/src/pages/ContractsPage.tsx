@@ -30,7 +30,7 @@ export default function ContractsPage() {
   const statusLabels: Record<string, string> = { Active: t.contracts.active, Expired: t.contracts.expired, Draft: t.contracts.draft, Suspended: 'Askiya Alindi' }
 
   const filteredContracts = contracts.filter((c) =>
-    searchTerm === '' || c.providerName.toLowerCase().includes(searchTerm.toLowerCase()) || c.contractNumber.toLowerCase().includes(searchTerm.toLowerCase()),
+    searchTerm === '' || (c.providerName || c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || c.contractNumber.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const handleRowClick = (contract: Contract) => { setSelectedContract(contract); setDetailDrawerOpen(true) }
@@ -99,7 +99,7 @@ export default function ContractsPage() {
               {!isLoading && filteredContracts.map((c) => (
                 <tr key={c.id} onClick={() => handleRowClick(c)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
                   <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{c.contractNumber}</td>
-                  <td className="px-6 py-3.5 text-[13px] text-slate-700">{c.providerName}</td>
+                  <td className="px-6 py-3.5 text-[13px] text-slate-700">{c.providerName || c.name || '--'}</td>
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{c.startDate}</td>
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{c.endDate}</td>
                   <td className="px-6 py-3.5 text-center text-[13px] font-medium text-slate-700">{c.rates.length} kalem</td>
@@ -120,7 +120,7 @@ export default function ContractsPage() {
               <Badge variant={statusVariant[selectedContract.status]}>{statusLabels[selectedContract.status]}</Badge>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><span className="text-[11px] font-semibold text-slate-400 uppercase">{t.contracts.carrier}</span><p className="text-[14px] text-slate-800 mt-1">{selectedContract.providerName}</p></div>
+              <div><span className="text-[11px] font-semibold text-slate-400 uppercase">{t.contracts.carrier}</span><p className="text-[14px] text-slate-800 mt-1">{selectedContract.providerName || selectedContract.name || '--'}</p></div>
               <div><span className="text-[11px] font-semibold text-slate-400 uppercase">{t.contracts.startDate}</span><p className="text-[14px] text-slate-800 mt-1">{selectedContract.startDate}</p></div>
               <div><span className="text-[11px] font-semibold text-slate-400 uppercase">{t.contracts.endDate}</span><p className="text-[14px] text-slate-800 mt-1">{selectedContract.endDate}</p></div>
             </div>

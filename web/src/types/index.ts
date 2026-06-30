@@ -91,14 +91,23 @@ export interface Provider {
   code: string
   type: ProviderType
   isActive: boolean
-  serviceRegions: string[]
-  supportedVehicleTypes: string[]
-  contractCount: number
+  serviceRegions: string | string[]
+  supportedVehicleTypes: string | string[]
+  contracts: { id: string }[]
+  contractCount?: number
   integrationMode?: 'ApiIntegrated' | 'SelfService' | 'Managed'
-  apiEndpoint?: string
+  apiBaseUrl?: string
   apiKey?: string
+  email?: string
+  phone?: string
+  contactPerson?: string
   contactEmail?: string
   contactPhone?: string
+  city?: string
+  taxNumber?: string
+  address?: string
+  tenantId?: string
+  createdAt?: string
 }
 
 export interface ContractRate {
@@ -121,12 +130,17 @@ export interface ContractRate {
 export interface Contract {
   id: string
   providerId: string
-  providerName: string
+  providerName?: string
+  name?: string
   contractNumber: string
   startDate: string
   endDate: string
   status: ContractStatus
+  notes?: string
+  currency?: string
   rates: ContractRate[]
+  tenantId?: string
+  createdAt?: string
 }
 
 export interface ErpConnection {
@@ -256,8 +270,10 @@ export interface Shipment {
   id: string
   shipmentNumber: string
   orderId?: string
-  originCity: string
-  destinationCity: string
+  originAddress?: string | null
+  originCity?: string | null
+  destinationAddress?: string | null
+  destinationCity?: string | null
   status: ShipmentStatus
   priority: ShipmentPriority
   totalWeightKg: number
@@ -267,16 +283,29 @@ export interface Shipment {
   palletCount: number
   isHazardous: boolean
   requiresColdChain: boolean
+  isStackable?: boolean
   recommendedVehicle: VehicleCategory
+  selectedProviderId?: string | null
   selectedProviderName?: string
+  selectedContractRateId?: string | null
   providerIntegrationMode?: 'ApiIntegrated' | 'SelfService' | 'Managed'
   calculatedPrice?: number
   currency: string
+  requestedPickupDate?: string
   requestedDeliveryDate?: string
+  actualPickupDate?: string
   actualDeliveryDate?: string
+  driverName?: string | null
+  driverPhone?: string | null
+  vehiclePlate?: string | null
+  currentLatitude?: number | null
+  currentLongitude?: number | null
+  lastTrackingUpdate?: string | null
+  estimatedArrival?: string | null
+  notes?: string | null
   items: ShipmentItem[]
-  events: ShipmentEvent[]
-  recommendation?: Recommendation
+  events?: ShipmentEvent[]
+  recommendation?: Recommendation | null
   createdAt: string
 }
 
