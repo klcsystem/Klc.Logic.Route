@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Navigation, ArrowRight, Zap, Package,
   CheckCircle2, ChevronRight, Globe, Phone, Mail, MapPin, Smartphone,
-  BarChart3, Link2, Satellite, Brain, Check, Star, Menu, X
+  BarChart3, Link2, Satellite, Brain, Star, Menu, X
 } from 'lucide-react'
 
 export default function LandingPage() {
@@ -101,60 +101,6 @@ export default function LandingPage() {
     },
   ]
 
-  const pricingPlans = [
-    {
-      name: 'Başlangıç',
-      price: '2,999',
-      period: '/ay',
-      desc: 'Küçük filolar için ideal başlangıç paketi.',
-      features: [
-        '10 araca kadar',
-        'Temel rota optimizasyonu',
-        'GPS canlı takip',
-        'Mobil sürücü uygulaması',
-        'E-posta desteği',
-        'Temel raporlama',
-      ],
-      cta: 'Hemen Başlayın',
-      popular: false,
-    },
-    {
-      name: 'Profesyonel',
-      price: '7,999',
-      period: '/ay',
-      desc: 'Büyüyen operasyonlar için tam donanımlı paket.',
-      features: [
-        '50 araca kadar',
-        'AI destekli optimizasyon',
-        'Gelişmiş analitik paneli',
-        'ERP entegrasyonu (SAP, Logo)',
-        'Müşteri takip portali',
-        'API erişimi',
-        'Öncelikli destek',
-        'CO2 raporlama',
-      ],
-      cta: 'Demo Talep Edin',
-      popular: true,
-    },
-    {
-      name: 'Kurumsal',
-      price: '14,999',
-      period: '/ay',
-      desc: 'Büyük filolar için sınır tanımayan çözüm.',
-      features: [
-        'Sınırsız araç',
-        'Tüm Profesyonel özellikler',
-        'Özel SLA garantisi',
-        'Dedicated account manager',
-        'On-premise opsiyonu',
-        'Özel entegrasyon geliştirme',
-        '7/24 telefon desteği',
-        'Eğitim ve danışmanlık',
-      ],
-      cta: 'Bize Ulaşın',
-      popular: false,
-    },
-  ]
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
@@ -178,7 +124,6 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8">
             <button onClick={() => scrollTo('features')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Özellikler</button>
             <button onClick={() => scrollTo('how-it-works')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Nasıl Çalışır</button>
-            <button onClick={() => scrollTo('pricing')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Fiyatlandırma</button>
             <button onClick={() => navigate('/api-docs')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">API</button>
           </nav>
           <div className="hidden md:flex items-center gap-3">
@@ -397,77 +342,6 @@ export default function LandingPage() {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Fiyatlandırma</p>
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-              Her Ölçek İçin Uygun Plan
-            </h2>
-            <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              14 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal edin.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, i) => (
-              <div key={i} className={`relative rounded-2xl p-8 ${plan.popular ? 'bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-2xl shadow-blue-200 scale-105' : 'bg-white border border-gray-200'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-400 text-amber-900 text-[11px] font-bold uppercase tracking-wider">
-                    En Popüler
-                  </div>
-                )}
-                <h3 className={`text-[18px] font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
-                <p className={`text-[13px] mb-6 ${plan.popular ? 'text-blue-100' : 'text-gray-400'}`}>{plan.desc}</p>
-                <div className="mb-6">
-                  <span className={`text-4xl font-extrabold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.price}</span>
-                  <span className={`text-[14px] ${plan.popular ? 'text-blue-100' : 'text-gray-400'}`}> TL{plan.period}</span>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((f, fi) => (
-                    <li key={fi} className="flex items-center gap-2">
-                      <Check className={`w-4 h-4 flex-shrink-0 ${plan.popular ? 'text-blue-200' : 'text-blue-500'}`} />
-                      <span className={`text-[13px] ${plan.popular ? 'text-blue-50' : 'text-gray-600'}`}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => navigate('/onboarding')}
-                  className={`w-full py-3 rounded-xl font-semibold text-[14px] transition-all duration-200 ${plan.popular ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-lg' : 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 shadow-md shadow-blue-100'}`}
-                >
-                  {plan.cta}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-800/30 rounded-full blur-[100px]" />
-        </div>
-        <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-4">
-            Hemen deneyin -- 14 gün ücretsiz
-          </h2>
-          <p className="text-[17px] text-blue-100 mb-10 max-w-lg mx-auto">
-            15 dakikada kurulum, anında tasarruf. Kredi kartı gerekmez.
-            Rotalarınızı optimize etmeye hemen başlayın.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <button onClick={() => navigate('/onboarding')} className="px-8 py-4 rounded-xl bg-white text-blue-600 font-bold hover:bg-blue-50 transition-all duration-200 text-[16px] shadow-xl shadow-blue-900/20 inline-flex items-center gap-2">
-              Ücretsiz Demo İsteyin <ArrowRight className="w-5 h-5" />
-            </button>
-            <button onClick={() => navigate('/login')} className="px-8 py-4 rounded-xl border-2 border-white/30 text-white font-semibold hover:bg-white/10 transition-all duration-200 text-[16px]">
-              Giriş Yap
-            </button>
           </div>
         </div>
       </section>

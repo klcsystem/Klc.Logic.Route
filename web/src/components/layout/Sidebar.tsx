@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard, Package, Truck, MapPin, Route, Building2,
+  LayoutDashboard, Package, Truck, MapPin, Route, Building2, Navigation,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
   ShoppingCart, Car, User, Send, TableProperties, Zap, CalendarDays,
@@ -268,7 +268,7 @@ export default function Sidebar() {
       <div className="px-5 py-5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <Route className="w-5 h-5 text-white" />
+            <Navigation className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="text-[15px] font-bold tracking-tight text-white">Logic Route</h1>

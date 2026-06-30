@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useI18n } from '../../i18n'
-import { Route, Mail, Lock, AlertCircle, Loader2, MapPin, Truck, BarChart3, Building2 } from 'lucide-react'
+import { Navigation, Mail, Lock, AlertCircle, Loader2, MapPin, Truck, BarChart3, Building2 } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -31,7 +31,7 @@ export default function LoginPage() {
   }
 
   const features = [
-    { icon: Route, text: t.login.feature1 },
+    { icon: Navigation, text: t.login.feature1 },
     { icon: MapPin, text: t.login.feature2 },
     { icon: Truck, text: t.login.feature3 },
     { icon: BarChart3, text: t.login.feature4 },
@@ -56,7 +56,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex items-center gap-3.5 mb-14">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-2xl shadow-blue-200">
-              <Route className="w-6 h-6 text-white" />
+              <Navigation className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight">Logic Route</h1>
@@ -105,7 +105,7 @@ export default function LoginPage() {
           {/* Mobil logo */}
           <div className="lg:hidden text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 mb-4 shadow-lg shadow-blue-200">
-              <Route className="w-7 h-7 text-white" />
+              <Navigation className="w-7 h-7 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Logic Route</h1>
             <p className="text-slate-500 text-sm mt-1">{t.sidebar.routeOptimization}</p>
