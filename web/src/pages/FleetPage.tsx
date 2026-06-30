@@ -42,7 +42,7 @@ const integrationBadge = (mode?: string) => {
   switch (mode) {
     case 'ApiIntegrated': return <Badge variant="orange">API</Badge>
     case 'SelfService': return <Badge variant="info">Self-Service</Badge>
-    default: return <Badge variant="default">Yonetilen</Badge>
+    default: return <Badge variant="default">Yönetilen</Badge>
   }
 }
 
@@ -57,6 +57,7 @@ export default function FleetPage() {
 
   const [vehicles, setVehicles] = useState<VehicleRecord[]>([])
   const [drivers, setDrivers] = useState<DriverRecord[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   // Vehicle form
   const [vehicleForm, setVehicleForm] = useState({ plateNumber: '', vehicleType: 'Tir', bodyType: '', tonnage: 0, providerName: '', insuranceExpiry: '', notes: '' })
@@ -65,6 +66,7 @@ export default function FleetPage() {
 
   const fetchData = useCallback(async () => {
     setIsLoading(true)
+    setError(null)
     try {
       const [vehiclesRes, driversRes] = await Promise.allSettled([
         api.get('/vehicles').then(r => r.data),
@@ -82,8 +84,11 @@ export default function FleetPage() {
           colorDot: driverColors[idx % driverColors.length],
         })))
       }
+      if (vehiclesRes.status === 'rejected' && driversRes.status === 'rejected') {
+        setError('Filo verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.')
+      }
     } catch {
-      // API endpoints not yet available
+      setError('Filo verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.')
     } finally {
       setIsLoading(false)
     }
@@ -104,7 +109,7 @@ export default function FleetPage() {
       setVehicleDrawerOpen(false)
       fetchData()
     } catch {
-      toast('error', 'Arac eklenirken hata olustu')
+      toast('error', 'Araç eklenirken hata oluştu')
     }
   }
 
@@ -116,11 +121,11 @@ export default function FleetPage() {
         certifications: driverForm.certifications ? driverForm.certifications.split(',').map(s => s.trim()) : [],
         preferredZones: driverForm.preferredZones ? driverForm.preferredZones.split(',').map(s => s.trim()) : [],
       })
-      toast('success', 'Sofor eklendi')
+      toast('success', 'Şoför eklendi')
       setDriverDrawerOpen(false)
       fetchData()
     } catch {
-      toast('error', 'Sofor eklenirken hata olustu')
+      toast('error', 'Şoför eklenirken hata oluştu')
     }
   }
 
@@ -129,7 +134,7 @@ export default function FleetPage() {
       await api.patch(`/vehicles/${v.id}`, { isActive: !v.isActive })
       setVehicles(prev => prev.map(veh => veh.id === v.id ? { ...veh, isActive: !veh.isActive } : veh))
     } catch {
-      toast('error', 'Durum guncellenemedi')
+      toast('error', 'Durum güncellenemedi')
     }
   }
 
@@ -137,8 +142,8 @@ export default function FleetPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Filo Yonetimi</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Arac ve sofor yonetimi</p>
+          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Filo Yönetimi</h1>
+          <p className="text-[14px] text-slate-400 mt-1">Araç ve şoför yönetimi</p>
         </div>
         <button
           onClick={() => {
@@ -152,7 +157,7 @@ export default function FleetPage() {
           }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all"
         >
-          <Plus className="w-4 h-4" /> {tab === 'vehicles' ? 'Arac Ekle' : 'Sofor Ekle'}
+          <Plus className="w-4 h-4" /> {tab === 'vehicles' ? 'Araç Ekle' : 'Şoför Ekle'}
         </button>
       </div>
 
@@ -162,7 +167,7 @@ export default function FleetPage() {
           <Truck className="w-4 h-4" /> Araclar ({vehicles.length})
         </button>
         <button onClick={() => { setTab('drivers'); setSearchTerm('') }} className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[13px] font-medium transition-all ${tab === 'drivers' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-          <User className="w-4 h-4" /> Soforler ({drivers.length})
+          <User className="w-4 h-4" /> Şoförler ({drivers.length})
         </button>
       </div>
 
@@ -178,6 +183,13 @@ export default function FleetPage() {
         </div>
       )}
 
+      {error && !isLoading && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <p className="text-[14px] text-red-600 mb-3">{error}</p>
+          <button onClick={fetchData} className="px-4 py-2 rounded-xl bg-red-100 text-red-700 text-[13px] font-medium hover:bg-red-200 transition-colors">Tekrar Dene</button>
+        </div>
+      )}
+
       {/* Vehicles Tab */}
       {!isLoading && tab === 'vehicles' && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
@@ -186,10 +198,10 @@ export default function FleetPage() {
               <thead>
                 <tr className="border-b border-slate-100">
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Plaka</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Arac Tipi</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Araç Tipi</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kasa Tipi</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tonaj</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tasiyici</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Taşıyıcı</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Entegrasyon</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Aktif</th>
                 </tr>
@@ -214,7 +226,7 @@ export default function FleetPage() {
                   </tr>
                 ))}
                 {filteredVehicles.length === 0 && (
-                  <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">Arac bulunamadi</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">Araç bulunamadı</td></tr>
                 )}
               </tbody>
             </table>
@@ -235,7 +247,7 @@ export default function FleetPage() {
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Yetenekler</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sertifikalar</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Maks Saat</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tercih Bolgesi</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tercih Bölgesi</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Aktif</th>
                 </tr>
               </thead>
@@ -279,7 +291,7 @@ export default function FleetPage() {
                   </tr>
                 ))}
                 {filteredDrivers.length === 0 && (
-                  <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">Sofor bulunamadi</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">Şoför bulunamadı</td></tr>
                 )}
               </tbody>
             </table>
@@ -288,31 +300,31 @@ export default function FleetPage() {
       )}
 
       {/* Vehicle Drawer */}
-      <Drawer isOpen={vehicleDrawerOpen} onClose={() => setVehicleDrawerOpen(false)} title="Arac Ekle" footer={
+      <Drawer isOpen={vehicleDrawerOpen} onClose={() => setVehicleDrawerOpen(false)} title="Araç Ekle" footer={
         <div className="flex justify-end gap-3">
-          <button onClick={() => setVehicleDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">Iptal</button>
+          <button onClick={() => setVehicleDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">İptal</button>
           <button onClick={handleSaveVehicle} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">Kaydet</button>
         </div>
       }>
         <div className="space-y-4">
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Plaka</label><input type="text" value={vehicleForm.plateNumber} onChange={e => setVehicleForm({ ...vehicleForm, plateNumber: e.target.value })} className={inputClass} placeholder="34 ABC 123" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Arac Tipi</label>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Araç Tipi</label>
             <select value={vehicleForm.vehicleType} onChange={e => setVehicleForm({ ...vehicleForm, vehicleType: e.target.value })} className={inputClass}><option>Tir</option><option>Kamyon</option><option>Kamyonet</option><option>Frigorifik</option><option>Tanker</option><option>Lowbed</option></select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Kasa Tipi</label><input type="text" value={vehicleForm.bodyType} onChange={e => setVehicleForm({ ...vehicleForm, bodyType: e.target.value })} className={inputClass} placeholder="Mega, Perdeli..." /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tonaj</label><input type="number" value={vehicleForm.tonnage} onChange={e => setVehicleForm({ ...vehicleForm, tonnage: Number(e.target.value) })} className={inputClass} placeholder="24" /></div>
           </div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tasiyici</label><input type="text" value={vehicleForm.providerName} onChange={e => setVehicleForm({ ...vehicleForm, providerName: e.target.value })} className={inputClass} placeholder="Tasiyici adi" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Sigorta Bitis Tarihi</label><input type="date" value={vehicleForm.insuranceExpiry} onChange={e => setVehicleForm({ ...vehicleForm, insuranceExpiry: e.target.value })} className={inputClass} /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Not</label><textarea value={vehicleForm.notes} onChange={e => setVehicleForm({ ...vehicleForm, notes: e.target.value })} className={inputClass} rows={2} placeholder="Ek bilgi..." /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Taşıyıcı</label><input type="text" value={vehicleForm.providerName} onChange={e => setVehicleForm({ ...vehicleForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adı" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Sigorta Bitiş Tarihi</label><input type="date" value={vehicleForm.insuranceExpiry} onChange={e => setVehicleForm({ ...vehicleForm, insuranceExpiry: e.target.value })} className={inputClass} /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Not</label><textarea value={vehicleForm.notes} onChange={e => setVehicleForm({ ...vehicleForm, notes: e.target.value })} className={inputClass} rows={2} placeholder="Ek bilgi…" /></div>
         </div>
       </Drawer>
 
       {/* Driver Drawer */}
-      <Drawer isOpen={driverDrawerOpen} onClose={() => setDriverDrawerOpen(false)} title="Sofor Ekle" footer={
+      <Drawer isOpen={driverDrawerOpen} onClose={() => setDriverDrawerOpen(false)} title="Şoför Ekle" footer={
         <div className="flex justify-end gap-3">
-          <button onClick={() => setDriverDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">Iptal</button>
+          <button onClick={() => setDriverDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">İptal</button>
           <button onClick={handleSaveDriver} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">Kaydet</button>
         </div>
       }>
@@ -321,14 +333,14 @@ export default function FleetPage() {
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Telefon</label><input type="text" value={driverForm.phone} onChange={e => setDriverForm({ ...driverForm, phone: e.target.value })} className={inputClass} placeholder="532 111 2233" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ehliyet No</label><input type="text" value={driverForm.licenseNumber} onChange={e => setDriverForm({ ...driverForm, licenseNumber: e.target.value })} className={inputClass} placeholder="B-34-12345" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ehliyet Bitis</label><input type="date" value={driverForm.licenseExpiry} onChange={e => setDriverForm({ ...driverForm, licenseExpiry: e.target.value })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ehliyet Bitiş</label><input type="date" value={driverForm.licenseExpiry} onChange={e => setDriverForm({ ...driverForm, licenseExpiry: e.target.value })} className={inputClass} /></div>
           </div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tasiyici</label><input type="text" value={driverForm.providerName} onChange={e => setDriverForm({ ...driverForm, providerName: e.target.value })} className={inputClass} placeholder="Tasiyici adi" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Taşıyıcı</label><input type="text" value={driverForm.providerName} onChange={e => setDriverForm({ ...driverForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adı" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Yetenekler (virgul ile)</label><input type="text" value={driverForm.skills} onChange={e => setDriverForm({ ...driverForm, skills: e.target.value })} className={inputClass} placeholder="ADR, Frigo, Uluslararasi" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Sertifikalar (virgul ile)</label><input type="text" value={driverForm.certifications} onChange={e => setDriverForm({ ...driverForm, certifications: e.target.value })} className={inputClass} placeholder="SRC1, ADR, Psikoteknik" /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Maks Calisma Saati</label><input type="number" value={driverForm.maxHoursPerDay} onChange={e => setDriverForm({ ...driverForm, maxHoursPerDay: Number(e.target.value) })} className={inputClass} /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tercih Bolgeleri</label><input type="text" value={driverForm.preferredZones} onChange={e => setDriverForm({ ...driverForm, preferredZones: e.target.value })} className={inputClass} placeholder="Marmara, Ege" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Maks Çalışma Saati</label><input type="number" value={driverForm.maxHoursPerDay} onChange={e => setDriverForm({ ...driverForm, maxHoursPerDay: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tercih Bölgeleri</label><input type="text" value={driverForm.preferredZones} onChange={e => setDriverForm({ ...driverForm, preferredZones: e.target.value })} className={inputClass} placeholder="Marmara, Ege" /></div>
           </div>
         </div>
       </Drawer>
