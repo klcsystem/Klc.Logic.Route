@@ -230,7 +230,42 @@ public class MobileController(
         var scans = await packageScanRepository.GetByShipmentIdAsync(id, tenantId);
         return Ok(ApiResponse<IEnumerable<PackageScan>>.Ok(scans));
     }
+
+    [HttpPost("messages")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<Guid>>> SendMessage([FromBody] MobileMessageRequest request)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userIdStr = tenantProvider.GetUserId();
+        var userId = Guid.TryParse(userIdStr, out var uid) ? uid : Guid.Empty;
+
+        var message = new Domain.Entities.DriverMessage
+        {
+            TenantId = tenantId,
+            ShipmentId = request.ShipmentId,
+            SenderId = userId,
+            SenderType = Domain.Entities.SenderType.Driver,
+            Message = request.Message,
+            CreatedBy = userIdStr
+        };
+
+        var messageRepo = HttpContext.RequestServices.GetRequiredService<Domain.Interfaces.IDriverMessageRepository>();
+        var id = await messageRepo.CreateAsync(message);
+        return Ok(ApiResponse<Guid>.Ok(id));
+    }
+
+    [HttpGet("messages/{shipmentId:guid}")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<IEnumerable<Domain.Entities.DriverMessage>>>> GetMessages(Guid shipmentId)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var messageRepo = HttpContext.RequestServices.GetRequiredService<Domain.Interfaces.IDriverMessageRepository>();
+        var messages = await messageRepo.GetByShipmentIdAsync(shipmentId, tenantId);
+        return Ok(ApiResponse<IEnumerable<Domain.Entities.DriverMessage>>.Ok(messages));
+    }
 }
+
+public record MobileMessageRequest(Guid ShipmentId, string Message);
 
 public record MobileScanRequest(
     Guid ShipmentId,

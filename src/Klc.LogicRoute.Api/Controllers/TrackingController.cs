@@ -2,6 +2,8 @@ using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
 using Klc.LogicRoute.Application.Tracking;
 using Klc.LogicRoute.Application.Tracking.Models;
+using Klc.LogicRoute.Domain.Entities;
+using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +15,8 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class TrackingController(
     IDelayPredictionService delayPredictionService,
     ICacheService cacheService,
-    ITenantProvider tenantProvider) : ControllerBase
+    ITenantProvider tenantProvider,
+    IDriverMessageRepository driverMessageRepository) : ControllerBase
 {
     /// <summary>
     /// Returns the current delay warnings for all active shipments.
@@ -58,4 +61,41 @@ public class TrackingController(
 
         return Ok(ApiResponse<bool>.Ok(true, "Tenant registered for delay monitoring"));
     }
+
+    /// <summary>
+    /// Get messages for a shipment (operations view).
+    /// </summary>
+    [HttpGet("messages/{shipmentId:guid}")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<DriverMessage>>>> GetMessages(Guid shipmentId)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var messages = await driverMessageRepository.GetByShipmentIdAsync(shipmentId, tenantId);
+        return Ok(ApiResponse<IEnumerable<DriverMessage>>.Ok(messages));
+    }
+
+    /// <summary>
+    /// Operations sends a message to a driver for a specific shipment.
+    /// </summary>
+    [HttpPost("messages")]
+    public async Task<ActionResult<ApiResponse<Guid>>> SendMessage([FromBody] OperationsMessageRequest request)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userIdStr = tenantProvider.GetUserId();
+        var userId = Guid.TryParse(userIdStr, out var uid) ? uid : Guid.Empty;
+
+        var message = new DriverMessage
+        {
+            TenantId = tenantId,
+            ShipmentId = request.ShipmentId,
+            SenderId = userId,
+            SenderType = SenderType.Operations,
+            Message = request.Message,
+            CreatedBy = userIdStr
+        };
+
+        var id = await driverMessageRepository.CreateAsync(message);
+        return Ok(ApiResponse<Guid>.Ok(id));
+    }
 }
+
+public record OperationsMessageRequest(Guid ShipmentId, string Message);

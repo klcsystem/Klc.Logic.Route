@@ -18,5 +18,8 @@ public enum NotificationType
     RouteDeviation = 60,
     DelayWarning = 70,
     DelayHigh = 71,
-    DelayCritical = 72
+    DelayCritical = 72,
+    DeliverySlotChange = 80,
+    DeliveryPointChangeRequest = 81,
+    DriverMessage = 90
 }

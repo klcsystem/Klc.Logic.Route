@@ -134,8 +134,9 @@ public static class DependencyInjection
         // Delivery Slots
         services.AddScoped<IDeliverySlotRepository, DeliverySlotRepository>();
 
-        // Customer Tracking
+        // Customer Tracking & Messaging
         services.AddScoped<ICustomerTrackingRepository, CustomerTrackingRepository>();
+        services.AddScoped<IDriverMessageRepository, DriverMessageRepository>();
         services.AddScoped<IEtaCalculationService, EtaCalculationService>();
 
         // Route Optimization
