@@ -55,11 +55,11 @@ export default function LoginPage() {
         <div className="relative flex flex-col justify-center px-16 z-10 w-full">
           {/* Logo */}
           <div className="flex items-center gap-3.5 mb-14">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-2xl shadow-blue-500/20">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-2xl shadow-blue-200">
               <Route className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">Logic.Route</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Logic Route</h1>
               <p className="text-[11px] text-blue-400/70 uppercase tracking-[0.2em] font-medium">{t.sidebar.routeOptimization}</p>
             </div>
           </div>
@@ -104,10 +104,10 @@ export default function LoginPage() {
         <div className="w-full max-w-[380px]">
           {/* Mobil logo */}
           <div className="lg:hidden text-center mb-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 mb-4 shadow-lg shadow-blue-500/20">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 mb-4 shadow-lg shadow-blue-200">
               <Route className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Logic.Route</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Logic Route</h1>
             <p className="text-slate-500 text-sm mt-1">{t.sidebar.routeOptimization}</p>
           </div>
 
@@ -169,7 +169,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-[14px] shadow-lg shadow-blue-500/20 active:scale-[0.99] flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold hover:from-blue-700 hover:to-cyan-600 focus:ring-2 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-[14px] shadow-lg shadow-blue-200 active:scale-[0.99] flex items-center justify-center gap-2"
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {isSubmitting ? t.login.submitting : t.login.submit}

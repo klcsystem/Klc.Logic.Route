@@ -248,7 +248,7 @@ export default function ApiDocsPage() {
         <div className="relative max-w-7xl mx-auto px-6">
           <h1 className="text-3xl lg:text-4xl font-extrabold text-white mb-4">API Referansi</h1>
           <p className="text-[16px] text-gray-400 mb-6 max-w-2xl">
-            Logic.Route REST API ile uygulamanizi entegre ediniz. Tum endpointler JSON formatinda istek ve yanit kabul eder.
+            Logic Route REST API ile uygulamanızı entegre edin. Tum endpointler JSON formatinda istek ve yanit kabul eder.
           </p>
           <div className="flex flex-wrap gap-6 text-[13px]">
             <div className="flex items-center gap-2">

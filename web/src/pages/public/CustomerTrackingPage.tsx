@@ -128,11 +128,11 @@ const mockTrackingData: TrackingData = {
     { status: 'Loaded', description: 'Route started — Istanbul depot', timestamp: '2026-05-06T09:30:00' },
     { status: 'InTransit', description: 'In transit — ETA: 14:30', timestamp: '2026-05-06T10:00:00' },
   ],
-  companyName: 'Logic.Route',
+  companyName: 'Logic Route',
 }
 
 const defaultBranding: TrackingBranding = {
-  companyName: 'Logic.Route',
+  companyName: 'Logic Route',
   logoUrl: null,
   primaryColor: '#f97316',
   contactPhone: null,
@@ -469,11 +469,11 @@ export default function CustomerTrackingPage() {
         </div>
       </div>
 
-      {/* Footer — Powered by Logic.Route */}
+      {/* Footer — Powered by Logic Route */}
       <footer className="border-t border-slate-200/60 mt-auto">
         <div className="max-w-lg mx-auto px-4 py-4 text-center">
           <p className="text-[10px] text-slate-300">
-            Powered by Logic.Route
+            Powered by Logic Route
           </p>
         </div>
       </footer>

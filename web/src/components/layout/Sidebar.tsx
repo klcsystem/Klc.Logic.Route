@@ -271,7 +271,7 @@ export default function Sidebar() {
             <Route className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-[15px] font-bold tracking-tight text-white">Logic.Route</h1>
+            <h1 className="text-[15px] font-bold tracking-tight text-white">Logic Route</h1>
             <p className="text-[10px] text-blue-300/50 uppercase tracking-[0.15em]">
               {isProvider ? 'TAŞIYICI PORTALI' : 'ROTA OPTİMİZASYONU'}
             </p>

@@ -20,8 +20,8 @@ export default function LandingPage() {
   const features = [
     {
       icon: Brain,
-      title: 'Akilli Rota Optimizasyonu',
-      desc: 'OR-Tools ve AI destekli algoritma ile en verimli rotayi saniyeler icinde hesaplayiniz. Trafik, zaman penceresi ve arac kapasitesi otomatik hesaplanir.',
+      title: 'Akıllı Rota Optimizasyonu',
+      desc: 'OR-Tools ve AI destekli algoritma ile en verimli rotayı saniyeler içinde hesaplayın. Trafik, zaman penceresi ve araç kapasitesi otomatik hesaplanır.',
       color: 'from-blue-500 to-cyan-500',
       bg: 'bg-blue-50',
       border: 'border-blue-100',
@@ -29,8 +29,8 @@ export default function LandingPage() {
     },
     {
       icon: Satellite,
-      title: 'Canli Takip ve Izleme',
-      desc: 'Gercek zamanli GPS takibi ile tum filonuzu tek haritada izleyiniz. Gecikme uyarilari ve ETA hesaplamalari otomatik guncellenir.',
+      title: 'Canlı Takip ve İzleme',
+      desc: 'Gerçek zamanlı GPS takibi ile tüm filonuzu tek haritada izleyin. Gecikme uyarıları ve ETA hesaplamaları otomatik güncellenir.',
       color: 'from-cyan-500 to-teal-500',
       bg: 'bg-cyan-50',
       border: 'border-cyan-100',
@@ -39,7 +39,7 @@ export default function LandingPage() {
     {
       icon: Link2,
       title: 'ERP Entegrasyonu',
-      desc: 'SAP, Logo, Netsis ve diger ERP sistemleri ile otomatik entegrasyon. Siparisler aninda akar, manuel veri girisi sifir.',
+      desc: 'SAP, Logo, Netsis ve diğer ERP sistemleri ile otomatik entegrasyon. Siparişler anında akar, manuel veri girişi sıfır.',
       color: 'from-indigo-500 to-blue-500',
       bg: 'bg-indigo-50',
       border: 'border-indigo-100',
@@ -47,8 +47,8 @@ export default function LandingPage() {
     },
     {
       icon: Smartphone,
-      title: 'Surucu Mobil Uygulama',
-      desc: 'iOS ve Android uyumlu mobil uygulama. Rota navigasyonu, teslimat onaylama, dijital imza ve offline calisma destegi.',
+      title: 'Sürücü Mobil Uygulama',
+      desc: 'iOS ve Android uyumlu mobil uygulama. Rota navigasyonu, teslimat onaylama, dijital imza ve offline çalışma desteği.',
       color: 'from-violet-500 to-purple-500',
       bg: 'bg-violet-50',
       border: 'border-violet-100',
@@ -56,8 +56,8 @@ export default function LandingPage() {
     },
     {
       icon: Package,
-      title: 'Musteri Izlenebilirligi',
-      desc: 'Markali takip sayfasi ile musterileriniz kargolarini canli takip edebilir. SMS ve e-posta bildirimleri otomatik gonderilir.',
+      title: 'Müşteri İzlenebilirliği',
+      desc: 'Markalı takip sayfası ile müşterileriniz kargolarını canlı takip edebilir. SMS ve e-posta bildirimleri otomatik gönderilir.',
       color: 'from-emerald-500 to-green-500',
       bg: 'bg-emerald-50',
       border: 'border-emerald-100',
@@ -65,8 +65,8 @@ export default function LandingPage() {
     },
     {
       icon: BarChart3,
-      title: 'Analitik Gosterge Paneli',
-      desc: 'Performans metrikleri, maliyet analizleri ve verimlilik raporlari. Veri odakli kararlar alin, surekli iyilestirin.',
+      title: 'Analitik Gösterge Paneli',
+      desc: 'Performans metrikleri, maliyet analizleri ve verimlilik raporları. Veri odaklı kararlar alın, sürekli iyileştirin.',
       color: 'from-amber-500 to-orange-500',
       bg: 'bg-amber-50',
       border: 'border-amber-100',
@@ -77,60 +77,60 @@ export default function LandingPage() {
   const steps = [
     {
       num: '01',
-      title: "ERP'nizi baglayin",
-      desc: 'Siparisler otomatik gelir. SAP, Logo veya Netsis entegrasyonunu 15 dakikada tamamlayiniz.',
+      title: "ERP'nizi bağlayın",
+      desc: 'Siparişler otomatik gelir. SAP, Logo veya Netsis entegrasyonunu 15 dakikada tamamlayın.',
       icon: Link2,
     },
     {
       num: '02',
-      title: 'Rotalari optimize edin',
-      desc: 'AI motoru en kisa, en verimli rotalari saniyeler icinde hesaplar. Trafik ve zaman kositlarini otomatik dikkate alir.',
+      title: 'Rotaları optimize edin',
+      desc: 'AI motoru en kısa, en verimli rotaları saniyeler içinde hesaplar. Trafik ve zaman kısıtlarını otomatik dikkate alır.',
       icon: Brain,
     },
     {
       num: '03',
-      title: 'Suruculere atayin',
-      desc: 'Optimize edilmis rotalar tek tikla suruculerin telefonlarina duser. Navigasyon otomatik baslar.',
+      title: 'Sürücülere atayın',
+      desc: 'Optimize edilmiş rotalar tek tıkla sürücülerin telefonlarına düşer. Navigasyon otomatik başlar.',
       icon: Smartphone,
     },
     {
       num: '04',
-      title: 'Canli takip edin',
-      desc: 'Tum teslimat surecini gercek zamanli izleyiniz. Musterileriniz de kendi takip linklerinden izleyebilir.',
+      title: 'Canlı takip edin',
+      desc: 'Tüm teslimat sürecini gerçek zamanlı izleyin. Müşterileriniz de kendi takip linklerinden izleyebilir.',
       icon: MapPin,
     },
   ]
 
   const pricingPlans = [
     {
-      name: 'Baslangic',
+      name: 'Başlangıç',
       price: '2,999',
       period: '/ay',
-      desc: 'Kucuk filolar icin ideal baslangic paketi.',
+      desc: 'Küçük filolar için ideal başlangıç paketi.',
       features: [
         '10 araca kadar',
         'Temel rota optimizasyonu',
-        'GPS canli takip',
-        'Mobil surucu uygulamasi',
-        'E-posta destegi',
+        'GPS canlı takip',
+        'Mobil sürücü uygulaması',
+        'E-posta desteği',
         'Temel raporlama',
       ],
-      cta: 'Hemen Baslayin',
+      cta: 'Hemen Başlayın',
       popular: false,
     },
     {
       name: 'Profesyonel',
       price: '7,999',
       period: '/ay',
-      desc: 'Buyuyen operasyonlar icin tam donanimli paket.',
+      desc: 'Büyüyen operasyonlar için tam donanımlı paket.',
       features: [
         '50 araca kadar',
         'AI destekli optimizasyon',
-        'Gelismis analitik paneli',
+        'Gelişmiş analitik paneli',
         'ERP entegrasyonu (SAP, Logo)',
-        'Musteri takip portali',
-        'API erisimi',
-        'Oncelikli destek',
+        'Müşteri takip portali',
+        'API erişimi',
+        'Öncelikli destek',
         'CO2 raporlama',
       ],
       cta: 'Demo Talep Edin',
@@ -140,18 +140,18 @@ export default function LandingPage() {
       name: 'Kurumsal',
       price: '14,999',
       period: '/ay',
-      desc: 'Buyuk filolar icin sinir tanimayan cozum.',
+      desc: 'Büyük filolar için sınır tanımayan çözüm.',
       features: [
-        'Sinirsiz arac',
-        'Tum Profesyonel ozellikler',
-        'Ozel SLA garantisi',
+        'Sınırsız araç',
+        'Tüm Profesyonel özellikler',
+        'Özel SLA garantisi',
         'Dedicated account manager',
         'On-premise opsiyonu',
-        'Ozel entegrasyon gelistirme',
-        '7/24 telefon destegi',
-        'Egitim ve danismanlik',
+        'Özel entegrasyon geliştirme',
+        '7/24 telefon desteği',
+        'Eğitim ve danışmanlık',
       ],
-      cta: 'Bize Ulasin',
+      cta: 'Bize Ulaşın',
       popular: false,
     },
   ]
@@ -172,23 +172,21 @@ export default function LandingPage() {
               <Navigation className="w-5 h-5 text-white" />
             </div>
             <span className="text-[17px] font-bold tracking-tight">
-              <span className="text-blue-600">KLC</span>
-              <span className="text-gray-800"> Logic</span>
-              <span className="text-gray-400 font-normal">.Route</span>
+                <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Logic Route</span>
             </span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollTo('features')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Ozellikler</button>
-            <button onClick={() => scrollTo('how-it-works')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Nasil Calisir</button>
-            <button onClick={() => scrollTo('pricing')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Fiyatlandirma</button>
+            <button onClick={() => scrollTo('features')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Özellikler</button>
+            <button onClick={() => scrollTo('how-it-works')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Nasıl Çalışır</button>
+            <button onClick={() => scrollTo('pricing')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">Fiyatlandırma</button>
             <button onClick={() => navigate('/api-docs')} className="text-[13px] text-gray-500 hover:text-blue-600 transition-colors font-medium">API</button>
           </nav>
           <div className="hidden md:flex items-center gap-3">
             <button onClick={() => navigate('/login')} className="px-4 py-2 text-[13px] text-gray-600 font-medium hover:text-blue-600 transition-colors">
-              Giris Yap
+              Giriş Yap
             </button>
             <button onClick={() => navigate('/onboarding')} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[13px] font-semibold hover:from-blue-700 hover:to-cyan-600 transition-all duration-200 shadow-lg shadow-blue-200">
-              Hemen Baslayin
+              Hemen Başlayın
             </button>
           </div>
           {/* Mobile menu button */}
@@ -199,13 +197,13 @@ export default function LandingPage() {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3">
-            <button onClick={() => scrollTo('features')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Ozellikler</button>
-            <button onClick={() => scrollTo('how-it-works')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Nasil Calisir</button>
-            <button onClick={() => scrollTo('pricing')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Fiyatlandirma</button>
+            <button onClick={() => scrollTo('features')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Özellikler</button>
+            <button onClick={() => scrollTo('how-it-works')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Nasıl Çalışır</button>
+            <button onClick={() => scrollTo('pricing')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Fiyatlandırma</button>
             <button onClick={() => navigate('/api-docs')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">API</button>
             <hr className="border-gray-100" />
-            <button onClick={() => navigate('/login')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Giris Yap</button>
-            <button onClick={() => navigate('/onboarding')} className="w-full px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[13px] font-semibold">Hemen Baslayin</button>
+            <button onClick={() => navigate('/login')} className="block text-[14px] text-gray-600 font-medium w-full text-left py-2">Giriş Yap</button>
+            <button onClick={() => navigate('/onboarding')} className="w-full px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[13px] font-semibold">Hemen Başlayın</button>
           </div>
         )}
       </header>
@@ -226,32 +224,32 @@ export default function LandingPage() {
                 AI Destekli Rota Optimizasyonu
               </div>
               <h1 className="text-4xl lg:text-[52px] font-extrabold leading-[1.1] tracking-tight text-gray-900 mb-6">
-                Akilli Rota Planlama ve{' '}
+                Akıllı Rota Planlama ve{' '}
                 <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                  Filo Yonetimi
+                  Filo Yönetimi
                 </span>{' '}
                 Platformu
               </h1>
               <p className="text-[17px] text-gray-500 leading-relaxed mb-8 max-w-lg">
-                OR-Tools AI motoru ile rotalarinizi optimize edin, filonuzu canli takip edin,
-                maliyetlerinizi %25 azaltin. Tek platform, sinirsiz verimlilik.
+                OR-Tools AI motoru ile rotalarınızı optimize edin, filonuzu canlı takip edin,
+                maliyetlerinizi %25 azaltın. Tek platform, sınırsız verimlilik.
               </p>
               <div className="flex flex-wrap gap-4 mb-10">
                 <button onClick={() => scrollTo('pricing')} className="px-7 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold hover:from-blue-700 hover:to-cyan-600 transition-all duration-200 text-[15px] shadow-xl shadow-blue-200 flex items-center gap-2">
                   Demo Talep Et <ArrowRight className="w-5 h-5" />
                 </button>
                 <button onClick={() => navigate('/onboarding')} className="px-7 py-3.5 rounded-xl border-2 border-blue-200 text-blue-600 font-semibold hover:bg-blue-50 transition-all duration-200 text-[15px]">
-                  Hemen Baslayin
+                  Hemen Başlayın
                 </button>
               </div>
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  14 gun ucretsiz deneme
+                  14 gün ücretsiz deneme
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Kredi karti gerekmez
+                  Kredi kartı gerekmez
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-gray-400">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -267,7 +265,7 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="ml-3 text-[11px] text-gray-500">Logic.Route -- Rota Optimizasyonu</span>
+                  <span className="ml-3 text-[11px] text-gray-500">Logic Route -- Rota Optimizasyonu</span>
                 </div>
                 {/* Mock route map */}
                 <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/20 rounded-lg p-4 mb-4 relative overflow-hidden">
@@ -282,7 +280,7 @@ export default function LandingPage() {
                     <span className="text-[11px] text-blue-300">12 Durak Optimize Edildi</span>
                   </div>
                   <div className="space-y-2">
-                    {['Depo Cikis', 'Kadikoy #A1', 'Uskudar #B3', 'Besiktas #C2', 'Sisli #D5'].map((stop, i) => (
+                    {['Depo Çıkış', 'Kadıköy #A1', 'Üsküdar #B3', 'Beşiktaş #C2', 'Şişli #D5'].map((stop, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${i === 0 ? 'bg-green-500 text-white' : 'bg-white/10 text-gray-400'}`}>
                           {i + 1}
@@ -301,12 +299,12 @@ export default function LandingPage() {
                     <span className="text-[10px] text-green-400">-%32 optimizasyon</span>
                   </div>
                   <div className="bg-white/5 rounded-lg p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Tahmini Sure</p>
+                    <p className="text-[10px] text-gray-500 mb-1">Tahmini Süre</p>
                     <p className="text-lg font-bold text-cyan-400">2s 15dk</p>
                     <span className="text-[10px] text-green-400">-%28 tasarruf</span>
                   </div>
                   <div className="bg-white/5 rounded-lg p-3">
-                    <p className="text-[10px] text-gray-500 mb-1">Yakit Maliyeti</p>
+                    <p className="text-[10px] text-gray-500 mb-1">Yakıt Maliyeti</p>
                     <p className="text-lg font-bold text-blue-400">₺284</p>
                     <span className="text-[10px] text-green-400">-%25 azalma</span>
                   </div>
@@ -319,7 +317,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-400">AI Optimizasyon</p>
-                      <p className="text-[13px] font-bold text-gray-800">Tamamlandi</p>
+                      <p className="text-[13px] font-bold text-gray-800">Tamamlandı</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 mb-1">
@@ -351,12 +349,12 @@ export default function LandingPage() {
       <section id="features" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Ozellikler</p>
+            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Özellikler</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-              Neden <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Logic.Route</span>?
+              Neden <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Logic Route</span>?
             </h2>
             <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              End-to-end rota optimizasyonu ve filo yonetimi icin ihtiyaciniz olan her sey tek platformda.
+              End-to-end rota optimizasyonu ve filo yönetimi için ihtiyacınız olan her şey tek platformda.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -377,12 +375,12 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Nasil Calisir?</p>
+            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Nasıl Çalışır?</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-              4 Adimda Baslayin
+              4 Adımda Başlayın
             </h2>
             <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              ERP entegrasyonundan canli takibe, 15 dakikada tam operasyonel olun.
+              ERP entegrasyonundan canlı takibe, 15 dakikada tam operasyonel olun.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -407,12 +405,12 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Fiyatlandirma</p>
+            <p className="text-[13px] text-blue-600 font-semibold uppercase tracking-wider mb-3">Fiyatlandırma</p>
             <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-              Her Olcek Icin Uygun Plan
+              Her Ölçek İçin Uygun Plan
             </h2>
             <p className="text-[16px] text-gray-400 max-w-xl mx-auto">
-              14 gun ucretsiz deneyin. Kredi karti gerekmez. Istediginiz zaman iptal edin.
+              14 gün ücretsiz deneyin. Kredi kartı gerekmez. İstediğiniz zaman iptal edin.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -420,7 +418,7 @@ export default function LandingPage() {
               <div key={i} className={`relative rounded-2xl p-8 ${plan.popular ? 'bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-2xl shadow-blue-200 scale-105' : 'bg-white border border-gray-200'}`}>
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-400 text-amber-900 text-[11px] font-bold uppercase tracking-wider">
-                    En Populer
+                    En Popüler
                   </div>
                 )}
                 <h3 className={`text-[18px] font-bold mb-2 ${plan.popular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
@@ -457,18 +455,18 @@ export default function LandingPage() {
         </div>
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-4">
-            Hemen deneyin -- 14 gun ucretsiz
+            Hemen deneyin -- 14 gün ücretsiz
           </h2>
           <p className="text-[17px] text-blue-100 mb-10 max-w-lg mx-auto">
-            15 dakikada kurulum, aninda tasarruf. Kredi karti gerekmez.
-            Rotalarinizi optimize etmeye hemen baslayin.
+            15 dakikada kurulum, anında tasarruf. Kredi kartı gerekmez.
+            Rotalarınızı optimize etmeye hemen başlayın.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <button onClick={() => navigate('/onboarding')} className="px-8 py-4 rounded-xl bg-white text-blue-600 font-bold hover:bg-blue-50 transition-all duration-200 text-[16px] shadow-xl shadow-blue-900/20 inline-flex items-center gap-2">
-              Ucretsiz Demo Isteyin <ArrowRight className="w-5 h-5" />
+              Ücretsiz Demo İsteyin <ArrowRight className="w-5 h-5" />
             </button>
             <button onClick={() => navigate('/login')} className="px-8 py-4 rounded-xl border-2 border-white/30 text-white font-semibold hover:bg-white/10 transition-all duration-200 text-[16px]">
-              Giris Yap
+              Giriş Yap
             </button>
           </div>
         </div>
@@ -483,12 +481,10 @@ export default function LandingPage() {
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
                   <Navigation className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-[16px] font-bold">
-                  <span className="text-blue-400">KLC</span> Logic.Route
-                </span>
+                <span className="text-[16px] font-bold text-white">Logic Route</span>
               </div>
               <p className="text-[13px] text-gray-400 leading-relaxed mb-5">
-                Akilli rota planlama ve filo yonetimi platformu. AI destekli optimizasyon ile maliyetlerinizi %25 azaltin.
+                Akıllı rota planlama ve filo yönetimi platformu. AI destekli optimizasyon ile maliyetlerinizi %25 azaltın.
               </p>
               <div className="flex items-center gap-3">
                 {['LinkedIn', 'Twitter', 'GitHub'].map((s) => (
@@ -499,9 +495,9 @@ export default function LandingPage() {
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Urun</h4>
+              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Ürün</h4>
               <div className="space-y-3">
-                {['Rota Optimizasyonu', 'Canli Takip', 'ERP Entegrasyon', 'Mobil Uygulama', 'Analitik Panel', 'Musteri Portali'].map((item) => (
+                {['Rota Optimizasyonu', 'Canlı Takip', 'ERP Entegrasyon', 'Mobil Uygulama', 'Analitik Panel', 'Müşteri Portali'].map((item) => (
                   <p key={item} className="text-[13px] text-gray-400 hover:text-blue-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
@@ -509,14 +505,14 @@ export default function LandingPage() {
             <div>
               <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Kaynaklar</h4>
               <div className="space-y-3">
-                <p onClick={() => navigate('/api-docs')} className="text-[13px] text-gray-400 hover:text-blue-400 cursor-pointer transition-colors">API Dokumanlari</p>
-                {['Hakkimizda', 'Kariyer', 'Blog', 'Iletisim'].map((item) => (
+                <p onClick={() => navigate('/api-docs')} className="text-[13px] text-gray-400 hover:text-blue-400 cursor-pointer transition-colors">API Dokümanları</p>
+                {['Hakkımızda', 'Kariyer', 'Blog', 'İletişim'].map((item) => (
                   <p key={item} className="text-[13px] text-gray-400 hover:text-blue-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Iletisim</h4>
+              <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">İletişim</h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-[13px] text-gray-400">
                   <Mail className="w-4 h-4 text-blue-400" /> info@klcsystem.com
@@ -529,15 +525,15 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="mt-5 space-y-2">
-                {['Gizlilik Politikasi', 'Kullanim Sartlari', 'KVKK'].map((item) => (
+                {['Gizlilik Politikası', 'Kullanım Şartları', 'KVKK'].map((item) => (
                   <p key={item} className="text-[12px] text-gray-500 hover:text-blue-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-[12px] text-gray-500">&copy; 2026 KLC System. Tum haklari saklidir.</p>
-            <p className="text-[12px] text-gray-500">Turkiye'nin akilli rota optimizasyonu platformu.</p>
+            <p className="text-[12px] text-gray-500">&copy; 2026 KLC System. Tüm hakları saklıdır.</p>
+            <p className="text-[12px] text-gray-500">Türkiye'nin akıllı rota optimizasyonu platformu.</p>
           </div>
         </div>
       </footer>

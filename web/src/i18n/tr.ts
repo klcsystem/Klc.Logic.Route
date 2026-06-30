@@ -84,7 +84,7 @@ const tr: Translations = {
     heroTag: 'Yeni Nesil Rota Optimizasyonu',
     heroTitle: 'Teslimat Rotalarınızı',
     heroHighlight: 'Optimize Edin',
-    heroDescription: 'Logic.Route ile teslimat rotalarınızı AI destekli algoritmalar ile planlayın, filo performansınızı gerçek zamanlı takip edin ve maliyetlerinizi minimize edin.',
+    heroDescription: 'Logic Route ile teslimat rotalarınızı AI destekli algoritmalar ile planlayın, filo performansınızı gerçek zamanlı takip edin ve maliyetlerinizi minimize edin.',
     getStarted: 'Hemen Başlayın',
     requestDemo: 'Demo Talep Et',
     whyTitle: 'Neden',

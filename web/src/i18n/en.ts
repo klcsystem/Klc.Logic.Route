@@ -82,7 +82,7 @@ const en = {
     heroTag: 'Next-Gen Route Optimization',
     heroTitle: 'Optimize Your',
     heroHighlight: 'Delivery Routes',
-    heroDescription: 'Plan your delivery routes with AI-powered algorithms, track fleet performance in real-time, and minimize costs with Logic.Route.',
+    heroDescription: 'Plan your delivery routes with AI-powered algorithms, track fleet performance in real-time, and minimize costs with Logic Route.',
     getStarted: 'Get Started',
     requestDemo: 'Request Demo',
     whyTitle: 'Why',
