@@ -7,7 +7,7 @@ import { Navigation, Mail, Lock, AlertCircle, Loader2, MapPin, Truck, BarChart3,
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [tenant, setTenant] = useState(localStorage.getItem('X-Tenant-Id') || '00000000-0000-0000-0000-000000000001')
+  const [tenantCode, setTenantCode] = useState(localStorage.getItem('tenantCode') || '')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { login } = useAuth()
@@ -19,7 +19,7 @@ export default function LoginPage() {
     setError('')
     setIsSubmitting(true)
     try {
-      localStorage.setItem('X-Tenant-Id', tenant)
+      localStorage.setItem('tenantCode', tenantCode.trim().toUpperCase())
       await login(email, password)
       navigate('/dashboard')
     } catch (err: unknown) {
@@ -124,16 +124,16 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-[13px] font-semibold text-slate-700 mb-2">Firma / Tenant</label>
+                <label className="block text-[13px] font-semibold text-slate-700 mb-2">Kurum Kodu</label>
                 <div className="relative">
                   <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <select
-                    value={tenant}
-                    onChange={(e) => setTenant(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none transition-all duration-200 text-[14px] bg-slate-50/50 focus:bg-white appearance-none"
-                  >
-                    <option value="00000000-0000-0000-0000-000000000001">Varsayılan Firma</option>
-                  </select>
+                  <input
+                    type="text"
+                    value={tenantCode}
+                    onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none transition-all duration-200 text-[14px] bg-slate-50/50 focus:bg-white placeholder:text-slate-400 uppercase tracking-wider font-medium"
+                    placeholder="Örn: KRC, A101, DEMO"
+                  />
                 </div>
               </div>
               <div>
