@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package, Truck, MapPin, Route, Building2,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
-  Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap, CalendarDays,
+  ShoppingCart, Car, User, Send, TableProperties, Zap, CalendarDays,
   Brain, FlaskConical, Map, RefreshCw, Shield, ShieldCheck, Store,
   MessageSquare, RotateCcw, Workflow, FileCheck, Smartphone, Database,
 } from 'lucide-react'
@@ -46,7 +46,7 @@ function CollapsibleGroup({ group, defaultOpen }: { group: NavGroup; defaultOpen
               className={({ isActive }) =>
                 `flex items-center justify-between gap-3 px-4 py-2 rounded-xl text-[13px] transition-all duration-200 ${
                   isActive
-                    ? 'bg-orange-400/15 text-orange-400 font-medium'
+                    ? 'bg-blue-500/15 text-blue-400 font-medium'
                     : 'text-blue-100/60 hover:bg-white/5 hover:text-blue-100/90'
                 }`
               }
@@ -113,7 +113,7 @@ function ProviderSidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
               isActive
-                ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-400/10'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/10'
                 : 'text-blue-100/70 hover:bg-white/5 hover:text-white'
             }`
           }
@@ -229,7 +229,7 @@ function CustomerSidebar() {
           className={({ isActive }) =>
             `flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
               isActive
-                ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-400/10'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/10'
                 : 'text-blue-100/70 hover:bg-white/5 hover:text-white'
             }`
           }
@@ -260,17 +260,17 @@ export default function Sidebar() {
   const isProvider = user?.role === 'ProviderUser'
 
   return (
-    <aside className="w-[260px] bg-[#111827] text-white min-h-screen flex flex-col border-r border-white/[0.06]">
+    <aside className="w-[260px] bg-[#0f172a] text-white min-h-screen flex flex-col border-r border-white/[0.06]">
       {/* Logo */}
       <div className="px-5 py-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-400/10">
-            <Navigation className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <Route className="w-5 h-5 text-white" />
           </div>
           <div>
             <h1 className="text-[15px] font-bold tracking-tight text-white">Logic.Route</h1>
-            <p className="text-[10px] text-blue-300/40 uppercase tracking-[0.15em]">
-              {isProvider ? 'Taşıyıcı Portalı' : 'Rota Optimizasyonu'}
+            <p className="text-[10px] text-blue-300/50 uppercase tracking-[0.15em]">
+              {isProvider ? 'TAŞIYICI PORTALI' : 'ROTA OPTİMİZASYONU'}
             </p>
           </div>
         </div>
