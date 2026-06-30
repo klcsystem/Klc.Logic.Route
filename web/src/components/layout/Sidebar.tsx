@@ -209,6 +209,8 @@ function CustomerSidebar() {
         { to: '/settings/locations', icon: Map, label: 'Adres Defteri' },
         { to: '/settings/pod', icon: FileCheck, label: 'POD Ayarları' },
         { to: '/settings/driver-app', icon: Smartphone, label: 'Sürücü Uygulama' },
+        { to: '/settings/vehicle-profiles', icon: Car, label: 'Araç Profilleri' },
+        { to: '/settings/optimization-presets', icon: Settings2, label: 'Optimizasyon Ayarları' },
         { to: '/users', icon: Users, label: 'Kullanıcılar' },
         { to: '/notifications', icon: Bell, label: 'Bildirimler' },
         { to: '/audit-logs', icon: FileText, label: 'Denetim Kayıtları' },

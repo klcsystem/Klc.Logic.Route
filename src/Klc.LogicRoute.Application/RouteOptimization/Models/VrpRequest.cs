@@ -1,8 +1,14 @@
+using Klc.LogicRoute.Domain.Enums;
+
 namespace Klc.LogicRoute.Application.RouteOptimization.Models;
 
 public record VrpRequest(
     List<VrpVehicle> Vehicles,
-    List<VrpStop> Stops);
+    List<VrpStop> Stops,
+    RouteEndMode RouteEndMode = RouteEndMode.ReturnToDepot,
+    double? EndLat = null,
+    double? EndLng = null,
+    bool OptimizationDisabled = false);
 
 public record VrpVehicle(
     Guid Id,

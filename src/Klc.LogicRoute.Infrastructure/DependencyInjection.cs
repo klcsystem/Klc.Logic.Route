@@ -209,6 +209,10 @@ public static class DependencyInjection
         // Faz H1: Insurance Marketplace
         services.AddScoped<IInsuranceRepository, InsuranceRepository>();
 
+        // Vehicle Profiles & Optimization Presets
+        services.AddScoped<IVehicleProfileRepository, VehicleProfileRepository>();
+        services.AddScoped<IOptimizationPresetRepository, OptimizationPresetRepository>();
+
         return services;
     }
 }

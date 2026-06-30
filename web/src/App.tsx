@@ -27,6 +27,8 @@ import DepotPage from './pages/settings/DepotPage'
 import LocationDirectoryPage from './pages/settings/LocationDirectoryPage'
 import PodSettingsPage from './pages/settings/PodSettingsPage'
 import DriverAppConfigPage from './pages/settings/DriverAppConfigPage'
+import VehicleProfilesPage from './pages/settings/VehicleProfilesPage'
+import OptimizationPresetsPage from './pages/settings/OptimizationPresetsPage'
 import FleetPage from './pages/FleetPage'
 import ProviderPortalPage from './pages/ProviderPortalPage'
 import LoginPage from './pages/auth/LoginPage'
@@ -107,6 +109,8 @@ export default function App() {
         <Route path="/settings/locations" element={<LocationDirectoryPage />} />
         <Route path="/settings/pod" element={<PodSettingsPage />} />
         <Route path="/settings/driver-app" element={<DriverAppConfigPage />} />
+        <Route path="/settings/vehicle-profiles" element={<VehicleProfilesPage />} />
+        <Route path="/settings/optimization-presets" element={<OptimizationPresetsPage />} />
         <Route path="/invoices" element={<InvoiceVerificationPage />} />
         <Route path="/audit-logs" element={<AuditLogPage />} />
         <Route path="/users" element={<UsersPage />} />
