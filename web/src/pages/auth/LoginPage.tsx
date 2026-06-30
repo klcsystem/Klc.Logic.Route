@@ -132,7 +132,7 @@ export default function LoginPage() {
                     value={tenantCode}
                     onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none transition-all duration-200 text-[14px] bg-slate-50/50 focus:bg-white placeholder:text-slate-400 uppercase tracking-wider font-medium"
-                    placeholder="Örn: KRC, A101, DEMO"
+                    placeholder="Örn: KLC, DEMO"
                   />
                 </div>
               </div>
