@@ -3,45 +3,9 @@ import { Brain, Clock, AlertTriangle, TrendingUp, Loader2, Play, CheckCircle2 } 
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
+import { mlApi } from '../api/ml'
+import { useApi } from '../utils/useApi'
 import type { MlModel, PredictionVsActual } from '../api/ml'
-
-const mockModels: MlModel[] = [
-  {
-    id: 'm1', name: 'Delivery Time Prediction', type: 'DeliveryTimePrediction', version: 'v2.3',
-    accuracy: 87.5, rmse: 0.42, r2Score: 0.89, trainedAt: '2026-05-04T10:30:00', recordCount: 24500, status: 'Active',
-  },
-  {
-    id: 'm2', name: 'Delay Risk Classification', type: 'DelayRisk', version: 'v1.8',
-    accuracy: 91.2, rmse: undefined, r2Score: undefined, trainedAt: '2026-05-03T15:00:00', recordCount: 18200, status: 'Active',
-  },
-  {
-    id: 'm3', name: 'Cost Anomaly Detection', type: 'CostAnomaly', version: 'v1.5',
-    accuracy: 94.8, rmse: undefined, r2Score: undefined, trainedAt: '2026-05-02T08:15:00', recordCount: 31000, status: 'Active',
-  },
-]
-
-const mockScatterData: PredictionVsActual[] = [
-  { predicted: 3.2, actual: 3.5, label: 'SHP-001' },
-  { predicted: 5.1, actual: 4.8, label: 'SHP-002' },
-  { predicted: 2.8, actual: 2.9, label: 'SHP-003' },
-  { predicted: 7.3, actual: 7.0, label: 'SHP-004' },
-  { predicted: 4.5, actual: 5.2, label: 'SHP-005' },
-  { predicted: 6.1, actual: 6.3, label: 'SHP-006' },
-  { predicted: 3.8, actual: 3.6, label: 'SHP-007' },
-  { predicted: 8.2, actual: 8.5, label: 'SHP-008' },
-  { predicted: 1.9, actual: 2.1, label: 'SHP-009' },
-  { predicted: 5.5, actual: 5.3, label: 'SHP-010' },
-  { predicted: 4.0, actual: 4.7, label: 'SHP-011' },
-  { predicted: 6.8, actual: 6.5, label: 'SHP-012' },
-  { predicted: 2.3, actual: 2.5, label: 'SHP-013' },
-  { predicted: 9.1, actual: 8.8, label: 'SHP-014' },
-  { predicted: 3.5, actual: 3.2, label: 'SHP-015' },
-  { predicted: 7.7, actual: 8.1, label: 'SHP-016' },
-  { predicted: 4.8, actual: 4.5, label: 'SHP-017' },
-  { predicted: 5.9, actual: 6.4, label: 'SHP-018' },
-  { predicted: 1.5, actual: 1.8, label: 'SHP-019' },
-  { predicted: 6.3, actual: 6.0, label: 'SHP-020' },
-]
 
 const modelIcons: Record<string, React.ElementType> = {
   DeliveryTimePrediction: Clock,
@@ -57,16 +21,20 @@ const modelColors: Record<string, { bg: string; text: string; border: string }> 
 
 export default function MLInsightsPage() {
   const { t } = useI18n()
-  const [models] = useState<MlModel[]>(mockModels)
-  const [scatterData] = useState<PredictionVsActual[]>(mockScatterData)
   const [trainingModel, setTrainingModel] = useState<string | null>(null)
   const [selectedModel, setSelectedModel] = useState<string>('DeliveryTimePrediction')
 
+  const { data: modelsData } = useApi(() => mlApi.getModels(), [])
+  const models: MlModel[] = modelsData || []
+
+  const { data: scatterRaw } = useApi(() => mlApi.getPredictionVsActual(selectedModel), [selectedModel])
+  const scatterData: PredictionVsActual[] = scatterRaw || []
+
   const handleTrain = (modelType: string) => {
     setTrainingModel(modelType)
-    // TODO: Replace with real API call
-    // mlApi.triggerTraining(modelType).then(...)
-    setTimeout(() => setTrainingModel(null), 3000)
+    mlApi.triggerTraining(modelType)
+      .catch(() => {})
+      .finally(() => setTrainingModel(null))
   }
 
   return (
@@ -82,7 +50,7 @@ export default function MLInsightsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {models.map(model => {
           const Icon = modelIcons[model.type] || Brain
-          const colors = modelColors[model.type]
+          const colors = modelColors[model.type] || modelColors.DeliveryTimePrediction
           const isTraining = trainingModel === model.type
           const isSelected = selectedModel === model.type
 
@@ -178,47 +146,51 @@ export default function MLInsightsPage() {
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={360}>
-          <ScatterChart margin={{ top: 10, right: 30, bottom: 20, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-            <XAxis
-              type="number"
-              dataKey="predicted"
-              name={t.ml.predicted}
-              label={{ value: t.ml.predicted, position: 'bottom', style: { fontSize: 12, fill: '#94a3b8' } }}
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
-            />
-            <YAxis
-              type="number"
-              dataKey="actual"
-              name={t.ml.actual}
-              label={{ value: t.ml.actual, angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#94a3b8' } }}
-              tick={{ fontSize: 11, fill: '#94a3b8' }}
-            />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length > 0) {
-                  const data = payload[0].payload as PredictionVsActual
-                  return (
-                    <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg text-[12px]">
-                      <p className="font-semibold text-slate-800 mb-1">{data.label}</p>
-                      <p className="text-slate-500">{t.ml.predicted}: <span className="font-medium text-slate-700">{data.predicted}h</span></p>
-                      <p className="text-slate-500">{t.ml.actual}: <span className="font-medium text-slate-700">{data.actual}h</span></p>
-                    </div>
-                  )
-                }
-                return null
-              }}
-            />
-            <ReferenceLine
-              segment={[{ x: 0, y: 0 }, { x: 10, y: 10 }]}
-              stroke="#f97316"
-              strokeDasharray="6 4"
-              strokeOpacity={0.5}
-            />
-            <Scatter data={scatterData} fill="#f97316" fillOpacity={0.7} r={5} />
-          </ScatterChart>
-        </ResponsiveContainer>
+        {scatterData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={360}>
+            <ScatterChart margin={{ top: 10, right: 30, bottom: 20, left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis
+                type="number"
+                dataKey="predicted"
+                name={t.ml.predicted}
+                label={{ value: t.ml.predicted, position: 'bottom', style: { fontSize: 12, fill: '#94a3b8' } }}
+                tick={{ fontSize: 11, fill: '#94a3b8' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="actual"
+                name={t.ml.actual}
+                label={{ value: t.ml.actual, angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#94a3b8' } }}
+                tick={{ fontSize: 11, fill: '#94a3b8' }}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length > 0) {
+                    const data = payload[0].payload as PredictionVsActual
+                    return (
+                      <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg text-[12px]">
+                        <p className="font-semibold text-slate-800 mb-1">{data.label}</p>
+                        <p className="text-slate-500">{t.ml.predicted}: <span className="font-medium text-slate-700">{data.predicted}h</span></p>
+                        <p className="text-slate-500">{t.ml.actual}: <span className="font-medium text-slate-700">{data.actual}h</span></p>
+                      </div>
+                    )
+                  }
+                  return null
+                }}
+              />
+              <ReferenceLine
+                segment={[{ x: 0, y: 0 }, { x: 10, y: 10 }]}
+                stroke="#f97316"
+                strokeDasharray="6 4"
+                strokeOpacity={0.5}
+              />
+              <Scatter data={scatterData} fill="#f97316" fillOpacity={0.7} r={5} />
+            </ScatterChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center py-16 text-[13px] text-slate-400">{t.common.noData}</div>
+        )}
 
         <div className="flex items-center justify-center gap-4 mt-2 text-[11px] text-slate-400">
           <div className="flex items-center gap-1.5">

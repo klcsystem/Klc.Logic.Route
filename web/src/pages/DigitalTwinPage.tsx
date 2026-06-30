@@ -4,41 +4,9 @@ import { useI18n } from '../i18n'
 import ScenarioBuilder from '../components/simulation/ScenarioBuilder'
 import ComparisonDashboard from '../components/simulation/ComparisonDashboard'
 import CostImpactChart from '../components/simulation/CostImpactChart'
-import type { SimulationScenario, SimulationResult, SimulationMetrics } from '../api/simulation'
-
-const mockCurrentMetrics: SimulationMetrics = {
-  totalCost: 245000,
-  totalDistanceKm: 18500,
-  totalDurationMin: 14400,
-  co2EmissionsKg: 4200,
-  vehicleUtilizationPercent: 68,
-  avgDeliveryTimeHours: 5.4,
-  onTimeDeliveryPercent: 89,
-  activeVehicles: 12,
-  activeShipments: 47,
-}
-
-const mockSimulationResult: SimulationResult = {
-  current: mockCurrentMetrics,
-  simulated: {
-    totalCost: 218000,
-    totalDistanceKm: 16200,
-    totalDurationMin: 12600,
-    co2EmissionsKg: 3650,
-    vehicleUtilizationPercent: 78,
-    avgDeliveryTimeHours: 4.8,
-    onTimeDeliveryPercent: 93,
-    activeVehicles: 14,
-    activeShipments: 47,
-  },
-  costBreakdown: [
-    { category: 'Yakit', current: 98000, simulated: 85000 },
-    { category: 'Personel', current: 72000, simulated: 68000 },
-    { category: 'Arac Bakim', current: 35000, simulated: 32000 },
-    { category: 'Sigorta', current: 22000, simulated: 18000 },
-    { category: 'Diger', current: 18000, simulated: 15000 },
-  ],
-}
+import { simulationApi } from '../api/simulation'
+import { useApi } from '../utils/useApi'
+import type { SimulationScenario, SimulationResult } from '../api/simulation'
 
 export default function DigitalTwinPage() {
   const { t } = useI18n()
@@ -50,17 +18,25 @@ export default function DigitalTwinPage() {
   const [result, setResult] = useState<SimulationResult | null>(null)
   const [isRunning, setIsRunning] = useState(false)
 
-  const current = mockCurrentMetrics
+  const { data: currentMetrics } = useApi(() => simulationApi.getCurrentMetrics(), [])
+
+  const current = currentMetrics || {
+    totalCost: 0, totalDistanceKm: 0, totalDurationMin: 0, co2EmissionsKg: 0,
+    vehicleUtilizationPercent: 0, avgDeliveryTimeHours: 0, onTimeDeliveryPercent: 0,
+    activeVehicles: 0, activeShipments: 0,
+  }
 
   const handleRun = () => {
     setIsRunning(true)
     setResult(null)
-    // TODO: Replace with real API call
-    // simulationApi.runSimulation(scenario).then(r => { if (r.success) setResult(r.data) })
-    setTimeout(() => {
-      setResult(mockSimulationResult)
-      setIsRunning(false)
-    }, 2000)
+    simulationApi.runSimulation(scenario)
+      .then((res) => {
+        if (res.success && res.data) {
+          setResult(res.data)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsRunning(false))
   }
 
   const summaryCards = [

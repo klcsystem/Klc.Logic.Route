@@ -33,6 +33,7 @@ import FleetPage from './pages/FleetPage'
 import ProviderPortalPage from './pages/ProviderPortalPage'
 import LoginPage from './pages/auth/LoginPage'
 import LandingPage from './pages/LandingPage'
+import ApiDocsPage from './pages/ApiDocsPage'
 import CustomerTrackingPage from './pages/public/CustomerTrackingPage'
 import RouteOptimizerPage from './pages/RouteOptimizerPage'
 import MLInsightsPage from './pages/MLInsightsPage'
@@ -61,6 +62,7 @@ export default function App() {
       {/* Public */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/api-docs" element={<ApiDocsPage />} />
       <Route path="/tracking/:token" element={<CustomerTrackingPage />} />
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
       <Route path="/onboarding/setup" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
