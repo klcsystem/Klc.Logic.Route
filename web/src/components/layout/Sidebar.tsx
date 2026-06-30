@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package, Truck, MapPin, Route, Building2,
   FileText, Settings2, BarChart3, Star, TrendingUp, Leaf,
   Settings, Users, Bell, ChevronDown, ChevronRight,
-  Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap,
+  Navigation, ShoppingCart, Car, User, Send, TableProperties, Zap, CalendarDays,
   Brain, FlaskConical, Map, RefreshCw, Shield, ShieldCheck, Store,
   MessageSquare, RotateCcw, Workflow, FileCheck, Smartphone, Database,
 } from 'lucide-react'
@@ -148,6 +148,7 @@ function CustomerSidebar() {
       icon: Package,
       items: [
         { to: '/plan', icon: Zap, label: 'Plan & Optimize' },
+        { to: '/weekly-plan', icon: CalendarDays, label: 'Haftalik Planlama' },
         { to: '/orders', icon: Package, label: t.sidebar.orders },
         { to: '/shipments', icon: Truck, label: t.sidebar.shipments },
         { to: '/tracking', icon: MapPin, label: t.sidebar.liveTracking },

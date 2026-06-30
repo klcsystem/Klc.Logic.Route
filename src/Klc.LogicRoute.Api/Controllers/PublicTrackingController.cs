@@ -52,6 +52,28 @@ public class PublicTrackingController(
     }
 
     /// <summary>
+    /// Returns tenant branding for the tracking page (logo, colors, contact info).
+    /// </summary>
+    [HttpGet("{token}/branding")]
+    public async Task<ActionResult<ApiResponse<TrackingBrandingResult>>> GetBranding(string token)
+    {
+        var tracking = await customerTrackingRepository.GetByTokenAsync(token);
+        if (tracking == null || !tracking.IsActive)
+            return NotFound(ApiResponse<TrackingBrandingResult>.Fail("Takip bilgisi bulunamadi"));
+
+        // TODO: Load company name, logo, colors from tenant settings table when available
+        var branding = new TrackingBrandingResult(
+            CompanyName: "Logic.Route",
+            LogoUrl: null,
+            PrimaryColor: "#f97316",
+            ContactPhone: tracking.CustomerPhone,
+            ContactEmail: tracking.CustomerEmail
+        );
+
+        return Ok(ApiResponse<TrackingBrandingResult>.Ok(branding));
+    }
+
+    /// <summary>
     /// Customer sends a message to driver from tracking page.
     /// </summary>
     [HttpPost("{token}/messages")]
@@ -83,3 +105,10 @@ public record ChangeDeliveryPointRequest(
     string? Notes = null);
 
 public record CustomerMessageRequest(string Message);
+
+public record TrackingBrandingResult(
+    string CompanyName,
+    string? LogoUrl,
+    string PrimaryColor,
+    string? ContactPhone,
+    string? ContactEmail);

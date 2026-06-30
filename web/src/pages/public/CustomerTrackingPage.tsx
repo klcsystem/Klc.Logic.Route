@@ -7,20 +7,22 @@ import {
   MessageSquare, ChevronDown, DoorOpen, Shield, Users, Box,
   Send, X, LocateFixed, CalendarClock
 } from 'lucide-react'
-import type { TrackingData } from '../../api/tracking'
+import type { TrackingData, TrackingBranding } from '../../api/tracking'
 import 'leaflet/dist/leaflet.css'
 
-const truckIcon = L.divIcon({
-  className: '',
-  html: `<div style="background:#f97316;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 12px rgba(249,115,22,0.4)">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
-    </svg>
-  </div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  popupAnchor: [0, -36],
-})
+function makeTruckIcon(color: string) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:${color};width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 12px ${color}66">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+      </svg>
+    </div>`,
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
+    popupAnchor: [0, -36],
+  })
+}
 
 const destinationIcon = L.divIcon({
   className: '',
@@ -99,12 +101,12 @@ function buildTimeline(tracking: TrackingData): TimelineStep[] {
   return steps
 }
 
-function getStatusBadge(status: string): { label: string; color: string; bg: string } {
+function getStatusBadge(status: string, primaryColor: string): { label: string; color: string; bg: string } {
   switch (status) {
     case 'Delivered':
       return { label: 'Completed', color: 'text-green-700', bg: 'bg-green-100' }
     case 'InTransit':
-      return { label: 'In Transit', color: 'text-orange-700', bg: 'bg-orange-100' }
+      return { label: 'In Transit', color: `text-[${primaryColor}]`, bg: 'bg-orange-100' }
     default:
       return { label: 'Scheduled', color: 'text-blue-700', bg: 'bg-blue-100' }
   }
@@ -129,9 +131,18 @@ const mockTrackingData: TrackingData = {
   companyName: 'Logic.Route',
 }
 
+const defaultBranding: TrackingBranding = {
+  companyName: 'Logic.Route',
+  logoUrl: null,
+  primaryColor: '#f97316',
+  contactPhone: null,
+  contactEmail: null,
+}
+
 export default function CustomerTrackingPage() {
   const { token } = useParams<{ token: string }>()
   const [tracking, setTracking] = useState<TrackingData | null>(null)
+  const [branding, setBranding] = useState<TrackingBranding>(defaultBranding)
   const [loading, setLoading] = useState(true)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [showMessageModal, setShowMessageModal] = useState(false)
@@ -141,14 +152,29 @@ export default function CustomerTrackingPage() {
   const [deliveryChanged, setDeliveryChanged] = useState(false)
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState<DeliveryOption | null>(null)
 
+  const primaryColor = branding.primaryColor || '#f97316'
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setTracking(mockTrackingData)
+      setBranding({
+        companyName: mockTrackingData.companyName,
+        logoUrl: null,
+        primaryColor: '#f97316',
+        contactPhone: '0212 555 1234',
+        contactEmail: 'info@logicroute.com',
+      })
       setLoading(false)
     }, 800)
     return () => clearTimeout(timer)
-    // TODO: Replace with real API call:
-    // publicTrackingApi.getByToken(token!).then(res => { if (res.success) setTracking(res.data) }).finally(() => setLoading(false))
+    // TODO: Replace with real API calls:
+    // Promise.all([
+    //   publicTrackingApi.getByToken(token!),
+    //   publicTrackingApi.getBranding(token!),
+    // ]).then(([trackingRes, brandingRes]) => {
+    //   if (trackingRes.success) setTracking(trackingRes.data)
+    //   if (brandingRes.success) setBranding(brandingRes.data)
+    // }).finally(() => setLoading(false))
   }, [token])
 
   const handleSendMessage = () => {
@@ -177,7 +203,10 @@ export default function CustomerTrackingPage() {
     return (
       <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center animate-pulse">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center animate-pulse"
+            style={{ background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd)` }}
+          >
             <Navigation className="w-6 h-6 text-white" />
           </div>
           <p className="text-[14px] text-slate-400">Loading...</p>
@@ -199,24 +228,40 @@ export default function CustomerTrackingPage() {
   }
 
   const timeline = buildTimeline(tracking)
-  const statusBadge = getStatusBadge(tracking.status)
+  const statusBadge = getStatusBadge(tracking.status, primaryColor)
   const mapCenter: [number, number] = tracking.driverLocation
     ? [tracking.driverLocation.lat, tracking.driverLocation.lng]
     : [tracking.destination.lat, tracking.destination.lng]
+  const truckIcon = makeTruckIcon(primaryColor)
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7]">
-      {/* Header */}
+    <div className="min-h-screen bg-[#f5f5f7] flex flex-col">
+      {/* Branded Header */}
       <header className="bg-white border-b border-slate-200/60 shadow-sm">
         <div className="max-w-lg mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          {/* Tenant Branding Row */}
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-400/10">
-                <Navigation className="w-5 h-5 text-white" />
-              </div>
+              {branding.logoUrl ? (
+                <img
+                  src={branding.logoUrl}
+                  alt={branding.companyName}
+                  className="h-10 w-auto max-w-[120px] object-contain"
+                />
+              ) : (
+                <div
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
+                  style={{
+                    background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}dd)`,
+                    boxShadow: `0 4px 12px ${primaryColor}1a`,
+                  }}
+                >
+                  <Navigation className="w-5 h-5 text-white" />
+                </div>
+              )}
               <div>
-                <h1 className="text-[16px] font-bold text-slate-900">Order Tracking</h1>
-                <p className="text-[11px] text-slate-400">{tracking.shipmentNumber}</p>
+                <h1 className="text-[16px] font-bold text-slate-900">{branding.companyName}</h1>
+                <p className="text-[11px] text-slate-400">Order Tracking</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -226,17 +271,22 @@ export default function CustomerTrackingPage() {
             </div>
           </div>
 
+          {/* Shipment Number */}
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-slate-400">{tracking.shipmentNumber}</span>
+          </div>
+
           {/* Planned delivery time */}
           {tracking.etaFormatted && (
-            <div className="mt-3 flex items-center gap-2 text-[13px] text-slate-600">
-              <CalendarClock className="w-4 h-4 text-orange-500" />
+            <div className="mt-2 flex items-center gap-2 text-[13px] text-slate-600">
+              <CalendarClock className="w-4 h-4" style={{ color: primaryColor }} />
               <span>Planned delivery: <strong className="text-slate-900">{tracking.etaFormatted}</strong></span>
             </div>
           )}
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
+      <div className="max-w-lg mx-auto px-4 py-5 space-y-4 flex-1">
         {/* Order Information */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
           <h3 className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-4">Order Information</h3>
@@ -248,7 +298,7 @@ export default function CustomerTrackingPage() {
             <div className="flex items-center justify-between">
               <span className="text-[13px] text-slate-500">Parcel</span>
               <div className="flex items-center gap-1.5">
-                <Package className="w-4 h-4 text-orange-500" />
+                <Package className="w-4 h-4" style={{ color: primaryColor }} />
                 <span className="text-[14px] font-medium text-slate-800">1</span>
               </div>
             </div>
@@ -337,29 +387,49 @@ export default function CustomerTrackingPage() {
                 <Popup>
                   <div className="text-[12px]">
                     <p className="font-bold">Driver Location</p>
-                    <p className="text-orange-600 font-semibold mt-1">ETA: {tracking.etaFormatted}</p>
+                    <p style={{ color: primaryColor }} className="font-semibold mt-1">ETA: {tracking.etaFormatted}</p>
                   </div>
                 </Popup>
               </Marker>
             )}
           </MapContainer>
           {tracking.driverLocation && tracking.status === 'InTransit' && (
-            <div className="px-4 py-2.5 bg-orange-50 border-t border-orange-100 flex items-center gap-2">
-              <LocateFixed className="w-4 h-4 text-orange-500" />
-              <span className="text-[12px] text-orange-700 font-medium">Driver is on the way</span>
+            <div className="px-4 py-2.5 border-t flex items-center gap-2" style={{ backgroundColor: `${primaryColor}0d`, borderColor: `${primaryColor}22` }}>
+              <LocateFixed className="w-4 h-4" style={{ color: primaryColor }} />
+              <span className="text-[12px] font-medium" style={{ color: `${primaryColor}cc` }}>Driver is on the way</span>
               {tracking.etaFormatted && (
-                <span className="ml-auto text-[12px] font-bold text-orange-600">ETA {tracking.etaFormatted}</span>
+                <span className="ml-auto text-[12px] font-bold" style={{ color: primaryColor }}>ETA {tracking.etaFormatted}</span>
               )}
             </div>
           )}
         </div>
+
+        {/* Contact Info (from branding) */}
+        {(branding.contactPhone || branding.contactEmail) && (
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4">
+            <h3 className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Contact</h3>
+            <div className="space-y-1">
+              {branding.contactPhone && (
+                <p className="text-[13px] text-slate-600">
+                  Phone: <a href={`tel:${branding.contactPhone}`} className="font-medium" style={{ color: primaryColor }}>{branding.contactPhone}</a>
+                </p>
+              )}
+              {branding.contactEmail && (
+                <p className="text-[13px] text-slate-600">
+                  Email: <a href={`mailto:${branding.contactEmail}`} className="font-medium" style={{ color: primaryColor }}>{branding.contactEmail}</a>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-3 pb-6">
           {/* Change Delivery Point */}
           <button
             onClick={() => setShowDeliveryModal(true)}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3.5 px-4 rounded-xl transition-colors text-[14px] uppercase tracking-wide shadow-lg shadow-orange-400/20"
+            className="w-full text-white font-semibold py-3.5 px-4 rounded-xl transition-colors text-[14px] uppercase tracking-wide shadow-lg"
+            style={{ backgroundColor: primaryColor, boxShadow: `0 4px 12px ${primaryColor}33` }}
           >
             CHANGE DELIVERY POINT
           </button>
@@ -399,11 +469,11 @@ export default function CustomerTrackingPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200/60">
+      {/* Footer — Powered by Logic.Route */}
+      <footer className="border-t border-slate-200/60 mt-auto">
         <div className="max-w-lg mx-auto px-4 py-4 text-center">
-          <p className="text-[11px] text-slate-400">
-            Powered by {tracking.companyName} &copy; {new Date().getFullYear()}
+          <p className="text-[10px] text-slate-300">
+            Powered by Logic.Route
           </p>
         </div>
       </footer>
@@ -434,11 +504,12 @@ export default function CustomerTrackingPage() {
                     <button
                       key={opt.key}
                       onClick={() => handleChangeDeliveryPoint(opt.key)}
-                      className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all hover:border-orange-300 hover:bg-orange-50 ${
+                      className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all ${
                         selectedDeliveryOption === opt.key
                           ? 'border-orange-400 bg-orange-50'
-                          : 'border-slate-200'
+                          : 'border-slate-200 hover:bg-slate-50'
                       }`}
+                      style={selectedDeliveryOption === opt.key ? { borderColor: primaryColor, backgroundColor: `${primaryColor}0d` } : undefined}
                     >
                       <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
                         <Icon className="w-5 h-5 text-slate-600" />
@@ -477,12 +548,14 @@ export default function CustomerTrackingPage() {
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Type your message to the driver..."
-                  className="w-full h-32 p-4 border border-slate-200 rounded-xl text-[14px] text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400 resize-none"
+                  className="w-full h-32 p-4 border border-slate-200 rounded-xl text-[14px] text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                  style={{ '--tw-ring-color': `${primaryColor}80` } as React.CSSProperties}
                 />
                 <button
                   onClick={handleSendMessage}
                   disabled={!messageText.trim()}
-                  className="mt-3 w-full bg-orange-500 hover:bg-orange-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl transition-colors text-[14px] flex items-center justify-center gap-2"
+                  className="mt-3 w-full disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 px-4 rounded-xl transition-colors text-[14px] flex items-center justify-center gap-2"
+                  style={messageText.trim() ? { backgroundColor: primaryColor } : undefined}
                 >
                   <Send className="w-4 h-4" />
                   Send Message

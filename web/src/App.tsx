@@ -51,6 +51,7 @@ import ReturnsPage from './pages/ReturnsPage'
 import LearningPage from './pages/LearningPage'
 import PipelinePage from './pages/PipelinePage'
 import PlanOptimizePage from './pages/PlanOptimizePage'
+import WeeklyPlannerPage from './pages/WeeklyPlannerPage'
 
 export default function App() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="/shipments" element={<ShipmentsPage />} />
         <Route path="/shipments/:id" element={<ShipmentDetailPage />} />
         <Route path="/tracking" element={<LiveTrackingPage />} />
+        <Route path="/weekly-plan" element={<WeeklyPlannerPage />} />
         <Route path="/delivery-slots" element={<DeliverySlotsPage />} />
 
         {/* KARAR MOTORU */}

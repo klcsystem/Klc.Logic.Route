@@ -8,6 +8,14 @@ const publicApi = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+export interface TrackingBranding {
+  companyName: string
+  logoUrl: string | null
+  primaryColor: string
+  contactPhone: string | null
+  contactEmail: string | null
+}
+
 export interface TrackingData {
   shipmentId: string
   shipmentNumber: string
@@ -27,4 +35,7 @@ export interface TrackingData {
 export const publicTrackingApi = {
   getByToken: (token: string) =>
     publicApi.get<{ data: TrackingData; success: boolean }>(`/public/tracking/${token}`).then(r => r.data),
+
+  getBranding: (token: string) =>
+    publicApi.get<{ data: TrackingBranding; success: boolean }>(`/public/tracking/${token}/branding`).then(r => r.data),
 }
