@@ -7,6 +7,7 @@ import {
   ShoppingCart, Car, User, Send, TableProperties, Zap, CalendarDays,
   Brain, FlaskConical, Map, RefreshCw, Shield, ShieldCheck, Store,
   MessageSquare, RotateCcw, Workflow, FileCheck, Smartphone, Database,
+  Flame, Receipt,
 } from 'lucide-react'
 import { useI18n } from '../../i18n'
 import { useAuth } from '../../contexts/AuthContext'
@@ -177,7 +178,9 @@ function CustomerSidebar() {
         { to: '/demand-forecast', icon: TrendingUp, label: 'Talep Tahmini' },
         { to: '/sustainability', icon: Leaf, label: 'Sürdürülebilirlik & CO2' },
         { to: '/safety', icon: Shield, label: 'Sürücü Güvenlik' },
+        { to: '/heat-map', icon: Flame, label: 'Yogunluk Haritasi' },
         { to: '/invoices', icon: FileText, label: 'Fatura Denetimi' },
+        { to: '/billing', icon: Receipt, label: 'Faturalama' },
         { to: '/digital-twin', icon: FlaskConical, label: 'Dijital İkiz' },
       ],
     },

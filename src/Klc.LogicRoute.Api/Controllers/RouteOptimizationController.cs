@@ -18,6 +18,7 @@ public class RouteOptimizationController(
     IVrpSolverService vrpSolverService,
     IPlannedVsActualService plannedVsActualService,
     IDynamicRerouteService dynamicRerouteService,
+    IMidRouteStopService midRouteStopService,
     IRouteOptimizationRepository optimizationRepository,
     IVehicleRepository vehicleRepository,
     ITenantProvider tenantProvider) : ControllerBase
@@ -223,6 +224,45 @@ public class RouteOptimizationController(
         if (report == null)
             return NotFound(ApiResponse<PlannedVsActualReport>.Fail("Optimizasyon bulunamadi"));
         return Ok(ApiResponse<PlannedVsActualReport>.Ok(report));
+    }
+
+    [HttpPost("routes/{routeId:guid}/add-stop")]
+    public async Task<ActionResult<ApiResponse<object>>> AddStopToRoute(Guid routeId, [FromBody] NewStopRequest request)
+    {
+        try
+        {
+            var tenantId = tenantProvider.GetTenantId();
+            var userId = tenantProvider.GetUserId();
+            var result = await midRouteStopService.AddStopToRouteAsync(routeId, tenantId, request, userId);
+
+            var response = new
+            {
+                routeId = result.RouteId.ToString(),
+                insertedAtPosition = result.InsertedAtPosition,
+                totalStops = result.TotalStops,
+                totalDistanceKm = result.TotalDistanceKm,
+                totalDurationMin = result.TotalDurationMinutes,
+                stops = result.UpdatedStops.Select(s => new
+                {
+                    stopId = s.Id.ToString(),
+                    shipmentId = s.ShipmentId?.ToString(),
+                    address = s.Address ?? $"Durak #{s.StopOrder}",
+                    lat = s.Lat,
+                    lng = s.Lng,
+                    sequence = s.StopOrder,
+                }),
+            };
+
+            return Ok(ApiResponse<object>.Ok(response));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(ApiResponse<object>.Fail(ex.Message));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse<object>.Fail($"Durak ekleme basarisiz: {ex.Message}"));
+        }
     }
 
     [HttpPost("reroute")]

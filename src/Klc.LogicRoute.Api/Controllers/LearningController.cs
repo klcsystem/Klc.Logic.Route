@@ -13,6 +13,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class LearningController(
     ILearningService learningService,
+    IDriverFamiliarityService driverFamiliarityService,
     LearningOrchestrator learningOrchestrator,
     ITenantProvider tenantProvider) : ControllerBase
 {
@@ -84,6 +85,38 @@ public class LearningController(
             UsingLearned = learned.HasValue
         };
         return Ok(ApiResponse<object>.Ok(result));
+    }
+
+    /// <summary>
+    /// Get familiarity scores for a driver across all zones.
+    /// </summary>
+    [HttpGet("driver-familiarity/{driverId:guid}")]
+    public async Task<ActionResult<ApiResponse<Dictionary<string, int>>>> GetDriverFamiliarity(Guid driverId)
+    {
+        var scores = await driverFamiliarityService.GetFamiliarityScoresAsync(driverId);
+        return Ok(ApiResponse<Dictionary<string, int>>.Ok(scores));
+    }
+
+    /// <summary>
+    /// Get the best driver for a zone based on familiarity.
+    /// </summary>
+    [HttpGet("driver-familiarity/best-for-zone")]
+    public async Task<ActionResult<ApiResponse<object>>> GetBestDriverForZone([FromQuery] string zone)
+    {
+        var driverId = await driverFamiliarityService.GetBestDriverForZoneAsync(zone);
+        return Ok(ApiResponse<object>.Ok(new { zone, bestDriverId = driverId?.ToString() }));
+    }
+
+    /// <summary>
+    /// Rebuild driver familiarity scores from historical data.
+    /// </summary>
+    [HttpPost("driver-familiarity/rebuild")]
+    [Authorize(Roles = "Admin,LogisticsManager")]
+    public async Task<ActionResult<ApiResponse<string>>> RebuildFamiliarity()
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        _ = Task.Run(() => driverFamiliarityService.RebuildFamiliarityAsync(tenantId, CancellationToken.None));
+        return Ok(ApiResponse<string>.Ok("Surucu bolge ogrenme sureci baslatildi."));
     }
 
     /// <summary>

@@ -12,4 +12,5 @@ public interface IRouteOptimizationRepository
     Task CreateStopAsync(RouteStop stop);
     Task<IEnumerable<OptimizedRoute>> GetRoutesByOptimizationIdAsync(Guid optimizationId, Guid tenantId);
     Task<IEnumerable<RouteStop>> GetStopsByRouteIdAsync(Guid routeId, Guid tenantId);
+    Task UpdateRouteAsync(OptimizedRoute route);
 }

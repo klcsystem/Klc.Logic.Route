@@ -94,6 +94,19 @@ public class RouteOptimizationRepository(IPostgresConnectionFactory connectionFa
             stop);
     }
 
+    public async Task UpdateRouteAsync(OptimizedRoute route)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        await conn.ExecuteAsync(
+            @"UPDATE logistics.optimized_routes
+              SET total_distance_km = @TotalDistanceKm, total_duration_minutes = @TotalDurationMinutes,
+                  total_weight_kg = @TotalWeightKg, total_volume_m3 = @TotalVolumeM3,
+                  updated_at = @UpdatedAt
+              WHERE id = @Id AND tenant_id = @TenantId",
+            route);
+    }
+
     public async Task<IEnumerable<OptimizedRoute>> GetRoutesByOptimizationIdAsync(Guid optimizationId, Guid tenantId)
     {
         await using var conn = connectionFactory.CreateConnection();

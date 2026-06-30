@@ -52,6 +52,8 @@ import LearningPage from './pages/LearningPage'
 import PipelinePage from './pages/PipelinePage'
 import PlanOptimizePage from './pages/PlanOptimizePage'
 import WeeklyPlannerPage from './pages/WeeklyPlannerPage'
+import HeatMapPage from './pages/HeatMapPage'
+import InvoicesPage from './pages/InvoicesPage'
 
 export default function App() {
   return (
@@ -96,6 +98,7 @@ export default function App() {
         <Route path="/demand-forecast" element={<DemandForecastPage />} />
         <Route path="/sustainability" element={<SustainabilityPage />} />
         <Route path="/safety" element={<SafetyDashboardPage />} />
+        <Route path="/heat-map" element={<HeatMapPage />} />
 
         {/* PLATFORM */}
         <Route path="/insurance" element={<InsurancePage />} />
@@ -118,6 +121,7 @@ export default function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/learning" element={<LearningPage />} />
+        <Route path="/billing" element={<InvoicesPage />} />
         <Route path="/pipeline" element={<PipelinePage />} />
 
         {/* PROVIDER PORTAL */}
