@@ -62,7 +62,7 @@ public class TerritoryController(
         if (points.Count == 0)
         {
             return BadRequest(ApiResponse<TerritoryPlanResult>.Fail(
-                "Gecerli koordinatlara sahip teslimat noktasi bulunamadi."));
+                "Geçerli koordinatlara sahip teslimat noktası bulunamadı."));
         }
 
         // Determine zone count

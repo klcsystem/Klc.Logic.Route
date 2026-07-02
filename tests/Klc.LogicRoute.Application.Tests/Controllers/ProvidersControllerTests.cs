@@ -102,7 +102,7 @@ public class ProvidersControllerTests
         var notFoundResult = result.Result.Should().BeOfType<NotFoundObjectResult>().Subject;
         var response = notFoundResult.Value.Should().BeOfType<ApiResponse<Provider>>().Subject;
         response.Success.Should().BeFalse();
-        response.Message.Should().Contain("bulunamadi");
+        response.Message.Should().Contain("bulunamadı");
     }
 
     // --- Create ---

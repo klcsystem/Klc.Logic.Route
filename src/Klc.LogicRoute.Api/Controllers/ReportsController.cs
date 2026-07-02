@@ -33,7 +33,7 @@ public class ReportsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var performance = await carrierPerformanceRepository.GetByProviderAsync(providerId, tenantId, year, month);
-        if (performance == null) return NotFound(ApiResponse<CarrierPerformance>.Fail("Performans verisi bulunamadi"));
+        if (performance == null) return NotFound(ApiResponse<CarrierPerformance>.Fail("Performans verisi bulunamadı"));
         return Ok(ApiResponse<CarrierPerformance>.Ok(performance));
     }
 
@@ -49,7 +49,7 @@ public class ReportsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(shipmentId, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<CO2Result>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<CO2Result>.Fail("Sevkiyat bulunamadı"));
 
         var result = co2CalculationService.Calculate(
             0m, shipment.TotalWeightKg, shipment.RecommendedVehicle);

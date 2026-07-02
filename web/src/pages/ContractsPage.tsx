@@ -137,11 +137,11 @@ export default function ContractsPage() {
                 <div className="border border-slate-200 rounded-xl overflow-hidden">
                   <table className="w-full">
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Guzergah</th>
-                      <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Arac</th>
+                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Güzergah</th>
+                      <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Araç</th>
                       <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Fiyat</th>
-                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ek Ucretler</th>
+                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ek Ücretler</th>
                       <th className="w-10"></th>
                     </tr></thead>
                     <tbody>
@@ -184,9 +184,9 @@ export default function ContractsPage() {
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Bölge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Bölge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="İç Anadolu" /></div>
           </div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Arac Tipi</label>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Araç Tipi</label>
             <select value={rateForm.vehicleCategory} onChange={(e) => setRateForm({ ...rateForm, vehicleCategory: e.target.value })} className={inputClass}>
-              <option value="Tir">Tir</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
+              <option value="Tir">Tır</option><option value="Kamyon">Kamyon</option><option value="Kamyonet">Kamyonet</option><option value="Frigorifik">Frigorifik</option><option value="Tanker">Tanker</option><option value="LowBed">LowBed</option>
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -206,7 +206,7 @@ export default function ContractsPage() {
               </select>
             </div>
           </div>
-          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ucretler (%)</h4>
+          <h4 className="text-[13px] font-semibold text-slate-700 pt-2">Ek Ücretler (%)</h4>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[12px] text-slate-500 mb-1">Acil</label><input type="number" value={rateForm.urgentSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, urgentSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[12px] text-slate-500 mb-1">ADR</label><input type="number" value={rateForm.adrSurchargePercent} onChange={(e) => setRateForm({ ...rateForm, adrSurchargePercent: Number(e.target.value) })} className={inputClass} /></div>

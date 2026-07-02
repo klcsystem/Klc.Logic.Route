@@ -47,8 +47,8 @@ public class CarrierNetworkRepository(IPostgresConnectionFactory connectionFacto
             @"INSERT INTO logistics.carrier_networks
               (id, tenant_id, carrier_name, api_endpoint, api_key, supported_regions,
                vehicle_types, pricing_model, is_active, created_by, created_at)
-              VALUES (@Id, @TenantId, @CarrierName, @ApiEndpoint, @ApiKey, @SupportedRegions,
-               @VehicleTypes, @PricingModel, @IsActive, @CreatedBy, @CreatedAt)",
+              VALUES (@Id, @TenantId, @CarrierName, @ApiEndpoint, @ApiKey, @SupportedRegions::jsonb,
+               @VehicleTypes::jsonb, @PricingModel, @IsActive, @CreatedBy, @CreatedAt)",
             new
             {
                 c.Id, c.TenantId, c.CarrierName, c.ApiEndpoint, c.ApiKey,
@@ -65,7 +65,7 @@ public class CarrierNetworkRepository(IPostgresConnectionFactory connectionFacto
         await conn.ExecuteAsync(
             @"UPDATE logistics.carrier_networks SET
               carrier_name = @CarrierName, api_endpoint = @ApiEndpoint, api_key = @ApiKey,
-              supported_regions = @SupportedRegions, vehicle_types = @VehicleTypes,
+              supported_regions = @SupportedRegions::jsonb, vehicle_types = @VehicleTypes::jsonb,
               pricing_model = @PricingModel, is_active = @IsActive,
               updated_by = @UpdatedBy, updated_at = @Now
               WHERE id = @Id",

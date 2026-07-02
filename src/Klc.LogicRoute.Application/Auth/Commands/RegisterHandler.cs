@@ -11,11 +11,11 @@ public class RegisterHandler(IUserRepository userRepository, IRoleRepository rol
     {
         var existing = await userRepository.GetByEmailAsync(request.Email, request.TenantId);
         if (existing != null)
-            throw new InvalidOperationException("Bu e-posta adresi zaten kullanilmaktadir.");
+            throw new InvalidOperationException("Bu e-posta adresi zaten kullanılmaktadır.");
 
         var viewerRole = await roleRepository.GetByNameAsync("Viewer", request.TenantId);
         if (viewerRole == null)
-            throw new InvalidOperationException("Varsayilan rol bulunamadi.");
+            throw new InvalidOperationException("Varsayılan rol bulunamadı.");
 
         var user = new User
         {

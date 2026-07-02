@@ -72,7 +72,7 @@ export default function OptimizationPresetsPage() {
       setIsNew(false)
       fetchPresets()
     } catch {
-      toast('error', 'Kaydetme hatasi')
+      toast('error', 'Kaydetme hatası')
     }
   }
 
@@ -82,7 +82,7 @@ export default function OptimizationPresetsPage() {
       toast('success', 'Preset silindi')
       fetchPresets()
     } catch {
-      toast('error', 'Silme hatasi')
+      toast('error', 'Silme hatası')
     }
   }
 
@@ -111,7 +111,7 @@ export default function OptimizationPresetsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Optimizasyon Ayarları</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu için tekrar kullanilabilir ayar sablonlari</p>
+          <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu için tekrar kullanılabilir ayar şablonları</p>
         </div>
         <button onClick={startNew} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Plus className="w-4 h-4" /> Yeni Preset
@@ -147,7 +147,7 @@ export default function OptimizationPresetsPage() {
           </div>
         ))}
         {presets.length === 0 && (
-          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz preset tanimlanmadi</div>
+          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz preset tanımlanmadı</div>
         )}
       </div>
 
@@ -182,7 +182,7 @@ export default function OptimizationPresetsPage() {
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Maks Sure (dk)</label>
+                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Maks Süre (dk)</label>
                   <input type="number" value={editing.maxDurationMinutes} onChange={e => updateField('maxDurationMinutes', +e.target.value)}
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
                 </div>

@@ -142,7 +142,7 @@ public class DecisionEngineServiceTests
 
         var result = await _sut.CalculateBestOptionAsync(shipment, criteria, _tenantId);
 
-        result.Explanation.Should().Contain("bulunamadi");
+        result.Explanation.Should().Contain("bulunamadı");
         result.CalculatedPrice.Should().Be(0);
     }
 
@@ -160,7 +160,7 @@ public class DecisionEngineServiceTests
 
         var result = await _sut.CalculateBestOptionAsync(shipment, criteria, _tenantId);
 
-        result.Explanation.Should().Contain("bulunamadi");
+        result.Explanation.Should().Contain("bulunamadı");
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class DecisionEngineServiceTests
 
         var result = await _sut.CalculateBestOptionAsync(shipment, criteria, _tenantId);
 
-        result.Explanation.Should().Contain("bulunamadi");
+        result.Explanation.Should().Contain("bulunamadı");
     }
 
     [Fact]
@@ -352,7 +352,7 @@ public class DecisionEngineServiceTests
 
         var result = await _sut.CalculateBestOptionAsync(shipment, criteria, _tenantId);
 
-        result.Explanation.Should().Contain("bulunamadi");
+        result.Explanation.Should().Contain("bulunamadı");
     }
 
     [Fact]

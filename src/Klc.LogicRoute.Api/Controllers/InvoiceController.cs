@@ -37,7 +37,7 @@ public class InvoiceController(
         var tenantId = tenantProvider.GetTenantId();
         var invoice = await invoiceRepository.GetByIdAsync(id, tenantId);
         if (invoice == null)
-            return NotFound(ApiResponse<Invoice>.Fail("Fatura bulunamadi"));
+            return NotFound(ApiResponse<Invoice>.Fail("Fatura bulunamadı"));
         return Ok(ApiResponse<Invoice>.Ok(invoice));
     }
 
@@ -61,7 +61,7 @@ public class InvoiceController(
             .ToList();
 
         if (deliveredShipments.Count == 0)
-            return BadRequest(ApiResponse<Invoice>.Fail($"Bu donem icin tamamlanan sevkiyat bulunamadi: {request.Month}/{request.Year}"));
+            return BadRequest(ApiResponse<Invoice>.Fail($"Bu dönem için tamamlanan sevkiyat bulunamadı: {request.Month}/{request.Year}"));
 
         // Create the invoice
         var invoice = new Invoice
@@ -120,7 +120,7 @@ public class InvoiceController(
         var tenantId = tenantProvider.GetTenantId();
         var invoice = await invoiceRepository.GetByIdAsync(id, tenantId);
         if (invoice == null)
-            return NotFound(ApiResponse<bool>.Fail("Fatura bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Fatura bulunamadı"));
 
         var validTransitions = new Dictionary<string, string[]>
         {
@@ -130,7 +130,7 @@ public class InvoiceController(
         };
 
         if (!validTransitions.TryGetValue(invoice.Status, out var allowed) || !allowed.Contains(request.Status))
-            return BadRequest(ApiResponse<bool>.Fail($"Gecersiz durum gecisi: {invoice.Status} -> {request.Status}"));
+            return BadRequest(ApiResponse<bool>.Fail($"Geçersiz durum geçişi: {invoice.Status} -> {request.Status}"));
 
         await invoiceRepository.UpdateStatusAsync(id, tenantId, request.Status, DateTime.UtcNow);
         return Ok(ApiResponse<bool>.Ok(true));

@@ -68,9 +68,9 @@ public class DashboardRepository(IPostgresConnectionFactory connectionFactory) :
         await using var conn = connectionFactory.CreateConnection();
         await conn.OpenAsync();
         return await conn.QueryAsync<MonthlyCostSummary>(
-            @"SELECT EXTRACT(MONTH FROM created_at)::INT AS month,
-              COALESCE(SUM(calculated_price), 0) AS total_cost,
-              COUNT(*) AS shipment_count
+            @"SELECT EXTRACT(MONTH FROM created_at)::INT AS Month,
+              COALESCE(SUM(calculated_price), 0) AS TotalCost,
+              COUNT(*)::INT AS ShipmentCount
               FROM logistics.shipments
               WHERE tenant_id = @TenantId AND is_deleted = FALSE AND EXTRACT(YEAR FROM created_at) = @Year
               GROUP BY EXTRACT(MONTH FROM created_at)
@@ -82,14 +82,14 @@ public class DashboardRepository(IPostgresConnectionFactory connectionFactory) :
     {
         await using var conn = connectionFactory.CreateConnection();
         await conn.OpenAsync();
-        var sql = @"SELECT s.selected_provider_id AS provider_id, p.name AS provider_name,
-              COALESCE(SUM(s.calculated_price), 0) AS total_cost, COUNT(*) AS shipment_count
+        var sql = @"SELECT s.selected_provider_id AS ProviderId, p.name AS ProviderName,
+              COALESCE(SUM(s.calculated_price), 0) AS TotalCost, COUNT(*)::INT AS ShipmentCount
               FROM logistics.shipments s
               JOIN logistics.providers p ON s.selected_provider_id = p.id
               WHERE s.tenant_id = @TenantId AND s.is_deleted = FALSE";
         if (year.HasValue) sql += " AND EXTRACT(YEAR FROM s.created_at) = @Year";
         if (month.HasValue) sql += " AND EXTRACT(MONTH FROM s.created_at) = @Month";
-        sql += " GROUP BY s.selected_provider_id, p.name ORDER BY total_cost DESC";
+        sql += " GROUP BY s.selected_provider_id, p.name ORDER BY TotalCost DESC";
         return await conn.QueryAsync<ProviderCostSummary>(sql, new { TenantId = tenantId, Year = year, Month = month });
     }
 }

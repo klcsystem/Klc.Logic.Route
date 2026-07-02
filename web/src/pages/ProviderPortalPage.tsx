@@ -121,7 +121,7 @@ export default function ProviderPortalPage() {
       const res = await providerPortalApi.getVehicles()
       setVehicles(res.data || [])
     } catch {
-      toast('error', 'Araclar yüklenemedi')
+      toast('error', 'Araçlar yüklenemedi')
     }
   }
 
@@ -130,7 +130,7 @@ export default function ProviderPortalPage() {
       const res = await providerPortalApi.getDrivers()
       setDrivers(res.data || [])
     } catch {
-      toast('error', 'Soforler yüklenemedi')
+      toast('error', 'Şoförler yüklenemedi')
     }
   }
 
@@ -148,7 +148,7 @@ export default function ProviderPortalPage() {
       const res = await providerPortalApi.getUsers()
       setPortalUsers(res.data || [])
     } catch {
-      toast('error', 'Kullanicilar yüklenemedi')
+      toast('error', 'Kullanıcılar yüklenemedi')
     }
   }
 
@@ -220,7 +220,7 @@ export default function ProviderPortalPage() {
       setEditingVehicleId(null)
       fetchVehicles()
     } catch {
-      toast('error', 'Kaydetme hatasi')
+      toast('error', 'Kaydetme hatası')
     } finally {
       setSaving(false)
     }
@@ -232,7 +232,7 @@ export default function ProviderPortalPage() {
       toast('success', 'Araç silindi')
       fetchVehicles()
     } catch {
-      toast('error', 'Silme hatasi')
+      toast('error', 'Silme hatası')
     }
   }
 
@@ -245,16 +245,16 @@ export default function ProviderPortalPage() {
     try {
       if (editingDriverId) {
         await providerPortalApi.updateDriver(editingDriverId, driverForm)
-        toast('success', 'Sofor güncellendi')
+        toast('success', 'Şoför güncellendi')
       } else {
         await providerPortalApi.createDriver(driverForm)
-        toast('success', 'Sofor eklendi')
+        toast('success', 'Şoför eklendi')
       }
       setDriverDrawerOpen(false)
       setEditingDriverId(null)
       fetchDrivers()
     } catch {
-      toast('error', 'Kaydetme hatasi')
+      toast('error', 'Kaydetme hatası')
     } finally {
       setSaving(false)
     }
@@ -263,10 +263,10 @@ export default function ProviderPortalPage() {
   const handleDeleteDriver = async (id: string) => {
     try {
       await providerPortalApi.deleteDriver(id)
-      toast('success', 'Sofor silindi')
+      toast('success', 'Şoför silindi')
       fetchDrivers()
     } catch {
-      toast('error', 'Silme hatasi')
+      toast('error', 'Silme hatası')
     }
   }
 
@@ -285,7 +285,7 @@ export default function ProviderPortalPage() {
       fetchShipments()
       fetchStats()
     } catch {
-      toast('error', 'Güncelleme hatasi')
+      toast('error', 'Güncelleme hatası')
     } finally {
       setSaving(false)
     }
@@ -300,16 +300,16 @@ export default function ProviderPortalPage() {
     try {
       if (editingUserId) {
         await providerPortalApi.updateUser(editingUserId, userForm)
-        toast('success', 'Kullanici güncellendi')
+        toast('success', 'Kullanıcı güncellendi')
       } else {
         await providerPortalApi.createUser(userForm)
-        toast('success', 'Kullanici eklendi')
+        toast('success', 'Kullanıcı eklendi')
       }
       setUserDrawerOpen(false)
       setEditingUserId(null)
       fetchUsers()
     } catch {
-      toast('error', 'Kaydetme hatasi')
+      toast('error', 'Kaydetme hatası')
     } finally {
       setSaving(false)
     }
@@ -318,10 +318,10 @@ export default function ProviderPortalPage() {
   const handleDeleteUser = async (id: string) => {
     try {
       await providerPortalApi.deleteUser(id)
-      toast('success', 'Kullanici silindi')
+      toast('success', 'Kullanıcı silindi')
       fetchUsers()
     } catch {
-      toast('error', 'Silme hatasi')
+      toast('error', 'Silme hatası')
     }
   }
 
@@ -515,7 +515,7 @@ export default function ProviderPortalPage() {
               </thead>
               <tbody>
                 {vehicles.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-12 text-[14px] text-slate-400">Kayitli arac bulunamadı</td></tr>
+                  <tr><td colSpan={6} className="text-center py-12 text-[14px] text-slate-400">Kayıtlı araç bulunamadı</td></tr>
                 ) : vehicles.map((v) => {
                   const insuranceExpired = new Date(v.insuranceEnd) < new Date()
                   return (
@@ -569,7 +569,7 @@ export default function ProviderPortalPage() {
               </thead>
               <tbody>
                 {drivers.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kayitli sofor bulunamadı</td></tr>
+                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kayıtlı şoför bulunamadı</td></tr>
                 ) : drivers.map((d) => (
                   <tr key={d.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-semibold text-slate-800`}>{d.name}</td>
@@ -678,7 +678,7 @@ export default function ProviderPortalPage() {
               </thead>
               <tbody>
                 {portalUsers.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kullanici bulunamadı</td></tr>
+                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kullanıcı bulunamadı</td></tr>
                 ) : portalUsers.map((u) => (
                   <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-semibold text-slate-800`}>{u.name}</td>

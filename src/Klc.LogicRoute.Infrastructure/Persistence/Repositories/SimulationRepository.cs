@@ -35,7 +35,7 @@ public class SimulationRepository(IPostgresConnectionFactory connectionFactory) 
             @"INSERT INTO logistics.simulation_scenarios
               (id, tenant_id, name, description, base_snapshot, modifications, status,
                is_deleted, created_at, created_by)
-              VALUES (@Id, @TenantId, @Name, @Description, @BaseSnapshot, @Modifications, @Status,
+              VALUES (@Id, @TenantId, @Name, @Description, @BaseSnapshot::jsonb, @Modifications::jsonb, @Status,
                FALSE, @CreatedAt, @CreatedBy)",
             scenario);
         return scenario.Id;
@@ -47,7 +47,7 @@ public class SimulationRepository(IPostgresConnectionFactory connectionFactory) 
         await conn.OpenAsync();
         await conn.ExecuteAsync(
             @"UPDATE logistics.simulation_scenarios
-              SET status = @Status, base_snapshot = @BaseSnapshot, updated_at = @UpdatedAt
+              SET status = @Status, base_snapshot = @BaseSnapshot::jsonb, updated_at = @UpdatedAt
               WHERE id = @Id AND tenant_id = @TenantId",
             scenario);
     }
@@ -74,7 +74,7 @@ public class SimulationRepository(IPostgresConnectionFactory connectionFactory) 
                cost_delta_pct, details, is_deleted, created_at, created_by)
               VALUES (@Id, @TenantId, @ScenarioId, @TotalCost, @TotalDistanceKm, @TotalDurationHours,
                @VehicleUtilizationPct, @OnTimePredictionPct, @Co2TotalKg, @UnservedShipments,
-               @CostDeltaPct, @Details, FALSE, @CreatedAt, @CreatedBy)",
+               @CostDeltaPct, @Details::jsonb, FALSE, @CreatedAt, @CreatedBy)",
             result);
         return result.Id;
     }

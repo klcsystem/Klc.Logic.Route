@@ -27,7 +27,7 @@ public class RoutingRulesController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var rule = await routingRuleRepository.GetByIdAsync(id, tenantId);
-        if (rule == null) return NotFound(ApiResponse<RoutingRule>.Fail("Kural bulunamadi"));
+        if (rule == null) return NotFound(ApiResponse<RoutingRule>.Fail("Kural bulunamadı"));
         return Ok(ApiResponse<RoutingRule>.Ok(rule));
     }
 

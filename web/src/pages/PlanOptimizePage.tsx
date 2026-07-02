@@ -220,7 +220,7 @@ export default function PlanOptimizePage() {
         toast('error', res.message || 'Optimizasyon başarısız')
       }
     } catch (err: unknown) {
-      toast('error', err instanceof Error ? err.message : 'Optimizasyon hatasi')
+      toast('error', err instanceof Error ? err.message : 'Optimizasyon hatası')
     } finally {
       setIsOptimizing(false)
     }
@@ -523,8 +523,8 @@ export default function PlanOptimizePage() {
                         <Popup>
                           <div className="text-[11px] min-w-[140px]">
                             <p className="font-bold text-[12px]">{stop.address}</p>
-                            <p className="text-gray-500 mt-0.5">Arac: {route.plateNumber}</p>
-                            <p className="text-gray-500">Sira: #{stop.sequence}</p>
+                            <p className="text-gray-500 mt-0.5">Araç: {route.plateNumber}</p>
+                            <p className="text-gray-500">Sıra: #{stop.sequence}</p>
                             <p className="text-gray-500">Varış: {stop.arrivalTime}</p>
                           </div>
                         </Popup>
@@ -623,11 +623,11 @@ export default function PlanOptimizePage() {
                         />
                       </th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sipariş No</th>
-                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Oncelik</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Öncelik</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Konum</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Adres</th>
-                      <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sure</th>
-                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Zaman Araligi</th>
+                      <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Süre</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Zaman Aralığı</th>
                       <th className="text-center px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Atanan Sürücü</th>
                       <th className="text-center px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Durak #</th>
                     </tr>
@@ -682,18 +682,18 @@ export default function PlanOptimizePage() {
                   {!solution ? (
                     <div className="flex items-center justify-center py-12 text-[13px] text-slate-400">
                       <MapPin className="w-5 h-5 mr-2 text-slate-300" />
-                      Henüz rota planlanmadı - yukaridaki "Rotalari Planla" butonunu kullanin
+                      Henüz rota planlanmadı - yukarıdaki "Rotaları Planla" butonunu kullanın
                     </div>
                   ) : (
                     <table className="w-full text-[12px]">
                       <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-100">
                           <th className="w-8 px-2 py-2"></th>
-                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sürücü / Arac</th>
+                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sürücü / Araç</th>
                           <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Teslimat Durumu</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Mesafe</th>
-                          <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sure</th>
-                          <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Kullanim %</th>
+                          <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Süre</th>
+                          <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Kullanım %</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Maliyet</th>
                         </tr>
                       </thead>

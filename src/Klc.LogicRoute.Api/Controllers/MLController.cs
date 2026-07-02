@@ -25,7 +25,7 @@ public class MLController(
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(shipmentId, tenantId);
         if (shipment == null)
-            return NotFound(ApiResponse<DeliveryTimePrediction>.Fail("Sevkiyat bulunamadi"));
+            return NotFound(ApiResponse<DeliveryTimePrediction>.Fail("Sevkiyat bulunamadı"));
 
         var result = await predictionService.PredictDeliveryTimeAsync(shipment, tenantId);
         return Ok(ApiResponse<DeliveryTimePrediction>.Ok(result));
@@ -37,7 +37,7 @@ public class MLController(
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(shipmentId, tenantId);
         if (shipment == null)
-            return NotFound(ApiResponse<DelayRiskPrediction>.Fail("Sevkiyat bulunamadi"));
+            return NotFound(ApiResponse<DelayRiskPrediction>.Fail("Sevkiyat bulunamadı"));
 
         var result = await predictionService.PredictDelayRiskAsync(shipment, tenantId);
         return Ok(ApiResponse<DelayRiskPrediction>.Ok(result));
@@ -48,7 +48,7 @@ public class MLController(
     public async Task<ActionResult<ApiResponse<string>>> TriggerTraining()
     {
         _ = Task.Run(() => trainingJob.TrainModelsAsync(CancellationToken.None));
-        return Ok(ApiResponse<string>.Ok("Model egitimi baslatildi"));
+        return Ok(ApiResponse<string>.Ok("Model eğitimi başlatıldı"));
     }
 
     [HttpGet("models")]

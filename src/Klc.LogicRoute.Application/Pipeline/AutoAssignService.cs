@@ -45,7 +45,16 @@ public class AutoAssignService : IAutoAssignService
 
         var routes = (await _optimizationRepository.GetRoutesByOptimizationIdAsync(optimizationId, tenantId)).ToList();
         if (routes.Count == 0)
-            throw new InvalidOperationException($"No routes found for optimization {optimizationId}.");
+        {
+            // Rota uretilememesi normal bir veri durumu (uygun arac yok vb.) — pipeline'i durdurmamali
+            _logger.LogWarning("No routes found for optimization {OptimizationId}, skipping assignment", optimizationId);
+            return new AutoAssignSummary(
+                OptimizationId: optimizationId,
+                RoutesAssigned: 0,
+                DriversNotified: 0,
+                OrdersUpdated: 0,
+                Warnings: [$"No routes produced for optimization {optimizationId}; assignment skipped."]);
+        }
 
         var allDrivers = await _driverRepository.GetAllAsync(tenantId);
         var activeDrivers = allDrivers.Where(d => d.IsActive).ToList();
@@ -122,7 +131,7 @@ public class AutoAssignService : IAutoAssignService
                     await _notificationService.SendAsync(
                         tenantId,
                         bestDriver.UserId,
-                        "Yeni Rota Atandi",
+                        "Yeni Rota Atandı",
                         $"Size {stops.Count} duraklı bir rota atandı. Araç: {route.VehiclePlate}. Toplam mesafe: {route.TotalDistanceKm:F1} km.",
                         NotificationType.Info,
                         "OptimizedRoute",

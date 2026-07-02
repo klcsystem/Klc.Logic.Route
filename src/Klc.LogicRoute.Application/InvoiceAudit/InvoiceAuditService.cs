@@ -10,7 +10,7 @@ public class InvoiceAuditService(
     public async Task<Domain.Entities.InvoiceAudit> AuditAsync(Guid shipmentId, string invoiceNumber, decimal invoiceAmount, Guid tenantId)
     {
         var shipment = await shipmentRepository.GetByIdAsync(shipmentId, tenantId)
-            ?? throw new KeyNotFoundException("Sevkiyat bulunamadi");
+            ?? throw new KeyNotFoundException("Sevkiyat bulunamadı");
 
         var expectedAmount = shipment.CalculatedPrice ?? 0m;
         var difference = invoiceAmount - expectedAmount;
@@ -46,9 +46,9 @@ public class InvoiceAuditService(
     private static string BuildNotes(decimal difference, decimal differencePercent, string status)
     {
         if (status == "Approved")
-            return "Fatura anlasma tarifesiyle uyumlu";
+            return "Fatura anlaşma tarifesiyle uyumlu";
         if (status == "NeedsReview")
             return $"Fark: {difference:F2} TRY (%{differencePercent:F1}) — inceleme gerekli";
-        return $"UYARI: Fark: {difference:F2} TRY (%{differencePercent:F1}) — anlasma disinda";
+        return $"UYARI: Fark: {difference:F2} TRY (%{differencePercent:F1}) — anlaşma dışında";
     }
 }

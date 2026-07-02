@@ -268,7 +268,7 @@ export default function LandingPage() {
                   <div className="flex items-center gap-1 mb-1">
                     {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 text-amber-400 fill-amber-400" />)}
                   </div>
-                  <p className="text-[10px] text-gray-400">12 rota, 3 arac, 47 sipariş</p>
+                  <p className="text-[10px] text-gray-400">12 rota, 3 araç, 47 sipariş</p>
                 </div>
               </div>
             </div>

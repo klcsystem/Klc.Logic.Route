@@ -28,7 +28,7 @@ public class LocationsController(
         var tenantId = tenantProvider.GetTenantId();
         var location = await locationRepository.GetByIdAsync(id, tenantId);
         if (location == null)
-            return NotFound(ApiResponse<Location>.Fail("Lokasyon bulunamadi"));
+            return NotFound(ApiResponse<Location>.Fail("Lokasyon bulunamadı"));
         return Ok(ApiResponse<Location>.Ok(location));
     }
 
@@ -48,7 +48,7 @@ public class LocationsController(
         var tenantId = tenantProvider.GetTenantId();
         var existing = await locationRepository.GetByIdAsync(id, tenantId);
         if (existing == null)
-            return NotFound(ApiResponse<bool>.Fail("Lokasyon bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Lokasyon bulunamadı"));
 
         location.Id = id;
         location.TenantId = tenantId;
@@ -63,7 +63,7 @@ public class LocationsController(
         var tenantId = tenantProvider.GetTenantId();
         var existing = await locationRepository.GetByIdAsync(id, tenantId);
         if (existing == null)
-            return NotFound(ApiResponse<bool>.Fail("Lokasyon bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Lokasyon bulunamadı"));
 
         await locationRepository.DeleteAsync(id, tenantId);
         return Ok(ApiResponse<bool>.Ok(true));

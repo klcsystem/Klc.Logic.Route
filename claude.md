@@ -41,7 +41,7 @@ Klc.Logic.Route/
 Admin, LogisticsManager, OperationsSpecialist, Finance, Executive
 
 ## Varsayilan Kullanici
-- admin@logicroute.com / admin123
+- ibrahim.kilic@klcsystem.com / Admin123!
 
 ## Build
 ```bash

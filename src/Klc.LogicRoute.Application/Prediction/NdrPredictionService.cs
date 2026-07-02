@@ -38,8 +38,8 @@ public class NdrPredictionService : INdrPredictionService
         weightSum += 35;
         if (pastNdrScore > 0.5)
         {
-            factors.Add($"Musteri gecmis NDR orani yuksek ({pastNdrScore:P0})");
-            recommendations.Add("Teslimat oncesi musteri ile telefon teyidi alinmali");
+            factors.Add($"Müşteri geçmiş NDR oranı yüksek ({pastNdrScore:P0})");
+            recommendations.Add("Teslimat öncesi müşteri ile telefon teyidi alınmalı");
         }
 
         // Factor 2: Time-of-day pattern (weight: 20)
@@ -48,8 +48,8 @@ public class NdrPredictionService : INdrPredictionService
         weightSum += 20;
         if (timeScore > 0.5)
         {
-            factors.Add("Aksam saatlerinde teslimat basarisizlik orani yuksek");
-            recommendations.Add("Teslimat saatini gun icine (09:00-17:00) kaydirin");
+            factors.Add("Akşam saatlerinde teslimat başarısızlık oranı yüksek");
+            recommendations.Add("Teslimat saatini gün içine (09:00-17:00) kaydırın");
         }
 
         // Factor 3: Day-of-week risk (weight: 15)
@@ -58,8 +58,8 @@ public class NdrPredictionService : INdrPredictionService
         weightSum += 15;
         if (dayScore > 0.5)
         {
-            factors.Add("Hafta sonu B2B teslimatlarinda basarisizlik riski yuksek");
-            recommendations.Add("Hafta ici teslimat planlayin");
+            factors.Add("Hafta sonu B2B teslimatlarında başarısızlık riski yüksek");
+            recommendations.Add("Hafta içi teslimat planlayın");
         }
 
         // Factor 4: Address quality (weight: 20)
@@ -70,7 +70,7 @@ public class NdrPredictionService : INdrPredictionService
         if (addressScore > 0.5)
         {
             factors.Add("Adres bilgisi eksik veya koordinat bilgisi yok");
-            recommendations.Add("Adres bilgisini tamamlayin ve geocoding yapin");
+            recommendations.Add("Adres bilgisini tamamlayın ve geocoding yapın");
         }
 
         // Factor 5: Weather risk placeholder (weight: 10)
@@ -87,10 +87,10 @@ public class NdrPredictionService : INdrPredictionService
         finalScore = Math.Clamp(finalScore, 0, 100);
 
         if (factors.Count == 0)
-            factors.Add("Dusuk risk — belirgin risk faktoru tespit edilmedi");
+            factors.Add("Düşük risk — belirgin risk faktörü tespit edilmedi");
 
         if (recommendations.Count == 0)
-            recommendations.Add("Standart teslimat sureci uygulanabilir");
+            recommendations.Add("Standart teslimat süreci uygulanabilir");
 
         var riskLevel = finalScore switch
         {

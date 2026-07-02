@@ -80,7 +80,7 @@ public class RouteOptimizationController(
             optimization.Status = "Failed";
             optimization.UpdatedAt = DateTime.UtcNow;
             await optimizationRepository.UpdateAsync(optimization);
-            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail($"Optimizasyon basarisiz: {ex.Message}"));
+            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail($"Optimizasyon başarısız: {ex.Message}"));
         }
         sw.Stop();
 
@@ -179,7 +179,7 @@ public class RouteOptimizationController(
         var tenantId = tenantProvider.GetTenantId();
         var result = await optimizationRepository.GetByIdAsync(id, tenantId);
         if (result == null)
-            return NotFound(ApiResponse<RouteOptimizationResult>.Fail("Optimizasyon bulunamadi"));
+            return NotFound(ApiResponse<RouteOptimizationResult>.Fail("Optimizasyon bulunamadı"));
         return Ok(ApiResponse<RouteOptimizationResult>.Ok(result));
     }
 
@@ -198,7 +198,7 @@ public class RouteOptimizationController(
         var tenantId = tenantProvider.GetTenantId();
         var result = await optimizationRepository.GetByIdAsync(id, tenantId);
         if (result == null)
-            return NotFound(ApiResponse<object>.Fail("Optimizasyon bulunamadi"));
+            return NotFound(ApiResponse<object>.Fail("Optimizasyon bulunamadı"));
 
         // Compare optimized vs naive (sequential) routing
         var naiveDistance = result.Routes.Sum(r => r.Stops.Count) * 50.0; // rough estimate: 50km avg per stop
@@ -222,7 +222,7 @@ public class RouteOptimizationController(
         var tenantId = tenantProvider.GetTenantId();
         var report = await plannedVsActualService.GenerateReportAsync(id, tenantId);
         if (report == null)
-            return NotFound(ApiResponse<PlannedVsActualReport>.Fail("Optimizasyon bulunamadi"));
+            return NotFound(ApiResponse<PlannedVsActualReport>.Fail("Optimizasyon bulunamadı"));
         return Ok(ApiResponse<PlannedVsActualReport>.Ok(report));
     }
 
@@ -261,7 +261,7 @@ public class RouteOptimizationController(
         }
         catch (Exception ex)
         {
-            return BadRequest(ApiResponse<object>.Fail($"Durak ekleme basarisiz: {ex.Message}"));
+            return BadRequest(ApiResponse<object>.Fail($"Durak ekleme başarısız: {ex.Message}"));
         }
     }
 
@@ -300,7 +300,7 @@ public class RouteOptimizationController(
         }
         catch (Exception ex)
         {
-            return BadRequest(ApiResponse<object>.Fail($"Reroute basarisiz: {ex.Message}"));
+            return BadRequest(ApiResponse<object>.Fail($"Reroute başarısız: {ex.Message}"));
         }
     }
 }

@@ -47,7 +47,7 @@ public class CrossDockRepository(IPostgresConnectionFactory connectionFactory) :
               (id, tenant_id, hub_name, hub_lat, hub_lng, inbound_vehicle_id, outbound_vehicle_id,
                transfer_date, status, items, notes, created_by, created_at)
               VALUES (@Id, @TenantId, @HubName, @HubLat, @HubLng, @InboundVehicleId, @OutboundVehicleId,
-               @TransferDate, @Status, @Items, @Notes, @CreatedBy, @CreatedAt)",
+               @TransferDate, @Status, @Items::jsonb, @Notes, @CreatedBy, @CreatedAt)",
             new
             {
                 op.Id, op.TenantId, op.HubName, op.HubLat, op.HubLng,
@@ -74,7 +74,7 @@ public class CrossDockRepository(IPostgresConnectionFactory connectionFactory) :
             @"UPDATE logistics.cross_dock_operations SET
               hub_name = @HubName, hub_lat = @HubLat, hub_lng = @HubLng,
               inbound_vehicle_id = @InboundVehicleId, outbound_vehicle_id = @OutboundVehicleId,
-              transfer_date = @TransferDate, status = @Status, items = @Items, notes = @Notes,
+              transfer_date = @TransferDate, status = @Status, items = @Items::jsonb, notes = @Notes,
               updated_by = @UpdatedBy, updated_at = @Now
               WHERE id = @Id",
             new

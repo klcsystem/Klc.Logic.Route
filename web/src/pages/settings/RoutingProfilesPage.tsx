@@ -23,25 +23,25 @@ const defaultProfile: RoutingProfile = {
 }
 
 const vehicleTypes = [
-  { key: 'standard' as const, label: 'Standart', desc: 'Binek arac', icon: Car },
-  { key: 'commercial' as const, label: 'Ticari Kamyon', desc: 'Agir vasita', icon: Truck },
+  { key: 'standard' as const, label: 'Standart', desc: 'Binek araç', icon: Car },
+  { key: 'commercial' as const, label: 'Ticari Kamyon', desc: 'Ağır vasıta', icon: Truck },
   { key: 'hazmat' as const, label: 'Tehlikeli Madde', desc: 'ADR belgeli', icon: AlertTriangle },
 ]
 
 const tollOptions = [
-  { key: 'all_roads' as const, label: 'Tüm Yollari Kullan', desc: 'Otoyol ve feribotlar dahil' },
-  { key: 'avoid_tolls' as const, label: 'Otoyollardan Kacin', desc: 'Ucretli yollardan kacin' },
-  { key: 'avoid_ferries' as const, label: 'Feribotlardan Kacin', desc: 'Feribot hatlarindan kacin' },
+  { key: 'all_roads' as const, label: 'Tüm Yolları Kullan', desc: 'Otoyol ve feribotlar dahil' },
+  { key: 'avoid_tolls' as const, label: 'Otoyollardan Kaçın', desc: 'Ücretli yollardan kaçın' },
+  { key: 'avoid_ferries' as const, label: 'Feribotlardan Kaçın', desc: 'Feribot hatlarından kaçın' },
 ]
 
 const approachOptions = [
-  { key: 'no_restrictions' as const, label: 'Kisitlama Yok', desc: 'Tüm manevralar serbest' },
-  { key: 'avoid_uturns' as const, label: 'U Donuslerden Kacin', desc: 'U donuslerden kacinarak rota oluştur' },
+  { key: 'no_restrictions' as const, label: 'Kısıtlama Yok', desc: 'Tüm manevralar serbest' },
+  { key: 'avoid_uturns' as const, label: 'U Dönüşlerden Kaçın', desc: 'U dönüşlerden kaçınarak rota oluştur' },
 ]
 
 const serviceOptions = [
-  { key: 'at_location' as const, label: 'Lokasyonda Servis', desc: 'Teslimat noktasinda dur' },
-  { key: 'roadside' as const, label: 'Yol Kenari Servis', desc: 'Yol kenarinda teslimat yap' },
+  { key: 'at_location' as const, label: 'Lokasyonda Servis', desc: 'Teslimat noktasında dur' },
+  { key: 'roadside' as const, label: 'Yol Kenarı Servis', desc: 'Yol kenarında teslimat yap' },
 ]
 
 export default function RoutingProfilesPage() {
@@ -90,7 +90,7 @@ export default function RoutingProfilesPage() {
 
       {/* Vehicle Type */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Arac Tipi</h3>
+        <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Araç Tipi</h3>
         <div className="grid md:grid-cols-3 gap-4">
           {vehicleTypes.map(vt => {
             const Icon = vt.icon
@@ -128,7 +128,7 @@ export default function RoutingProfilesPage() {
           />
           <div>
             <span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde Tasimaciligi</span>
-            <p className="text-[11px] text-slate-400">ADR kurallarini uygula ve kisitli yollardan kacin</p>
+            <p className="text-[11px] text-slate-400">ADR kurallarını uygula ve kısıtlı yollardan kaçın</p>
           </div>
         </label>
       </div>

@@ -174,9 +174,9 @@ public class DelayPredictionService : IDelayPredictionService
 
             await _notificationService.SendToAllAsync(
                 tenantId,
-                $"Gecikme Uyarisi — {severity}",
+                $"Gecikme Uyarısı — {severity}",
                 $"Sevkiyat {shipment.ShipmentNumber}: Tahmini {delayMinutes} dk gecikme. " +
-                $"Oneri: {suggestedAction}",
+                $"Öneri: {suggestedAction}",
                 notificationType);
 
             _logger.LogWarning(
@@ -196,8 +196,8 @@ public class DelayPredictionService : IDelayPredictionService
 
     private static (string Severity, string SuggestedAction) ClassifyDelay(int delayMinutes) => delayMinutes switch
     {
-        >= 60 => ("CRITICAL", "Musteriye bildirim gonderin, yeniden rotalama veya baska surucuye atama yapin"),
-        >= 30 => ("HIGH", "Rotayi yeniden optimize edin veya musteriye bilgi verin"),
-        _ => ("WARNING", "Surucuyle iletisime gecin ve durumu takip edin")
+        >= 60 => ("CRITICAL", "Müşteriye bildirim gönderin, yeniden rotalama veya başka sürücüye atama yapın"),
+        >= 30 => ("HIGH", "Rotayı yeniden optimize edin veya müşteriye bilgi verin"),
+        _ => ("WARNING", "Sürücüyle iletişime geçin ve durumu takip edin")
     };
 }

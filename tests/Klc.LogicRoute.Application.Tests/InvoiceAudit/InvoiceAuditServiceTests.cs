@@ -134,7 +134,7 @@ public class InvoiceAuditServiceTests
         var act = () => _service.AuditAsync(Guid.NewGuid(), "INV-001", 5000, _tenantId);
 
         await act.Should().ThrowAsync<KeyNotFoundException>()
-            .WithMessage("*bulunamadi*");
+            .WithMessage("*bulunamadı*");
     }
 
     [Fact]

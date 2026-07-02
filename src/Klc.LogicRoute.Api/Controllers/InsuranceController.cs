@@ -23,7 +23,7 @@ public class InsuranceController(
         var userId = tenantProvider.GetUserId();
 
         var quotes = await insuranceService.RequestQuotesAsync(request, tenantId, userId);
-        return Ok(ApiResponse<IEnumerable<InsuranceQuote>>.Ok(quotes, $"{quotes.Count()} partner'a teklif talebi gonderildi"));
+        return Ok(ApiResponse<IEnumerable<InsuranceQuote>>.Ok(quotes, $"{quotes.Count()} partner'a teklif talebi gönderildi"));
     }
 
     /// <summary>List quotes for a shipment</summary>
@@ -47,7 +47,7 @@ public class InsuranceController(
         try
         {
             var policy = await insuranceService.AcceptQuoteAsync(quoteId, tenantId, userId);
-            return Ok(ApiResponse<InsurancePolicy>.Ok(policy, "Police olusturuldu"));
+            return Ok(ApiResponse<InsurancePolicy>.Ok(policy, "Poliçe oluşturuldu"));
         }
         catch (InvalidOperationException ex)
         {
@@ -85,7 +85,7 @@ public class InsuranceController(
     public async Task<ActionResult<ApiResponse<IEnumerable<InsuranceQuote>>>> GetPartnerRequests([FromQuery] string apiKey)
     {
         if (string.IsNullOrWhiteSpace(apiKey))
-            return Unauthorized(ApiResponse<IEnumerable<InsuranceQuote>>.Fail("API anahtari gerekli"));
+            return Unauthorized(ApiResponse<IEnumerable<InsuranceQuote>>.Fail("API anahtarı gerekli"));
 
         try
         {
@@ -104,12 +104,12 @@ public class InsuranceController(
     public async Task<ActionResult<ApiResponse<InsuranceQuote>>> SubmitPartnerQuote([FromBody] PartnerQuoteSubmission submission)
     {
         if (string.IsNullOrWhiteSpace(submission.ApiKey))
-            return Unauthorized(ApiResponse<InsuranceQuote>.Fail("API anahtari gerekli"));
+            return Unauthorized(ApiResponse<InsuranceQuote>.Fail("API anahtarı gerekli"));
 
         try
         {
             var quote = await insuranceService.SubmitPartnerQuoteAsync(submission);
-            return Ok(ApiResponse<InsuranceQuote>.Ok(quote, "Teklif basariyla gonderildi"));
+            return Ok(ApiResponse<InsuranceQuote>.Ok(quote, "Teklif başarıyla gönderildi"));
         }
         catch (InvalidOperationException ex)
         {

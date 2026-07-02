@@ -22,10 +22,10 @@ public class TerritoryPlanningService : ITerritoryPlanningService
     public Task<TerritoryPlanResult> PlanAsync(List<DeliveryPoint> points, int zoneCount, TerritoryPlanRequest options)
     {
         if (points.Count == 0)
-            throw new ArgumentException("En az bir teslimat noktasi gereklidir.");
+            throw new ArgumentException("En az bir teslimat noktası gereklidir.");
 
         if (zoneCount <= 0)
-            throw new ArgumentException("Bolge sayisi 1 veya daha fazla olmalidir.");
+            throw new ArgumentException("Bölge sayısı 1 veya daha fazla olmalıdır.");
 
         if (zoneCount > points.Count)
             zoneCount = points.Count;
@@ -285,7 +285,7 @@ public class TerritoryPlanningService : ITerritoryPlanningService
             var zone = new Territory
             {
                 ZoneId = c + 1,
-                Name = $"Bolge {c + 1}",
+                Name = $"Bölge {c + 1}",
                 CentroidLat = centroids[c].Lat,
                 CentroidLng = centroids[c].Lng,
                 Color = ZoneColors[c % ZoneColors.Length],

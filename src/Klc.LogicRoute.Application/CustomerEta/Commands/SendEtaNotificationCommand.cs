@@ -21,7 +21,7 @@ public class SendEtaNotificationHandler(
     {
         var shipment = await shipmentRepository.GetByIdAsync(request.ShipmentId, request.TenantId);
         if (shipment == null)
-            return new SendEtaNotificationResult(false, Message: "Sevkiyat bulunamadi");
+            return new SendEtaNotificationResult(false, Message: "Sevkiyat bulunamadı");
 
         // Get or create customer tracking record
         var tracking = await customerTrackingRepository.GetByShipmentIdAsync(request.ShipmentId, request.TenantId);
@@ -70,7 +70,7 @@ public class SendEtaNotificationHandler(
             await emailProvider.SendEmailAsync(tracking.CustomerEmail, subject, body, isHtml: true, cancellationToken);
         }
 
-        return new SendEtaNotificationResult(true, tracking.TrackingToken, "Bildirim gonderildi");
+        return new SendEtaNotificationResult(true, tracking.TrackingToken, "Bildirim gönderildi");
     }
 
     private static string GenerateToken()

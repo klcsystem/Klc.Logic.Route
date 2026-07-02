@@ -56,7 +56,7 @@ const defaultConfig: DriverConfig = {
   barcodeAutoComplete: false,
   fields: [
     { id: 'address', label: 'Adres', visible: true },
-    { id: 'duration', label: 'Sure', visible: true },
+    { id: 'duration', label: 'Süre', visible: true },
     { id: 'location', label: 'Konum', visible: true },
     { id: 'timeWindows', label: 'Zaman Penceresi', visible: true },
     { id: 'orderId', label: 'Sipariş ID', visible: true },

@@ -31,6 +31,8 @@ public static class DependencyInjection
     {
         // Enable Dapper snake_case to PascalCase mapping
         DefaultTypeMap.MatchNamesWithUnderscores = true;
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+        SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
 
         // PostgreSQL
         services.AddSingleton<IPostgresConnectionFactory, PostgresConnectionFactory>();

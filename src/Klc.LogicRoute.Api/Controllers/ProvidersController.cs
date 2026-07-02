@@ -27,7 +27,7 @@ public class ProvidersController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var provider = await providerRepository.GetByIdAsync(id, tenantId);
-        if (provider == null) return NotFound(ApiResponse<Provider>.Fail("Tedarikci bulunamadi"));
+        if (provider == null) return NotFound(ApiResponse<Provider>.Fail("Tedarikçi bulunamadı"));
         return Ok(ApiResponse<Provider>.Ok(provider));
     }
 

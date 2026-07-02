@@ -25,7 +25,7 @@ public class UploadProofOfDeliveryHandler(
     {
         var shipment = await shipmentRepository.GetByIdAsync(request.ShipmentId, request.TenantId);
         if (shipment == null)
-            return new UploadProofOfDeliveryResult(false, Message: "Sevkiyat bulunamadi");
+            return new UploadProofOfDeliveryResult(false, Message: "Sevkiyat bulunamadı");
 
         var pod = new ProofOfDelivery
         {
@@ -42,6 +42,6 @@ public class UploadProofOfDeliveryHandler(
         };
 
         var id = await podRepository.CreateAsync(pod);
-        return new UploadProofOfDeliveryResult(true, id, "Teslimat kaniti kaydedildi");
+        return new UploadProofOfDeliveryResult(true, id, "Teslimat kanıtı kaydedildi");
     }
 }

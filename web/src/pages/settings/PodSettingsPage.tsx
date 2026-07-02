@@ -18,7 +18,7 @@ interface PodRow {
 const initialRows: PodRow[] = [
   { orderType: 'delivery', label: 'Teslimat', note: 'optional', noteRequired: false, signature: 'enabled', signatureRequired: true, photos: 'optional', photosRequired: false },
   { orderType: 'pickup', label: 'Toplama', note: 'optional', noteRequired: false, signature: 'optional', signatureRequired: false, photos: 'disabled', photosRequired: false },
-  { orderType: 'task', label: 'Gorev', note: 'enabled', noteRequired: false, signature: 'disabled', signatureRequired: false, photos: 'disabled', photosRequired: false },
+  { orderType: 'task', label: 'Görev', note: 'enabled', noteRequired: false, signature: 'disabled', signatureRequired: false, photos: 'disabled', photosRequired: false },
   { orderType: 'failed', label: 'Başarısız / Reddedildi', note: 'enabled', noteRequired: true, signature: 'disabled', signatureRequired: false, photos: 'optional', photosRequired: false },
 ]
 

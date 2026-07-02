@@ -61,9 +61,9 @@ function getHeatColor(count: number, max: number): string {
 
 function getHeatColorLabel(count: number, max: number): string {
   const ratio = count / Math.max(max, 1)
-  if (ratio > 0.66) return 'Yuksek'
+  if (ratio > 0.66) return 'Yüksek'
   if (ratio > 0.33) return 'Orta'
-  return 'Dusuk'
+  return 'Düşük'
 }
 
 function getRadius(count: number, max: number): number {
@@ -230,7 +230,7 @@ export default function HeatMapPage() {
               <div className="font-medium text-slate-700 mb-2">Yoğunluk</div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
-                <span className="text-slate-600">Yuksek</span>
+                <span className="text-slate-600">Yüksek</span>
               </div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-3 h-3 rounded-full bg-amber-400" />
@@ -238,7 +238,7 @@ export default function HeatMapPage() {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="text-slate-600">Dusuk</span>
+                <span className="text-slate-600">Düşük</span>
               </div>
             </div>
           </div>

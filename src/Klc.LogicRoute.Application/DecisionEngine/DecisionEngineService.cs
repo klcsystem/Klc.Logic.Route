@@ -67,7 +67,7 @@ public class DecisionEngineService(
             {
                 TenantId = tenantId,
                 ShipmentId = shipment.Id,
-                Explanation = "Eslesen tarife bulunamadi",
+                Explanation = "Eşleşen tarife bulunamadı",
                 CalculatedAt = DateTime.UtcNow
             };
         }
@@ -188,7 +188,7 @@ public class DecisionEngineService(
     {
         var parts = new List<string> { $"{best.ProviderName}: {best.TotalPrice:F2} TRY" };
         if (alt != null && savings > 0)
-            parts.Add($"{alt.ProviderName}'e gore %{savingsPercent:F1} daha uygun ({savings:F2} TRY tasarruf)");
+            parts.Add($"{alt.ProviderName}'e göre %{savingsPercent:F1} daha uygun ({savings:F2} TRY tasarruf)");
         parts.Add($"Karar: {reason}");
         return string.Join(". ", parts);
     }

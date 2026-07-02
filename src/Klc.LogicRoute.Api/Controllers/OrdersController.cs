@@ -41,7 +41,7 @@ public class OrdersController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var order = await orderRepository.GetByIdAsync(id, tenantId);
-        if (order == null) return NotFound(ApiResponse<Order>.Fail("Siparis bulunamadi"));
+        if (order == null) return NotFound(ApiResponse<Order>.Fail("Sipariş bulunamadı"));
         return Ok(ApiResponse<Order>.Ok(order));
     }
 
@@ -76,7 +76,7 @@ public class OrdersController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var existing = await orderRepository.GetByIdAsync(id, tenantId);
-        if (existing == null) return NotFound(ApiResponse<bool>.Fail("Siparis bulunamadi"));
+        if (existing == null) return NotFound(ApiResponse<bool>.Fail("Sipariş bulunamadı"));
 
         order.Id = id;
         order.TenantId = tenantId;
@@ -103,7 +103,7 @@ public class OrdersController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var existing = await orderRepository.GetByIdAsync(id, tenantId);
-        if (existing == null) return NotFound(ApiResponse<bool>.Fail("Siparis bulunamadi"));
+        if (existing == null) return NotFound(ApiResponse<bool>.Fail("Sipariş bulunamadı"));
 
         await orderRepository.UpdateStatusAsync(id, tenantId, (int)update.Status);
         return Ok(ApiResponse<bool>.Ok(true));
@@ -136,13 +136,13 @@ public class OrdersController(
         }
 
         if (connection == null)
-            return NotFound(ApiResponse<object>.Fail("Aktif ERP baglantisi bulunamadi"));
+            return NotFound(ApiResponse<object>.Fail("Aktif ERP bağlantısı bulunamadı"));
 
         var adapter = erpAdapters.FirstOrDefault(a => a.SupportedType == connection.ErpType)
                       ?? erpAdapters.FirstOrDefault(a => a.SupportedType == ErpType.Generic);
 
         if (adapter == null)
-            return BadRequest(ApiResponse<object>.Fail("ERP adapter bulunamadi"));
+            return BadRequest(ApiResponse<object>.Fail("ERP adapter bulunamadı"));
 
         var orders = await adapter.SyncOrdersAsync(connection, connection.LastSyncAt);
 

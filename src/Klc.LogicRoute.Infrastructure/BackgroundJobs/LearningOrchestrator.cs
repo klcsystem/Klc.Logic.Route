@@ -123,7 +123,7 @@ public class LearningOrchestrator : BackgroundService
         await using var connection = connectionFactory.CreateConnection();
         await connection.OpenAsync();
 
-        const string sql = "SELECT id FROM tenants WHERE is_deleted = false";
+        const string sql = "SELECT id FROM auth.tenants WHERE is_active = true";
         var result = await connection.QueryAsync<Guid>(sql);
         return result.ToList();
     }

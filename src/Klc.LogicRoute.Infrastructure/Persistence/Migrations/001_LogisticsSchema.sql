@@ -87,6 +87,26 @@ CREATE TABLE IF NOT EXISTS logistics.contract_rates (
 CREATE INDEX IF NOT EXISTS idx_contract_rates_contract ON logistics.contract_rates(contract_id);
 CREATE INDEX IF NOT EXISTS idx_contract_rates_route ON logistics.contract_rates(origin_region, destination_region);
 
+-- ERP Connections (ERP baglantilari) — orders tablosundan ONCE olusturulmali (FK referansi var)
+CREATE TABLE IF NOT EXISTS logistics.erp_connections (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID NOT NULL REFERENCES auth.tenants(id),
+    name VARCHAR(200) NOT NULL,
+    erp_type INT NOT NULL DEFAULT 0,
+    endpoint_url VARCHAR(1000),
+    username VARCHAR(200),
+    password VARCHAR(500),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_sync_at TIMESTAMPTZ,
+    last_sync_status VARCHAR(100),
+    settings TEXT,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_by VARCHAR(100),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_by VARCHAR(100),
+    updated_at TIMESTAMPTZ
+);
+
 -- Orders (ERP'den gelen siparisler)
 CREATE TABLE IF NOT EXISTS logistics.orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -144,26 +164,6 @@ CREATE TABLE IF NOT EXISTS logistics.order_lines (
     desi_weight NUMERIC(18,2) NOT NULL DEFAULT 0,
     is_stackable BOOLEAN NOT NULL DEFAULT TRUE,
     notes TEXT,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    created_by VARCHAR(100),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_by VARCHAR(100),
-    updated_at TIMESTAMPTZ
-);
-
--- ERP Connections (ERP baglantilari)
-CREATE TABLE IF NOT EXISTS logistics.erp_connections (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id UUID NOT NULL REFERENCES auth.tenants(id),
-    name VARCHAR(200) NOT NULL,
-    erp_type INT NOT NULL DEFAULT 0,
-    endpoint_url VARCHAR(1000),
-    username VARCHAR(200),
-    password VARCHAR(500),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    last_sync_at TIMESTAMPTZ,
-    last_sync_status VARCHAR(100),
-    settings TEXT,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_by VARCHAR(100),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -29,7 +29,7 @@ public class SettingsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var connection = await erpConnectionRepository.GetByIdAsync(id, tenantId);
-        if (connection == null) return NotFound(ApiResponse<ErpConnection>.Fail("ERP baglantisi bulunamadi"));
+        if (connection == null) return NotFound(ApiResponse<ErpConnection>.Fail("ERP bağlantısı bulunamadı"));
         return Ok(ApiResponse<ErpConnection>.Ok(connection));
     }
 
@@ -67,7 +67,7 @@ public class SettingsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var connection = await erpConnectionRepository.GetByIdAsync(id, tenantId);
-        if (connection == null) return NotFound(ApiResponse<bool>.Fail("ERP baglantisi bulunamadi"));
+        if (connection == null) return NotFound(ApiResponse<bool>.Fail("ERP bağlantısı bulunamadı"));
 
         var adapter = erpAdapters.FirstOrDefault(a => a.SupportedType == connection.ErpType)
             ?? erpAdapters.First(a => a.SupportedType == Domain.Enums.ErpType.Generic);
@@ -82,7 +82,7 @@ public class SettingsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var connection = await erpConnectionRepository.GetByIdAsync(id, tenantId);
-        if (connection == null) return NotFound(ApiResponse<int>.Fail("ERP baglantisi bulunamadi"));
+        if (connection == null) return NotFound(ApiResponse<int>.Fail("ERP bağlantısı bulunamadı"));
 
         var adapter = erpAdapters.FirstOrDefault(a => a.SupportedType == connection.ErpType)
             ?? erpAdapters.First(a => a.SupportedType == Domain.Enums.ErpType.Generic);
@@ -97,6 +97,6 @@ public class SettingsController(
         }
 
         await erpConnectionRepository.UpdateSyncStatusAsync(id, tenantId, $"Synced {orders.Count} orders");
-        return Ok(ApiResponse<int>.Ok(orders.Count, $"{orders.Count} siparis senkronize edildi"));
+        return Ok(ApiResponse<int>.Ok(orders.Count, $"{orders.Count} sipariş senkronize edildi"));
     }
 }

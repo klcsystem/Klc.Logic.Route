@@ -66,7 +66,7 @@ export default function VehicleProfilesPage() {
       setIsNew(false)
       fetchProfiles()
     } catch {
-      toast('error', 'Kaydetme hatasi')
+      toast('error', 'Kaydetme hatası')
     }
   }
 
@@ -76,7 +76,7 @@ export default function VehicleProfilesPage() {
       toast('success', 'Profil silindi')
       fetchProfiles()
     } catch {
-      toast('error', 'Silme hatasi')
+      toast('error', 'Silme hatası')
     }
   }
 
@@ -85,11 +85,11 @@ export default function VehicleProfilesPage() {
     try {
       const ids = vehicleIdsText.split(',').map(s => s.trim()).filter(Boolean)
       await api.post(`/vehicle-profiles/${assignProfileId}/assign`, ids)
-      toast('success', 'Profil araclara atandı')
+      toast('success', 'Profil araçlara atandı')
       setAssignProfileId(null)
       setVehicleIdsText('')
     } catch {
-      toast('error', 'Atama hatasi')
+      toast('error', 'Atama hatası')
     }
   }
 
@@ -111,8 +111,8 @@ export default function VehicleProfilesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Arac Profilleri</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Tekrar kullanilabilir arac profil sablonlari tanimlayip araclara atayin</p>
+          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Araç Profilleri</h1>
+          <p className="text-[14px] text-slate-400 mt-1">Tekrar kullanılabilir araç profil şablonları tanımlayıp araçlara atayın</p>
         </div>
         <button onClick={startNew} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Plus className="w-4 h-4" /> Yeni Profil
@@ -140,7 +140,7 @@ export default function VehicleProfilesPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => { setAssignProfileId(p.id); setVehicleIdsText('') }} className="p-2 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-500 transition-colors" title="Araclara Ata">
+              <button onClick={() => { setAssignProfileId(p.id); setVehicleIdsText('') }} className="p-2 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-500 transition-colors" title="Araçlara Ata">
                 <Link className="w-4 h-4" />
               </button>
               <button onClick={() => startEdit(p)} className="p-2 rounded-lg hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors">
@@ -153,7 +153,7 @@ export default function VehicleProfilesPage() {
           </div>
         ))}
         {profiles.length === 0 && (
-          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz profil tanimlanmadi</div>
+          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz profil tanımlanmadı</div>
         )}
       </div>
 
@@ -162,10 +162,10 @@ export default function VehicleProfilesPage() {
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[16px] font-semibold text-slate-800">Profili Araclara Ata</h3>
+              <h3 className="text-[16px] font-semibold text-slate-800">Profili Araçlara Ata</h3>
               <button onClick={() => setAssignProfileId(null)} className="p-1 rounded-lg hover:bg-slate-100"><X className="w-4 h-4" /></button>
             </div>
-            <label className="block text-[13px] text-slate-600 mb-2">Arac ID'leri (virgul ile ayirin)</label>
+            <label className="block text-[13px] text-slate-600 mb-2">Araç ID'leri (virgül ile ayırın)</label>
             <textarea
               value={vehicleIdsText}
               onChange={e => setVehicleIdsText(e.target.value)}
@@ -215,12 +215,12 @@ export default function VehicleProfilesPage() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Yukseklik (m)</label>
+                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Yükseklik (m)</label>
                   <input type="number" step="0.1" value={editing.maxHeightM} onChange={e => updateField('maxHeightM', +e.target.value)}
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Genislik (m)</label>
+                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Genişlik (m)</label>
                   <input type="number" step="0.1" value={editing.maxWidthM} onChange={e => updateField('maxWidthM', +e.target.value)}
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
                 </div>
@@ -251,12 +251,12 @@ export default function VehicleProfilesPage() {
                 <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
                   <input type="checkbox" checked={editing.avoidTolls} onChange={e => updateField('avoidTolls', e.target.checked)}
                     className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400" />
-                  <span className="text-[13px] font-medium text-slate-700">Otoyollardan Kacin</span>
+                  <span className="text-[13px] font-medium text-slate-700">Otoyollardan Kaçın</span>
                 </label>
                 <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
                   <input type="checkbox" checked={editing.avoidFerries} onChange={e => updateField('avoidFerries', e.target.checked)}
                     className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400" />
-                  <span className="text-[13px] font-medium text-slate-700">Feribotlardan Kacin</span>
+                  <span className="text-[13px] font-medium text-slate-700">Feribotlardan Kaçın</span>
                 </label>
               </div>
               <label className="flex items-center gap-2 p-3 rounded-xl bg-orange-50 border border-orange-100 cursor-pointer">

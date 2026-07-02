@@ -186,7 +186,7 @@ public class LogisticsPipelineOrchestrator : BackgroundService
 
         const string sql = """
             SELECT DISTINCT tenant_id
-            FROM orders
+            FROM logistics.orders
             WHERE status = 1
               AND is_deleted = false
               AND destination_lat IS NOT NULL
@@ -205,7 +205,7 @@ public class LogisticsPipelineOrchestrator : BackgroundService
 
         const string sql = """
             SELECT id, destination_lat, destination_lng, destination_city
-            FROM orders
+            FROM logistics.orders
             WHERE tenant_id = @TenantId
               AND status = 1
               AND is_deleted = false

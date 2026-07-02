@@ -30,22 +30,22 @@ const API_GROUPS: EndpointGroup[] = [
     name: 'Authentication',
     description: 'Kimlik doğrulama ve yetkilendirme işlemleri',
     endpoints: [
-      { method: 'POST', path: '/api/auth/login', description: 'Kullanici girişi, JWT token alinir' },
+      { method: 'POST', path: '/api/auth/login', description: 'Kullanıcı girişi, JWT token alınır' },
       { method: 'POST', path: '/api/auth/refresh', description: 'Token yenileme' },
-      { method: 'POST', path: '/api/auth/logout', description: 'Oturum sonlandirma' },
-      { method: 'GET', path: '/api/auth/me', description: 'Mevcut kullanici bilgilerini getirir' },
+      { method: 'POST', path: '/api/auth/logout', description: 'Oturum sonlandırma' },
+      { method: 'GET', path: '/api/auth/me', description: 'Mevcut kullanıcı bilgilerini getirir' },
     ],
   },
   {
     name: 'Orders',
     description: 'Sipariş yönetimi ve sipariş işlemleri',
     endpoints: [
-      { method: 'GET', path: '/api/orders', description: 'Tüm siparişleri listeler (pagination, filtre destegi)' },
-      { method: 'GET', path: '/api/orders/{id}', description: 'Sipariş detayini getirir' },
+      { method: 'GET', path: '/api/orders', description: 'Tüm siparişleri listeler (pagination, filtre desteği)' },
+      { method: 'GET', path: '/api/orders/{id}', description: 'Sipariş detayını getirir' },
       { method: 'POST', path: '/api/orders', description: 'Yeni sipariş oluşturur' },
       { method: 'PUT', path: '/api/orders/{id}', description: 'Sipariş bilgilerini günceller' },
       { method: 'DELETE', path: '/api/orders/{id}', description: 'Siparişi siler' },
-      { method: 'POST', path: '/api/orders/import', description: 'Toplu sipariş aktarımi (CSV/Excel)' },
+      { method: 'POST', path: '/api/orders/import', description: 'Toplu sipariş aktarımı (CSV/Excel)' },
       { method: 'PATCH', path: '/api/orders/{id}/status', description: 'Sipariş durumunu günceller' },
     ],
   },
@@ -53,12 +53,12 @@ const API_GROUPS: EndpointGroup[] = [
     name: 'Shipments',
     description: 'Sevkiyat yönetimi ve takibi',
     endpoints: [
-      { method: 'GET', path: '/api/shipments', description: 'Tüm sevkiyatlari listeler' },
-      { method: 'GET', path: '/api/shipments/{id}', description: 'Sevkiyat detayini getirir' },
+      { method: 'GET', path: '/api/shipments', description: 'Tüm sevkiyatları listeler' },
+      { method: 'GET', path: '/api/shipments/{id}', description: 'Sevkiyat detayını getirir' },
       { method: 'POST', path: '/api/shipments', description: 'Yeni sevkiyat oluşturur' },
       { method: 'PUT', path: '/api/shipments/{id}', description: 'Sevkiyat bilgilerini günceller' },
       { method: 'PATCH', path: '/api/shipments/{id}/status', description: 'Sevkiyat durumunu günceller' },
-      { method: 'POST', path: '/api/shipments/{id}/assign', description: 'Sevkiyati sürücüye atar' },
+      { method: 'POST', path: '/api/shipments/{id}/assign', description: 'Sevkiyatı sürücüye atar' },
       { method: 'GET', path: '/api/shipments/{id}/timeline', description: 'Sevkiyat zaman çizelgesi' },
     ],
   },
@@ -68,10 +68,10 @@ const API_GROUPS: EndpointGroup[] = [
     endpoints: [
       { method: 'POST', path: '/api/route-optimization/optimize', description: 'Rota optimizasyonu başlat (OR-Tools AI)' },
       { method: 'GET', path: '/api/route-optimization/{id}', description: 'Optimizasyon sonucunu getirir' },
-      { method: 'GET', path: '/api/route-optimization', description: 'Optimizasyon gecmisini listeler' },
-      { method: 'POST', path: '/api/route-optimization/{id}/apply', description: 'Optimize rotayi uygular' },
-      { method: 'GET', path: '/api/route-optimization/{id}/planned-vs-actual', description: 'Planlanan vs gerçeklesen karşılaştırmasi' },
-      { method: 'POST', path: '/api/route-optimization/reoptimize', description: 'Mevcut rotayi yeniden optimize eder' },
+      { method: 'GET', path: '/api/route-optimization', description: 'Optimizasyon geçmişini listeler' },
+      { method: 'POST', path: '/api/route-optimization/{id}/apply', description: 'Optimize rotayı uygular' },
+      { method: 'GET', path: '/api/route-optimization/{id}/planned-vs-actual', description: 'Planlanan vs gerçekleşen karşılaştırması' },
+      { method: 'POST', path: '/api/route-optimization/reoptimize', description: 'Mevcut rotayı yeniden optimize eder' },
     ],
   },
   {
@@ -79,12 +79,12 @@ const API_GROUPS: EndpointGroup[] = [
     description: 'Araç ve filo yönetimi',
     endpoints: [
       { method: 'GET', path: '/api/vehicles', description: 'Tüm araçları listeler' },
-      { method: 'GET', path: '/api/vehicles/{id}', description: 'Araç detayini getirir' },
-      { method: 'POST', path: '/api/vehicles', description: 'Yeni arac ekler' },
+      { method: 'GET', path: '/api/vehicles/{id}', description: 'Araç detayını getirir' },
+      { method: 'POST', path: '/api/vehicles', description: 'Yeni araç ekler' },
       { method: 'PUT', path: '/api/vehicles/{id}', description: 'Araç bilgilerini günceller' },
-      { method: 'DELETE', path: '/api/vehicles/{id}', description: 'Araci siler' },
+      { method: 'DELETE', path: '/api/vehicles/{id}', description: 'Aracı siler' },
       { method: 'GET', path: '/api/vehicles/{id}/location', description: 'Araç konumunu getirir' },
-      { method: 'GET', path: '/api/vehicles/{id}/maintenance', description: 'Araç bakim gecmisi' },
+      { method: 'GET', path: '/api/vehicles/{id}/maintenance', description: 'Araç bakım geçmişi' },
     ],
   },
   {
@@ -92,31 +92,31 @@ const API_GROUPS: EndpointGroup[] = [
     description: 'Sürücü yönetimi ve performansı',
     endpoints: [
       { method: 'GET', path: '/api/drivers', description: 'Tüm sürücüleri listeler' },
-      { method: 'GET', path: '/api/drivers/{id}', description: 'Sürücü detayini getirir' },
+      { method: 'GET', path: '/api/drivers/{id}', description: 'Sürücü detayını getirir' },
       { method: 'POST', path: '/api/drivers', description: 'Yeni sürücü ekler' },
       { method: 'PUT', path: '/api/drivers/{id}', description: 'Sürücü bilgilerini günceller' },
-      { method: 'DELETE', path: '/api/drivers/{id}', description: 'Sürücüyu siler' },
+      { method: 'DELETE', path: '/api/drivers/{id}', description: 'Sürücüyü siler' },
       { method: 'GET', path: '/api/drivers/{id}/performance', description: 'Sürücü performans metrikleri' },
-      { method: 'GET', path: '/api/drivers/{id}/routes', description: 'Sürücünun rota gecmisi' },
+      { method: 'GET', path: '/api/drivers/{id}/routes', description: 'Sürücünün rota geçmişi' },
     ],
   },
   {
     name: 'Tracking',
-    description: 'Canli takip ve konum hizmetleri',
+    description: 'Canlı takip ve konum hizmetleri',
     endpoints: [
-      { method: 'GET', path: '/api/tracking/live', description: 'Tüm aktif araçların canli konumlarını getirir' },
+      { method: 'GET', path: '/api/tracking/live', description: 'Tüm aktif araçların canlı konumlarını getirir' },
       { method: 'GET', path: '/api/tracking/{shipmentId}', description: 'Sevkiyat takip bilgisi' },
       { method: 'POST', path: '/api/tracking/location', description: 'Konum güncelleme (mobil uygulama)' },
-      { method: 'GET', path: '/api/tracking/{token}/public', description: 'Müşteri takip sayfasi verisi (public)' },
-      { method: 'POST', path: '/api/tracking/geofence', description: 'Geofence alani tanimlar' },
+      { method: 'GET', path: '/api/tracking/{token}/public', description: 'Müşteri takip sayfası verisi (public)' },
+      { method: 'POST', path: '/api/tracking/geofence', description: 'Geofence alanı tanımlar' },
     ],
   },
   {
     name: 'Insurance',
     description: 'Sigorta yönetimi',
     endpoints: [
-      { method: 'GET', path: '/api/insurance/policies', description: 'Sigorta policelerini listeler' },
-      { method: 'POST', path: '/api/insurance/policies', description: 'Yeni police oluşturur' },
+      { method: 'GET', path: '/api/insurance/policies', description: 'Sigorta poliçelerini listeler' },
+      { method: 'POST', path: '/api/insurance/policies', description: 'Yeni poliçe oluşturur' },
       { method: 'POST', path: '/api/insurance/claims', description: 'Hasar bildirimi oluşturur' },
       { method: 'GET', path: '/api/insurance/claims', description: 'Hasar bildirimlerini listeler' },
     ],
@@ -125,9 +125,9 @@ const API_GROUPS: EndpointGroup[] = [
     name: 'Marketplace',
     description: 'Taşıyıcı pazar yeri',
     endpoints: [
-      { method: 'GET', path: '/api/marketplace/carriers', description: 'Mevcut taşıyıcılari listeler' },
+      { method: 'GET', path: '/api/marketplace/carriers', description: 'Mevcut taşıyıcıları listeler' },
       { method: 'POST', path: '/api/marketplace/quotes', description: 'Fiyat teklifi talep eder' },
-      { method: 'GET', path: '/api/marketplace/quotes/{id}', description: 'Teklif detayini getirir' },
+      { method: 'GET', path: '/api/marketplace/quotes/{id}', description: 'Teklif detayını getirir' },
       { method: 'POST', path: '/api/marketplace/quotes/{id}/accept', description: 'Teklifi kabul eder' },
     ],
   },
@@ -135,38 +135,38 @@ const API_GROUPS: EndpointGroup[] = [
     name: 'Analytics',
     description: 'Raporlama ve analitik',
     endpoints: [
-      { method: 'GET', path: '/api/analytics/dashboard', description: 'Dashboard ozet metrikleri' },
+      { method: 'GET', path: '/api/analytics/dashboard', description: 'Dashboard özet metrikleri' },
       { method: 'GET', path: '/api/analytics/costs', description: 'Maliyet analiz raporu' },
       { method: 'GET', path: '/api/analytics/performance', description: 'Performans metrikleri raporu' },
       { method: 'GET', path: '/api/analytics/co2', description: 'Karbon ayak izi raporu' },
-      { method: 'GET', path: '/api/analytics/carrier-scorecard', description: 'Taşıyıcı performans karti' },
-      { method: 'POST', path: '/api/analytics/export', description: 'Rapor disari aktarım (PDF/Excel)' },
+      { method: 'GET', path: '/api/analytics/carrier-scorecard', description: 'Taşıyıcı performans kartı' },
+      { method: 'POST', path: '/api/analytics/export', description: 'Rapor dışarı aktarım (PDF/Excel)' },
     ],
   },
   {
     name: 'Settings',
-    description: 'Sistem ayarları ve konfigurasyonlari',
+    description: 'Sistem ayarları ve konfigürasyonları',
     endpoints: [
-      { method: 'GET', path: '/api/settings/tenant', description: 'Tenant ayarlarıni getirir' },
-      { method: 'PUT', path: '/api/settings/tenant', description: 'Tenant ayarlarıni günceller' },
+      { method: 'GET', path: '/api/settings/tenant', description: 'Tenant ayarlarını getirir' },
+      { method: 'PUT', path: '/api/settings/tenant', description: 'Tenant ayarlarını günceller' },
       { method: 'GET', path: '/api/settings/erp-connections', description: 'ERP entegrasyon ayarları' },
-      { method: 'POST', path: '/api/settings/erp-connections', description: 'Yeni ERP bağlantısi ekler' },
-      { method: 'GET', path: '/api/settings/depots', description: 'Depo tanimlarini listeler' },
-      { method: 'POST', path: '/api/settings/depots', description: 'Yeni depo tanimlar' },
-      { method: 'GET', path: '/api/settings/routing-rules', description: 'Rotalama kurallarini listeler' },
-      { method: 'POST', path: '/api/settings/routing-rules', description: 'Yeni rotalama kurali ekler' },
+      { method: 'POST', path: '/api/settings/erp-connections', description: 'Yeni ERP bağlantısı ekler' },
+      { method: 'GET', path: '/api/settings/depots', description: 'Depo tanımlarını listeler' },
+      { method: 'POST', path: '/api/settings/depots', description: 'Yeni depo tanımlar' },
+      { method: 'GET', path: '/api/settings/routing-rules', description: 'Rotalama kurallarını listeler' },
+      { method: 'POST', path: '/api/settings/routing-rules', description: 'Yeni rotalama kuralı ekler' },
     ],
   },
   {
     name: 'Users',
-    description: 'Kullanici yönetimi',
+    description: 'Kullanıcı yönetimi',
     endpoints: [
-      { method: 'GET', path: '/api/users', description: 'Kullanicilari listeler' },
-      { method: 'GET', path: '/api/users/{id}', description: 'Kullanici detayini getirir' },
-      { method: 'POST', path: '/api/users', description: 'Yeni kullanici oluşturur' },
-      { method: 'PUT', path: '/api/users/{id}', description: 'Kullanici bilgilerini günceller' },
-      { method: 'DELETE', path: '/api/users/{id}', description: 'Kullaniciyi siler' },
-      { method: 'PATCH', path: '/api/users/{id}/role', description: 'Kullanici rolunu degistirir' },
+      { method: 'GET', path: '/api/users', description: 'Kullanıcıları listeler' },
+      { method: 'GET', path: '/api/users/{id}', description: 'Kullanıcı detayını getirir' },
+      { method: 'POST', path: '/api/users', description: 'Yeni kullanıcı oluşturur' },
+      { method: 'PUT', path: '/api/users/{id}', description: 'Kullanıcı bilgilerini günceller' },
+      { method: 'DELETE', path: '/api/users/{id}', description: 'Kullanıcıyı siler' },
+      { method: 'PATCH', path: '/api/users/{id}/role', description: 'Kullanıcı rolünü değiştirir' },
     ],
   },
 ]
@@ -327,7 +327,7 @@ export default function ApiDocsPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Endpoint ara... (orn: orders, POST, optimize)"
+                  placeholder="Endpoint ara... (örn: orders, POST, optimize)"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all"
@@ -335,10 +335,10 @@ export default function ApiDocsPage() {
               </div>
               <div className="flex gap-2">
                 <button onClick={expandAll} className="px-4 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-500 hover:text-blue-600 hover:border-blue-200 transition-all bg-white">
-                  Tumu Ac
+                  Tümü Aç
                 </button>
                 <button onClick={collapseAll} className="px-4 py-2 rounded-lg border border-gray-200 text-[12px] text-gray-500 hover:text-blue-600 hover:border-blue-200 transition-all bg-white">
-                  Tumu Kapat
+                  Tümü Kapat
                 </button>
               </div>
             </div>

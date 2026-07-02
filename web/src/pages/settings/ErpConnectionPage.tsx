@@ -157,7 +157,7 @@ export default function ErpConnectionPage() {
                   {t.onboarding.testConnection}
                 </button>
                 <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-                  <RefreshCw className="w-3.5 h-3.5" /> Simdi Senkronize Et
+                  <RefreshCw className="w-3.5 h-3.5" /> Şimdi Senkronize Et
                 </button>
                 <button onClick={() => openEdit(conn)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors">
                   <Edit3 className="w-3.5 h-3.5" /> {t.common.edit}
@@ -188,7 +188,7 @@ export default function ErpConnectionPage() {
             </select>
           </div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.onboarding.apiEndpoint}</label><input type="text" value={formData.apiEndpoint} onChange={(e) => setFormData({ ...formData, apiEndpoint: e.target.value })} className={inputClass} placeholder="https://erp.company.com/api" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.onboarding.apiKey}</label><input type="password" value={formData.apiKey} onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })} className={inputClass} placeholder={editingId ? '(degistirmek için yeni deger girin)' : 'sk_...'} /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.onboarding.apiKey}</label><input type="password" value={formData.apiKey} onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })} className={inputClass} placeholder={editingId ? '(değiştirmek için yeni değer girin)' : 'sk_...'} /></div>
         </div>
       </Drawer>
     </div>

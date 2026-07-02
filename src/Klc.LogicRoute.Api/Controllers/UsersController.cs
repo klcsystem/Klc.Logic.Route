@@ -28,7 +28,7 @@ public class UsersController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var user = await userRepository.GetByIdAsync(id, tenantId);
-        if (user == null) return NotFound(ApiResponse<User>.Fail("Kullanici bulunamadi"));
+        if (user == null) return NotFound(ApiResponse<User>.Fail("Kullanıcı bulunamadı"));
         return Ok(ApiResponse<User>.Ok(user));
     }
 

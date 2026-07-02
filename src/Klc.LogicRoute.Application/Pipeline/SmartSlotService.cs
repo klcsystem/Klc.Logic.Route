@@ -162,10 +162,10 @@ public class SmartSlotService : ISmartSlotService
     {
         return detourMinutes switch
         {
-            <= 5 => $"{label} — Mevcut rotaya en yakin, minimum sapma",
-            <= 15 => $"{label} — Mevcut rotaya yakin, dusuk sapma",
-            <= 30 => $"{label} — Orta duzeyde sapma gerektirir",
-            _ => $"{label} — Mevcut rotalardan uzak, yuksek sapma"
+            <= 5 => $"{label} — Mevcut rotaya en yakın, minimum sapma",
+            <= 15 => $"{label} — Mevcut rotaya yakın, düşük sapma",
+            <= 30 => $"{label} — Orta düzeyde sapma gerektirir",
+            _ => $"{label} — Mevcut rotalardan uzak, yüksek sapma"
         };
     }
 

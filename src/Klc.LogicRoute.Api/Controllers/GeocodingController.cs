@@ -20,7 +20,7 @@ public class GeocodingController(IGeocodingProvider geocodingProvider) : Control
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(query))
-            return BadRequest(ApiResponse<List<GeocodingSearchDto>>.Fail("Adres bos olamaz"));
+            return BadRequest(ApiResponse<List<GeocodingSearchDto>>.Fail("Adres boş olamaz"));
 
         var results = await geocodingProvider.SearchAsync(query, 5, cancellationToken);
         if (results.Count == 0)
@@ -42,7 +42,7 @@ public class GeocodingController(IGeocodingProvider geocodingProvider) : Control
     {
         var result = await geocodingProvider.ReverseGeocodeAsync(lat, lng, cancellationToken);
         if (result == null)
-            return NotFound(ApiResponse<GeocodingReverseDto>.Fail("Konum icin adres bulunamadi"));
+            return NotFound(ApiResponse<GeocodingReverseDto>.Fail("Konum için adres bulunamadı"));
 
         var dto = new GeocodingReverseDto(result.Address, result.City, result.District, result.DisplayName);
         return Ok(ApiResponse<GeocodingReverseDto>.Ok(dto));

@@ -25,16 +25,16 @@ interface DriverConfig {
 }
 
 const BUSINESS_TYPES = [
-  { id: 'gida', label: 'Gida Dagitim', icon: Utensils },
-  { id: 'perakende', label: 'Perakende & Dagitim', icon: ShoppingCart },
+  { id: 'gida', label: 'Gıda Dağıtım', icon: Utensils },
+  { id: 'perakende', label: 'Perakende & Dağıtım', icon: ShoppingCart },
   { id: 'eticaret', label: 'E-ticaret Kargo', icon: Package },
   { id: 'saha', label: 'Saha Servis', icon: Wrench },
-  { id: 'atik', label: 'Atik Toplama', icon: Trash2 },
+  { id: 'atik', label: 'Atık Toplama', icon: Trash2 },
   { id: 'temizlik', label: 'Temizlik Hizmeti', icon: Sparkles },
-  { id: 'sağlık', label: 'Sağlık/Ilac', icon: Heart },
+  { id: 'sağlık', label: 'Sağlık/İlaç', icon: Heart },
   { id: 'kurye', label: 'Kurye', icon: Bike },
-  { id: 'diger_teslimat', label: 'Diger Teslimat', icon: Package },
-  { id: 'diger_servis', label: 'Diger Servis', icon: Wrench },
+  { id: 'diger_teslimat', label: 'Diğer Teslimat', icon: Package },
+  { id: 'diger_servis', label: 'Diğer Servis', icon: Wrench },
 ] as const
 
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
@@ -45,8 +45,8 @@ const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
 
 const VEHICLE_TYPES = [
   { id: 'standard' as const, label: 'Standard', desc: 'Binek / hafif ticari', icon: Package },
-  { id: 'kamyon' as const, label: 'Kamyon', desc: 'Agir ticari arac', icon: Truck },
-  { id: 'tehlikeli' as const, label: 'Tehlikeli Madde', desc: 'ADR belgeli arac', icon: AlertTriangle },
+  { id: 'kamyon' as const, label: 'Kamyon', desc: 'Ağır ticari araç', icon: Truck },
+  { id: 'tehlikeli' as const, label: 'Tehlikeli Madde', desc: 'ADR belgeli araç', icon: AlertTriangle },
 ]
 
 export default function OnboardingPage() {
@@ -252,7 +252,7 @@ export default function OnboardingPage() {
                 {driverConfig.scheduleBreak && (
                   <div className="grid grid-cols-3 gap-3 pt-2">
                     <div>
-                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Sure (dk)</label>
+                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Süre (dk)</label>
                       <input
                         type="number"
                         min={5}
@@ -263,7 +263,7 @@ export default function OnboardingPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Baslangic</label>
+                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Başlangıç</label>
                       <select
                         value={driverConfig.breakStartTime}
                         onChange={(e) => setDriverConfig({ ...driverConfig, breakStartTime: e.target.value })}
@@ -273,7 +273,7 @@ export default function OnboardingPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Bitis</label>
+                      <label className="block text-[12px] font-medium text-slate-500 mb-1">Bitiş</label>
                       <select
                         value={driverConfig.breakEndTime}
                         onChange={(e) => setDriverConfig({ ...driverConfig, breakEndTime: e.target.value })}
@@ -288,7 +288,7 @@ export default function OnboardingPage() {
 
               {/* Vehicle type */}
               <div>
-                <label className="block text-[13px] font-semibold text-slate-700 mb-3">Arac Tipi</label>
+                <label className="block text-[13px] font-semibold text-slate-700 mb-3">Araç Tipi</label>
                 <div className="grid grid-cols-3 gap-3">
                   {VEHICLE_TYPES.map((vt) => {
                     const Icon = vt.icon
@@ -321,7 +321,7 @@ export default function OnboardingPage() {
               disabled={step === 0}
               className="flex items-center gap-2 px-5 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" /> Onceki
+              <ChevronLeft className="w-4 h-4" /> Önceki
             </button>
             {step < 2 ? (
               <button

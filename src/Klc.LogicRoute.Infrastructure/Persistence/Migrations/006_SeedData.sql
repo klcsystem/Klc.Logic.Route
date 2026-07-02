@@ -97,7 +97,7 @@ VALUES
     (p_horoz, tid, 'Horoz Lojistik', 'HOROZ', 1, TRUE, FALSE,
      'Kamyon,Kamyonet,Parsiyel,Frigorifik', 'Marmara,Ege,Ic Anadolu,Karadeniz',
      '4567890123', 'Istanbul', '+902124567890', 'info@horozlojistik.com', 'Mehmet Kaya', 'Managed', 'seed', NOW()),
-    (p_surat, tid, 'Surat Kargo', 'SURAT', 1, TRUE, FALSE,
+    (p_surat, tid, 'Sürat Kargo', 'SURAT', 1, TRUE, FALSE,
      'Kamyonet,Parsiyel', 'Marmara,Ege,Akdeniz,Ic Anadolu,Karadeniz,Dogu Anadolu,Guneydogu Anadolu',
      '5678901234', 'Istanbul', '+902125678901', 'info@suratkargo.com', 'Fatma Sahin', 'Managed', 'seed', NOW()),
     (p_aras, tid, 'Aras Kargo', 'ARAS', 1, TRUE, FALSE,
@@ -111,21 +111,21 @@ ON CONFLICT DO NOTHING;
 INSERT INTO logistics.contracts (id, tenant_id, provider_id, contract_number, name, start_date, end_date, status, currency, created_by, created_at)
 VALUES
     -- Yolda: 1 expired, 1 active
-    (c_yolda1, tid, p_yolda, 'CNT-2024-0001', 'Yolda 2024 Sozlesmesi', '2024-01-01', '2024-12-31', 2, 'TRY', 'seed', NOW()),
-    (c_yolda2, tid, p_yolda, 'CNT-2025-0001', 'Yolda 2025-2026 Sozlesmesi', '2025-01-01', '2026-12-31', 1, 'TRY', 'seed', NOW()),
+    (c_yolda1, tid, p_yolda, 'CNT-2024-0001', 'Yolda 2024 Sözleşmesi', '2024-01-01', '2024-12-31', 2, 'TRY', 'seed', NOW()),
+    (c_yolda2, tid, p_yolda, 'CNT-2025-0001', 'Yolda 2025-2026 Sözleşmesi', '2025-01-01', '2026-12-31', 1, 'TRY', 'seed', NOW()),
     -- Tirport: 2 active
-    (c_tirport1, tid, p_tirport, 'CNT-2025-0002', 'Tirport FTL Sozlesmesi', '2025-01-01', '2026-06-30', 1, 'TRY', 'seed', NOW()),
-    (c_tirport2, tid, p_tirport, 'CNT-2025-0003', 'Tirport LTL Sozlesmesi', '2025-03-01', '2026-03-01', 1, 'TRY', 'seed', NOW()),
+    (c_tirport1, tid, p_tirport, 'CNT-2025-0002', 'Tirport FTL Sözleşmesi', '2025-01-01', '2026-06-30', 1, 'TRY', 'seed', NOW()),
+    (c_tirport2, tid, p_tirport, 'CNT-2025-0003', 'Tirport LTL Sözleşmesi', '2025-03-01', '2026-03-01', 1, 'TRY', 'seed', NOW()),
     -- Ekol: 1 expired, 1 active
-    (c_ekol1, tid, p_ekol, 'CNT-2024-0004', 'Ekol 2024 Sozlesmesi', '2024-06-01', '2025-05-31', 2, 'TRY', 'seed', NOW()),
-    (c_ekol2, tid, p_ekol, 'CNT-2025-0005', 'Ekol 2025-2026 Sozlesmesi', '2025-06-01', '2026-12-31', 1, 'TRY', 'seed', NOW()),
+    (c_ekol1, tid, p_ekol, 'CNT-2024-0004', 'Ekol 2024 Sözleşmesi', '2024-06-01', '2025-05-31', 2, 'TRY', 'seed', NOW()),
+    (c_ekol2, tid, p_ekol, 'CNT-2025-0005', 'Ekol 2025-2026 Sözleşmesi', '2025-06-01', '2026-12-31', 1, 'TRY', 'seed', NOW()),
     -- Horoz: 1 active
-    (c_horoz1, tid, p_horoz, 'CNT-2025-0006', 'Horoz Yillik Sozlesme', '2025-01-01', '2025-12-31', 1, 'TRY', 'seed', NOW()),
-    -- Surat: 2 active
-    (c_surat1, tid, p_surat, 'CNT-2025-0007', 'Surat Parsiyel Sozlesme', '2025-01-01', '2025-12-31', 1, 'TRY', 'seed', NOW()),
-    (c_surat2, tid, p_surat, 'CNT-2025-0008', 'Surat Ekspres Sozlesme', '2025-04-01', '2026-04-01', 1, 'TRY', 'seed', NOW()),
+    (c_horoz1, tid, p_horoz, 'CNT-2025-0006', 'Horoz Yıllık Sözleşme', '2025-01-01', '2025-12-31', 1, 'TRY', 'seed', NOW()),
+    -- Sürat: 2 active
+    (c_surat1, tid, p_surat, 'CNT-2025-0007', 'Sürat Parsiyel Sözleşme', '2025-01-01', '2025-12-31', 1, 'TRY', 'seed', NOW()),
+    (c_surat2, tid, p_surat, 'CNT-2025-0008', 'Sürat Ekspres Sözleşme', '2025-04-01', '2026-04-01', 1, 'TRY', 'seed', NOW()),
     -- Aras: 1 active
-    (c_aras1, tid, p_aras, 'CNT-2025-0009', 'Aras Kargo Sozlesme', '2025-02-01', '2026-02-01', 1, 'TRY', 'seed', NOW())
+    (c_aras1, tid, p_aras, 'CNT-2025-0009', 'Aras Kargo Sözleşme', '2025-02-01', '2026-02-01', 1, 'TRY', 'seed', NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
@@ -189,13 +189,13 @@ VALUES
     (gen_random_uuid(), tid, c_horoz1, 'Marmara', 'Karadeniz', 1, 3000, 12000, 600, 1100, 15.00, 4, 'TRY', 20, 25, 30, 10, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_horoz1, 'Ic Anadolu', 'Ege', 3, 0, 1000, 400, 650, 5.80, 4, 'TRY', 22, 0, 0, 6, TRUE, 'seed', NOW()),
 
-    -- Surat Parsiyel rates
+    -- Sürat Parsiyel rates
     (gen_random_uuid(), tid, c_surat1, 'Marmara', 'Ic Anadolu', 3, 0, 500, 400, 600, 4.50, 4, 'TRY', 30, 0, 0, 5, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_surat1, 'Marmara', 'Ege', 3, 0, 500, 350, 550, 4.00, 4, 'TRY', 28, 0, 0, 5, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_surat1, 'Marmara', 'Akdeniz', 3, 0, 500, 600, 900, 5.50, 4, 'TRY', 30, 0, 0, 7, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_surat1, 'Ic Anadolu', 'Ege', 3, 0, 500, 400, 650, 4.20, 4, 'TRY', 28, 0, 0, 5, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_surat1, 'Ic Anadolu', 'Akdeniz', 3, 0, 500, 250, 500, 3.80, 4, 'TRY', 28, 0, 0, 5, TRUE, 'seed', NOW()),
-    -- Surat Ekspres rates (higher price, faster)
+    -- Sürat Ekspres rates (higher price, faster)
     (gen_random_uuid(), tid, c_surat2, 'Marmara', 'Ic Anadolu', 2, 100, 1500, 400, 600, 9.50, 4, 'TRY', 15, 0, 0, 8, TRUE, 'seed', NOW()),
     (gen_random_uuid(), tid, c_surat2, 'Marmara', 'Ege', 2, 100, 1500, 350, 550, 8.80, 4, 'TRY', 15, 0, 0, 7, TRUE, 'seed', NOW()),
 
@@ -282,7 +282,7 @@ VALUES
     (gen_random_uuid(), tid, p_horoz, 'Suleyman Aydin', '+905334567890', 'B-34-20202', '2027-04-25', TRUE, NOW())
 ON CONFLICT DO NOTHING;
 
--- Surat vehicles & drivers
+-- Sürat vehicles & drivers
 INSERT INTO logistics.vehicles (id, tenant_id, provider_id, plate_number, vehicle_type, body_type, tonnage, is_active, insurance_expiry, created_at)
 VALUES
     (gen_random_uuid(), tid, p_surat, '34 SRT 401', 'Kamyonet', 'Kapali', 3, TRUE, '2026-06-10', NOW()),
@@ -403,21 +403,21 @@ FOR i IN 1..650 LOOP
     END;
 
     v_customer := CASE (i % 15)
-        WHEN 0 THEN 'ABC Gida A.S.'
-        WHEN 1 THEN 'Teknosa Dagitim'
+        WHEN 0 THEN 'ABC Gıda A.Ş.'
+        WHEN 1 THEN 'Teknosa Dağıtım'
         WHEN 2 THEN 'LC Waikiki Depo'
-        WHEN 3 THEN 'TOFAS Otomotiv'
-        WHEN 4 THEN 'Cimsa Cimento'
+        WHEN 3 THEN 'TOFAŞ Otomotiv'
+        WHEN 4 THEN 'Çimsa Çimento'
         WHEN 5 THEN 'Vestel Elektronik'
         WHEN 6 THEN 'Bellona Mobilya'
-        WHEN 7 THEN 'Migros Dagitim'
-        WHEN 8 THEN 'Eti Gida'
-        WHEN 9 THEN 'Arcelik Beyaz Esya'
+        WHEN 7 THEN 'Migros Dağıtım'
+        WHEN 8 THEN 'Eti Gıda'
+        WHEN 9 THEN 'Arçelik Beyaz Eşya'
         WHEN 10 THEN 'Ford Otosan'
-        WHEN 11 THEN 'Ulker Biskuvi'
+        WHEN 11 THEN 'Ülker Bisküvi'
         WHEN 12 THEN 'Defacto Tekstil'
         WHEN 13 THEN 'Banvit Tavuk'
-        ELSE 'Turk Traktor'
+        ELSE 'Türk Traktör'
     END;
 
     v_hazardous := (v_product = 'Kimyasal' AND (i % 3) = 0);
@@ -437,7 +437,7 @@ FOR i IN 1..650 LOOP
         created_by, created_at)
     VALUES (order_id, tid, 'ORD-' || TO_CHAR(v_created, 'YYYYMM') || '-' || LPAD(i::TEXT, 5, '0'),
         v_customer,
-        v_origin_city || ' Organize Sanayi Bolgesi', v_origin_city, v_origin_lat, v_origin_lng,
+        v_origin_city || ' Organize Sanayi Bölgesi', v_origin_city, v_origin_lat, v_origin_lng,
         v_dest_city || ' Merkez Depo', v_dest_city, v_dest_lat, v_dest_lng,
         v_weight, v_volume, v_pallets, v_product,
         v_hazardous, v_cold, v_status, v_priority,
@@ -473,7 +473,7 @@ FOR i IN 1..650 LOOP
         -- Shipment status mirrors order progress
         -- Plate/driver only for active shipments
         v_plate := CASE WHEN v_status >= 3 THEN LPAD(((i % 81) + 1)::TEXT, 2, '0') || ' XX ' || LPAD((100 + i % 900)::TEXT, 3, '0') ELSE NULL END;
-        v_driver := CASE WHEN v_status >= 3 THEN 'Surucu ' || i::TEXT ELSE NULL END;
+        v_driver := CASE WHEN v_status >= 3 THEN 'Sürücü ' || i::TEXT ELSE NULL END;
         v_phone := CASE WHEN v_status >= 3 THEN '+9053' || LPAD((i % 100)::TEXT, 2, '0') || LPAD((1000000 + i % 9000000)::TEXT, 7, '0') ELSE NULL END;
 
         v_pickup := CASE WHEN v_status >= 3 THEN v_created + INTERVAL '1 day' ELSE NULL END;
@@ -490,7 +490,7 @@ FOR i IN 1..650 LOOP
             created_by, created_at)
         VALUES (shipment_id, tid, 'SHP-' || TO_CHAR(v_created, 'YYYYMM') || '-' || LPAD(i::TEXT, 5, '0'),
             order_id,
-            v_origin_city || ' Organize Sanayi Bolgesi', v_origin_city,
+            v_origin_city || ' Organize Sanayi Bölgesi', v_origin_city,
             v_dest_city || ' Merkez Depo', v_dest_city,
             CASE v_status
                 WHEN 2 THEN 2   -- ReadyForShipment -> Calculated
@@ -612,7 +612,7 @@ FOR i IN 0..11 LOOP
         ROUND(v_score, 2), (NOW() - (i || ' months')::INTERVAL + INTERVAL '28 days'), 'seed', NOW())
     ON CONFLICT (tenant_id, provider_id, year, month) DO NOTHING;
 
-    -- Surat: lower tier (parcels)
+    -- Sürat: lower tier (parcels)
     v_total_ship := 60 + (i * 5);
     v_ontime_pct := 80.0 + (i % 7) * 0.8;
     v_ontime := ROUND(v_total_ship * v_ontime_pct / 100)::INT;
@@ -627,7 +627,7 @@ FOR i IN 0..11 LOOP
         total_shipments, on_time_deliveries, late_deliveries, damaged_shipments, cancelled_shipments,
         on_time_percentage, average_delivery_hours, total_cost, average_cost_per_kg, co2_total_kg,
         overall_score, calculated_at, created_by, created_at)
-    VALUES (gen_random_uuid(), tid, p_surat, 'Surat Kargo',
+    VALUES (gen_random_uuid(), tid, p_surat, 'Sürat Kargo',
         EXTRACT(YEAR FROM NOW() - (i || ' months')::INTERVAL)::INT * 100 + EXTRACT(MONTH FROM NOW() - (i || ' months')::INTERVAL)::INT,
         EXTRACT(YEAR FROM NOW() - (i || ' months')::INTERVAL)::INT,
         EXTRACT(MONTH FROM NOW() - (i || ' months')::INTERVAL)::INT,
@@ -636,7 +636,7 @@ FOR i IN 0..11 LOOP
         ROUND(v_score, 2), (NOW() - (i || ' months')::INTERVAL + INTERVAL '28 days'), 'seed', NOW())
     ON CONFLICT (tenant_id, provider_id, year, month) DO NOTHING;
 
-    -- Aras: similar to Surat
+    -- Aras: similar to Sürat
     v_total_ship := 55 + (i * 4);
     v_ontime_pct := 82.0 + (i % 6) * 0.7;
     v_ontime := ROUND(v_total_ship * v_ontime_pct / 100)::INT;

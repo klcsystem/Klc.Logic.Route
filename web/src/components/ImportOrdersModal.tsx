@@ -24,12 +24,12 @@ interface ColumnMapping {
 }
 
 const FIELD_LABELS: Record<keyof ColumnMapping, string> = {
-  customerName: 'Müşteri Adi',
+  customerName: 'Müşteri Adı',
   destinationAddress: 'Teslimat Adresi',
   destinationCity: 'Şehir',
   orderNumber: 'Sipariş No',
   totalWeightKg: 'Ağırlık (kg)',
-  priority: 'Oncelik',
+  priority: 'Öncelik',
 }
 
 function parseCSV(text: string): { headers: string[]; rows: ParsedRow[] } {
@@ -367,7 +367,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
                       onChange={(e) => updateMapping(field, e.target.value)}
                       className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white"
                     >
-                      <option value="">-- Sec --</option>
+                      <option value="">-- Seç --</option>
                       {headers.map((h) => <option key={h} value={h}>{h}</option>)}
                     </select>
                   </div>

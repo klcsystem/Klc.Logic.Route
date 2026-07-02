@@ -23,11 +23,11 @@ public class CapacityMatchingService(ICapacityListingRepository repository) : IC
     {
         var listing = await repository.GetByIdAsync(listingId);
         if (listing == null)
-            throw new InvalidOperationException("Listing bulunamadi");
+            throw new InvalidOperationException("Listing bulunamadı");
         if (listing.Status != CapacityListingStatus.Available)
-            throw new InvalidOperationException("Listing musait degil");
+            throw new InvalidOperationException("Listing müsait değil");
         if (requestedWeightKg > listing.AvailableWeightKg)
-            throw new InvalidOperationException("Istenen agirlik mevcut kapasiteyi asiyor");
+            throw new InvalidOperationException("İstenen ağırlık mevcut kapasiteyi aşıyor");
 
         var match = new CapacityMatch
         {
@@ -48,11 +48,11 @@ public class CapacityMatchingService(ICapacityListingRepository repository) : IC
     {
         var match = await repository.GetMatchByIdAsync(matchId);
         if (match == null)
-            throw new InvalidOperationException("Match bulunamadi");
+            throw new InvalidOperationException("Match bulunamadı");
 
         var listing = await repository.GetByIdAsync(match.ListingId);
         if (listing == null || listing.TenantId != ownerTenantId)
-            throw new InvalidOperationException("Bu match uzerinde yetkiniz yok");
+            throw new InvalidOperationException("Bu match üzerinde yetkiniz yok");
 
         await repository.UpdateMatchStatusAsync(matchId, (int)CapacityMatchStatus.Accepted, match.AgreedPrice);
         await repository.UpdateStatusAsync(listing.Id, (int)CapacityListingStatus.Matched);
@@ -65,11 +65,11 @@ public class CapacityMatchingService(ICapacityListingRepository repository) : IC
     {
         var match = await repository.GetMatchByIdAsync(matchId);
         if (match == null)
-            throw new InvalidOperationException("Match bulunamadi");
+            throw new InvalidOperationException("Match bulunamadı");
 
         var listing = await repository.GetByIdAsync(match.ListingId);
         if (listing == null || listing.TenantId != ownerTenantId)
-            throw new InvalidOperationException("Bu match uzerinde yetkiniz yok");
+            throw new InvalidOperationException("Bu match üzerinde yetkiniz yok");
 
         await repository.UpdateMatchStatusAsync(matchId, (int)CapacityMatchStatus.Rejected, null);
 

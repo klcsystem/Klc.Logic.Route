@@ -52,7 +52,7 @@ public class DriverWellnessService : IDriverWellnessService
             report.SafetyScore = 100;
             report.FatigueLevel = FatigueRiskLevel.OK;
             report.HoursWorked = 0;
-            report.Recommendations.Add("Surucu bugun aktif degil");
+            report.Recommendations.Add("Sürücü bugün aktif değil");
             return report;
         }
 
@@ -104,30 +104,30 @@ public class DriverWellnessService : IDriverWellnessService
         // Generate alerts and recommendations
         if (hoursWorked > MaxDailyHours)
         {
-            report.Alerts.Add($"BLOKE: Gunluk calisma suresi asimi ({hoursWorked:F1}h / max {MaxDailyHours}h)");
-            report.Recommendations.Add("Surucu derhal dinlenmeye alinmali — yasal limit asildi");
+            report.Alerts.Add($"BLOKE: Günlük çalışma süresi aşımı ({hoursWorked:F1}h / max {MaxDailyHours}h)");
+            report.Recommendations.Add("Sürücü derhal dinlenmeye alınmalı — yasal limit aşıldı");
         }
         else if (hoursWorked > 10)
         {
-            report.Alerts.Add($"KRITIK: Calisma suresi {hoursWorked:F1} saat — limit yaklastiriyor");
-            report.Recommendations.Add("Kalan teslimatlar baska surucuye devredilmeli");
+            report.Alerts.Add($"KRİTİK: Çalışma süresi {hoursWorked:F1} saat — limit yaklaştırıyor");
+            report.Recommendations.Add("Kalan teslimatlar başka sürücüye devredilmeli");
         }
         else if (hoursWorked > 8)
         {
-            report.Alerts.Add($"UYARI: Calisma suresi {hoursWorked:F1} saat");
-            report.Recommendations.Add("Mola planlamasi yapilmali, kalan teslimat sayisi kontrol edilmeli");
+            report.Alerts.Add($"UYARI: Çalışma süresi {hoursWorked:F1} saat");
+            report.Recommendations.Add("Mola planlaması yapılmalı, kalan teslimat sayısı kontrol edilmeli");
         }
 
         if (hoursSinceLastBreak > MandatoryBreakAfterHours)
         {
-            report.Alerts.Add($"Son moladan bu yana {hoursSinceLastBreak:F1} saat gecti (max {MandatoryBreakAfterHours}h)");
+            report.Alerts.Add($"Son moladan bu yana {hoursSinceLastBreak:F1} saat geçti (max {MandatoryBreakAfterHours}h)");
             report.Recommendations.Add($"En az {MandatoryBreakMinutes} dakika mola verilmeli");
         }
 
         if (locationUpdateFrequency > 30)
         {
-            report.Alerts.Add("Konum guncellemesi seyrek — cihaz veya baglanti sorunu olabilir");
-            report.Recommendations.Add("Surucu cihazi kontrol edilmeli");
+            report.Alerts.Add("Konum güncellemesi seyrek — cihaz veya bağlantı sorunu olabilir");
+            report.Recommendations.Add("Sürücü cihazı kontrol edilmeli");
         }
 
         _logger.LogInformation(

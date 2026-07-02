@@ -198,10 +198,10 @@ export default function CO2Page() {
       {/* Vehicle type detail table */}
       {vehicleData.length > 0 && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Arac Tipi Detay</h3></div>
+          <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Araç Tipi Detay</h3></div>
           <table className="w-full">
             <thead><tr className="border-b border-slate-100">
-              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Arac Tipi</th>
+              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Araç Tipi</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Emisyon (kg)</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Tasarruf (kg)</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Mesafe (km)</th>

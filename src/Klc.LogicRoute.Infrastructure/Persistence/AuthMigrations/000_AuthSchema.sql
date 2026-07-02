@@ -140,4 +140,18 @@ BEGIN
         admin_role_id
     )
     ON CONFLICT (tenant_id, email) DO NOTHING;
+
+    -- Default admin user 2 (password: Admin123!) — CLAUDE.md'deki varsayilan kullanici
+    INSERT INTO auth.users (id, tenant_id, email, password_hash, first_name, last_name, is_active, role_id)
+    VALUES (
+        gen_random_uuid(),
+        default_tenant,
+        'ibrahim.kilic@klcsystem.com',
+        '$2b$11$jvALpEvrYbY2N7YlUwEvyO6LDFCSH6DSmQ77YK9DR3.9MKLCyNNd2',
+        'Ibrahim',
+        'Kilic',
+        TRUE,
+        admin_role_id
+    )
+    ON CONFLICT (tenant_id, email) DO NOTHING;
 END $$;

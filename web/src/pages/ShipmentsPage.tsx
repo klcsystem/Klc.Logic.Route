@@ -208,7 +208,7 @@ export default function ShipmentsPage() {
                 <div className="border border-slate-200 rounded-xl overflow-hidden">
                   <table className="w-full">
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Urun</th>
+                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ürün</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Adet</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                     </tr></thead>
@@ -229,7 +229,7 @@ export default function ShipmentsPage() {
                 onClick={() => { setDetailDrawerOpen(false); navigate(`/shipments/${selectedShipment.id}`) }}
                 className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 transition-all text-center"
               >
-                Detay Sayfasina Git
+                Detay Sayfasına Git
               </button>
             </div>
           </div>
@@ -254,9 +254,9 @@ export default function ShipmentsPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Palet Sayısı</label><input type="number" value={shipmentForm.palletCount} onChange={(e) => setShipmentForm({ ...shipmentForm, palletCount: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Oncelik</label>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Öncelik</label>
               <select value={shipmentForm.priority} onChange={(e) => setShipmentForm({ ...shipmentForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
-                <option value="Normal">Normal</option><option value="Priority">Oncelikli</option><option value="Urgent">Acil</option>
+                <option value="Normal">Normal</option><option value="Priority">Öncelikli</option><option value="Urgent">Acil</option>
               </select>
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function ShipmentsPage() {
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={shipmentForm.requiresColdChain} onChange={(e) => setShipmentForm({ ...shipmentForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" />
-              <span className="text-[13px] font-medium text-slate-700">Soguk Zincir</span>
+              <span className="text-[13px] font-medium text-slate-700">Soğuk Zincir</span>
             </label>
           </div>
         </div>

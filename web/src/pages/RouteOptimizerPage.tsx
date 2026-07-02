@@ -123,7 +123,7 @@ export default function RouteOptimizerPage() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Bilinmeyen hata'
-      toast('error', `Rota optimizasyonu hatasi: ${msg}`)
+      toast('error', `Rota optimizasyonu hatası: ${msg}`)
       console.error('VRP solve error:', err)
     } finally {
       setIsOptimizing(false)
@@ -142,9 +142,9 @@ export default function RouteOptimizerPage() {
         } catch { /* skip */ }
       }
       setIsConfirmed(true)
-      toast('success', `Rota onaylandı! ${solution.routes.length} arac, ${solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak atandı.`)
+      toast('success', `Rota onaylandı! ${solution.routes.length} araç, ${solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak atandı.`)
     } catch {
-      toast('error', 'Rota onaylama hatasi')
+      toast('error', 'Rota onaylama hatası')
     } finally {
       setIsConfirming(false)
     }
@@ -318,7 +318,7 @@ export default function RouteOptimizerPage() {
               <>
                 {/* Donut Charts Row */}
                 <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                  <h3 className="text-[15px] font-semibold text-slate-800 mb-5">Cozum Özeti</h3>
+                  <h3 className="text-[15px] font-semibold text-slate-800 mb-5">Çözüm Özeti</h3>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-col items-center">
                       <DonutChart
@@ -362,7 +362,7 @@ export default function RouteOptimizerPage() {
                     { label: 'Sipariş', value: totalStops.toString(), icon: Package, color: 'text-blue-600 bg-blue-50' },
                     { label: 'Rota', value: solution.routes.length.toString(), icon: MapPin, color: 'text-green-600 bg-green-50' },
                     { label: 'Toplam Mesafe', value: `${solution.totalDistanceKm.toLocaleString()} km`, icon: Truck, color: 'text-orange-600 bg-orange-50' },
-                    { label: 'Toplam Sure', value: `${Math.round(solution.totalDurationMin / 60)} saat`, icon: Clock, color: 'text-indigo-600 bg-indigo-50' },
+                    { label: 'Toplam Süre', value: `${Math.round(solution.totalDurationMin / 60)} saat`, icon: Clock, color: 'text-indigo-600 bg-indigo-50' },
                     { label: 'Toplam Maliyet', value: `${solution.totalCost.toLocaleString()} TRY`, icon: DollarSign, color: 'text-emerald-600 bg-emerald-50' },
                     { label: 'Atanamayan', value: (solution.unassignedStops?.length || 0).toString(), icon: XCircle, color: solution.unassignedStops?.length > 0 ? 'text-red-600 bg-red-50' : 'text-slate-500 bg-slate-50' },
                   ].map(kpi => (
@@ -385,7 +385,7 @@ export default function RouteOptimizerPage() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-slate-100">
-                          {['Rota', 'Arac', 'Durak', 'Mesafe', 'Sure', 'Ağırlık', 'Hacim', 'Doluluk', 'Maliyet'].map(h => (
+                          {['Rota', 'Araç', 'Durak', 'Mesafe', 'Süre', 'Ağırlık', 'Hacim', 'Doluluk', 'Maliyet'].map(h => (
                             <th key={h} className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
                           ))}
                         </tr>

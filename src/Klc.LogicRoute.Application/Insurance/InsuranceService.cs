@@ -65,13 +65,13 @@ public class InsuranceService(
     {
         var quote = await insuranceRepository.GetQuoteByIdAsync(quoteId);
         if (quote == null)
-            throw new InvalidOperationException("Teklif bulunamadi");
+            throw new InvalidOperationException("Teklif bulunamadı");
         if (quote.TenantId != tenantId)
-            throw new InvalidOperationException("Bu teklif uzerinde yetkiniz yok");
+            throw new InvalidOperationException("Bu teklif üzerinde yetkiniz yok");
         if (quote.Status != InsuranceQuoteStatus.Quoted)
-            throw new InvalidOperationException("Teklif kabul edilebilir durumda degil");
+            throw new InvalidOperationException("Teklif kabul edilebilir durumda değil");
         if (!quote.PremiumAmount.HasValue)
-            throw new InvalidOperationException("Teklif fiyati belirlenmemis");
+            throw new InvalidOperationException("Teklif fiyatı belirlenmemiş");
 
         // Update quote status
         quote.Status = InsuranceQuoteStatus.Accepted;
@@ -106,7 +106,7 @@ public class InsuranceService(
     {
         var partner = await insuranceRepository.GetPartnerByApiKeyAsync(apiKey);
         if (partner == null)
-            throw new InvalidOperationException("Gecersiz API anahtari");
+            throw new InvalidOperationException("Geçersiz API anahtarı");
 
         return await insuranceRepository.GetPendingQuotesByPartnerAsync(partner.Id);
     }
@@ -115,15 +115,15 @@ public class InsuranceService(
     {
         var partner = await insuranceRepository.GetPartnerByApiKeyAsync(submission.ApiKey);
         if (partner == null)
-            throw new InvalidOperationException("Gecersiz API anahtari");
+            throw new InvalidOperationException("Geçersiz API anahtarı");
 
         var quote = await insuranceRepository.GetQuoteByIdAsync(submission.QuoteId);
         if (quote == null)
-            throw new InvalidOperationException("Teklif bulunamadi");
+            throw new InvalidOperationException("Teklif bulunamadı");
         if (quote.PartnerId != partner.Id)
-            throw new InvalidOperationException("Bu teklif size ait degil");
+            throw new InvalidOperationException("Bu teklif size ait değil");
         if (quote.Status != InsuranceQuoteStatus.Pending)
-            throw new InvalidOperationException("Teklif zaten yanit verilmis");
+            throw new InvalidOperationException("Teklif zaten yanıt verilmiş");
 
         quote.PremiumAmount = submission.PremiumAmount;
         quote.ValidUntil = submission.ValidUntil;

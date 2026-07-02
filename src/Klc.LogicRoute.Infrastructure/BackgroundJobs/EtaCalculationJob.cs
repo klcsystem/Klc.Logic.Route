@@ -53,8 +53,8 @@ public class EtaCalculationJob : BackgroundService
             SELECT s.id, s.current_latitude, s.current_longitude,
                    s.destination_address, s.destination_city,
                    s.estimated_arrival
-            FROM shipments s
-            WHERE s.status IN ('InTransit', 'PickedUp')
+            FROM logistics.shipments s
+            WHERE s.status IN (6, 7) -- Loading, InTransit
               AND s.is_deleted = false
               AND s.current_latitude IS NOT NULL
               AND s.current_longitude IS NOT NULL
@@ -75,7 +75,7 @@ public class EtaCalculationJob : BackgroundService
             var etaString = newEta.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
             const string updateSql = """
-                UPDATE shipments SET estimated_arrival = @Eta, updated_at = NOW()
+                UPDATE logistics.shipments SET estimated_arrival = @Eta, updated_at = NOW()
                 WHERE id = @Id
                 """;
 

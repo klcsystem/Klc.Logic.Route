@@ -92,7 +92,7 @@ public class RegisterHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Bu e-posta adresi zaten kullanilmaktadir.");
+            .WithMessage("Bu e-posta adresi zaten kullanılmaktadır.");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class RegisterHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Varsayilan rol bulunamadi.");
+            .WithMessage("Varsayılan rol bulunamadı.");
     }
 
     [Fact]

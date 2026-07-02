@@ -23,7 +23,7 @@ public class PublicTrackingController(
     {
         var result = await mediator.Send(new GetPublicTrackingQuery(token));
         if (result == null)
-            return NotFound(ApiResponse<PublicTrackingResult>.Fail("Takip bilgisi bulunamadi"));
+            return NotFound(ApiResponse<PublicTrackingResult>.Fail("Takip bilgisi bulunamadı"));
 
         return Ok(ApiResponse<PublicTrackingResult>.Ok(result));
     }
@@ -38,17 +38,17 @@ public class PublicTrackingController(
     {
         var tracking = await customerTrackingRepository.GetByTokenAsync(token);
         if (tracking == null || !tracking.IsActive)
-            return NotFound(ApiResponse<bool>.Fail("Takip bilgisi bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Takip bilgisi bulunamadı"));
 
         // Create a notification for operations
         await notificationService.SendToAllAsync(
             tracking.TenantId,
-            "Teslimat Noktasi Degisikligi Talebi",
-            $"Sevkiyat {tracking.ShipmentId}: Musteri teslimat noktasini degistirmek istiyor — {request.DeliveryOption}" +
+            "Teslimat Noktası Değişikliği Talebi",
+            $"Sevkiyat {tracking.ShipmentId}: Müşteri teslimat noktasını değiştirmek istiyor — {request.DeliveryOption}" +
             (string.IsNullOrEmpty(request.CustomAddress) ? "" : $" ({request.CustomAddress})"),
             Domain.Enums.NotificationType.DeliverySlotChange);
 
-        return Ok(ApiResponse<bool>.Ok(true, "Teslimat noktasi degisikligi talebi alindi"));
+        return Ok(ApiResponse<bool>.Ok(true, "Teslimat noktası değişikliği talebi alındı"));
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class PublicTrackingController(
     {
         var tracking = await customerTrackingRepository.GetByTokenAsync(token);
         if (tracking == null || !tracking.IsActive)
-            return NotFound(ApiResponse<TrackingBrandingResult>.Fail("Takip bilgisi bulunamadi"));
+            return NotFound(ApiResponse<TrackingBrandingResult>.Fail("Takip bilgisi bulunamadı"));
 
         // TODO: Load company name, logo, colors from tenant settings table when available
         var branding = new TrackingBrandingResult(
@@ -82,7 +82,7 @@ public class PublicTrackingController(
     {
         var tracking = await customerTrackingRepository.GetByTokenAsync(token);
         if (tracking == null || !tracking.IsActive)
-            return NotFound(ApiResponse<Guid>.Fail("Takip bilgisi bulunamadi"));
+            return NotFound(ApiResponse<Guid>.Fail("Takip bilgisi bulunamadı"));
 
         var message = new DriverMessage
         {

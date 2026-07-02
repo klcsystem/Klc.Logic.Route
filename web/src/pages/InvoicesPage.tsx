@@ -134,7 +134,7 @@ export default function InvoicesPage() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Yil</label>
+            <label className="block text-xs text-slate-500 mb-1">Yıl</label>
             <input type="number" value={genYear} onChange={e => setGenYear(Number(e.target.value))}
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm w-24" />
           </div>
@@ -165,11 +165,11 @@ export default function InvoicesPage() {
                 <tr className="border-b border-slate-100 bg-slate-50/50">
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Fatura No</th>
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Müşteri</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Donem</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">Dönem</th>
                   <th className="text-right px-4 py-3 font-medium text-slate-500">Tutar</th>
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Durum</th>
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Tarih</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Islemler</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
@@ -189,7 +189,7 @@ export default function InvoicesPage() {
                         {inv.status === 'Draft' && (
                           <button onClick={() => handleStatusUpdate(inv.id, 'Sent')}
                             className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100">
-                            <Send className="w-3 h-3" /> Gonder
+                            <Send className="w-3 h-3" /> Gönder
                           </button>
                         )}
                         {inv.status === 'Sent' && (

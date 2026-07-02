@@ -135,7 +135,7 @@ export default function WeeklyPlannerPage() {
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[13px] font-medium text-slate-600 hover:bg-slate-100 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
-          Onceki Hafta
+          Önceki Hafta
         </button>
         <div className="flex items-center gap-3">
           <h2 className="text-[16px] font-bold text-slate-800">{formatWeekRange(weekStart)}</h2>
@@ -143,7 +143,7 @@ export default function WeeklyPlannerPage() {
             onClick={handleToday}
             className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-600 text-[11px] font-semibold hover:bg-orange-100 transition-colors"
           >
-            Bugun
+            Bugün
           </button>
         </div>
         <button

@@ -22,7 +22,7 @@ public class UpdateShipmentStatusHandler(
     {
         var shipment = await shipmentRepository.GetByIdAsync(request.ShipmentId, request.TenantId);
         if (shipment == null)
-            return new UpdateShipmentStatusResult(false, "Sevkiyat bulunamadi");
+            return new UpdateShipmentStatusResult(false, "Sevkiyat bulunamadı");
 
         var oldStatus = shipment.Status;
         await shipmentRepository.UpdateStatusAsync(request.ShipmentId, request.TenantId, (int)request.NewStatus);
@@ -57,6 +57,6 @@ public class UpdateShipmentStatusHandler(
             // Event publishing failure should not fail the status update
         }
 
-        return new UpdateShipmentStatusResult(true, $"Durum guncellendi: {request.NewStatus}");
+        return new UpdateShipmentStatusResult(true, $"Durum güncellendi: {request.NewStatus}");
     }
 }

@@ -27,7 +27,7 @@ public class ContractsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var contract = await contractRepository.GetByIdAsync(id, tenantId);
-        if (contract == null) return NotFound(ApiResponse<Contract>.Fail("Sozlesme bulunamadi"));
+        if (contract == null) return NotFound(ApiResponse<Contract>.Fail("Sözleşme bulunamadı"));
         return Ok(ApiResponse<Contract>.Ok(contract));
     }
 

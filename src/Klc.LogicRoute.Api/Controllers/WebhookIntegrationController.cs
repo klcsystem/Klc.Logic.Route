@@ -23,7 +23,7 @@ public class WebhookIntegrationController(
     public async Task<ActionResult<ApiResponse<object>>> ReceiveOrder([FromBody] GenericOrderWebhook payload)
     {
         if (!ValidateApiKey(out var tenantId))
-            return Unauthorized(ApiResponse<object>.Fail("Gecersiz API anahtari"));
+            return Unauthorized(ApiResponse<object>.Fail("Geçersiz API anahtarı"));
 
         var order = MapGenericToOrder(payload, tenantId);
         var orderId = await orderRepository.InsertAsync(order);
@@ -38,7 +38,7 @@ public class WebhookIntegrationController(
     public async Task<ActionResult<ApiResponse<object>>> ReceiveShopify([FromBody] ShopifyOrderWebhook payload)
     {
         if (!ValidateApiKey(out var tenantId))
-            return Unauthorized(ApiResponse<object>.Fail("Gecersiz API anahtari"));
+            return Unauthorized(ApiResponse<object>.Fail("Geçersiz API anahtarı"));
 
         var order = MapShopifyToOrder(payload, tenantId);
         var orderId = await orderRepository.InsertAsync(order);
@@ -53,7 +53,7 @@ public class WebhookIntegrationController(
     public async Task<ActionResult<ApiResponse<object>>> ReceiveTrendyol([FromBody] TrendyolOrderWebhook payload)
     {
         if (!ValidateApiKey(out var tenantId))
-            return Unauthorized(ApiResponse<object>.Fail("Gecersiz API anahtari"));
+            return Unauthorized(ApiResponse<object>.Fail("Geçersiz API anahtarı"));
 
         var order = MapTrendyolToOrder(payload, tenantId);
         var orderId = await orderRepository.InsertAsync(order);

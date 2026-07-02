@@ -311,7 +311,7 @@ export default function FleetPage() {
         <div className="space-y-4">
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Plaka</label><input type="text" value={vehicleForm.plateNumber} onChange={e => setVehicleForm({ ...vehicleForm, plateNumber: e.target.value })} className={inputClass} placeholder="34 ABC 123" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Araç Tipi</label>
-            <select value={vehicleForm.vehicleType} onChange={e => setVehicleForm({ ...vehicleForm, vehicleType: e.target.value })} className={inputClass}><option>Tir</option><option>Kamyon</option><option>Kamyonet</option><option>Frigorifik</option><option>Tanker</option><option>Lowbed</option></select>
+            <select value={vehicleForm.vehicleType} onChange={e => setVehicleForm({ ...vehicleForm, vehicleType: e.target.value })} className={inputClass}><option value="Tir">Tır</option><option>Kamyon</option><option>Kamyonet</option><option>Frigorifik</option><option>Tanker</option><option>Lowbed</option></select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Kasa Tipi</label><input type="text" value={vehicleForm.bodyType} onChange={e => setVehicleForm({ ...vehicleForm, bodyType: e.target.value })} className={inputClass} placeholder="Mega, Perdeli..." /></div>

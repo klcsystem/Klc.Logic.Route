@@ -35,10 +35,10 @@ public class PredictionController(
         [FromBody] NdrBatchRequest request)
     {
         if (request.OrderIds.Count == 0)
-            return BadRequest(ApiResponse<NdrBatchResult>.Fail("En az bir siparis ID gereklidir."));
+            return BadRequest(ApiResponse<NdrBatchResult>.Fail("En az bir sipariş ID gereklidir."));
 
         if (request.OrderIds.Count > 100)
-            return BadRequest(ApiResponse<NdrBatchResult>.Fail("Tek seferde en fazla 100 siparis analiz edilebilir."));
+            return BadRequest(ApiResponse<NdrBatchResult>.Fail("Tek seferde en fazla 100 sipariş analiz edilebilir."));
 
         var tenantId = tenantProvider.GetTenantId();
         var result = await ndrPredictionService.PredictBatchAsync(request.OrderIds, tenantId);

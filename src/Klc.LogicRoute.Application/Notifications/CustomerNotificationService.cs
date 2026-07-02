@@ -12,34 +12,34 @@ public class CustomerNotificationService(
 {
     private static readonly Dictionary<DeliveryNotificationStage, string> DefaultSmsTemplates = new()
     {
-        [DeliveryNotificationStage.OrderConfirmed] = "Siparissiniz onaylandi. Takip: {TrackingUrl}",
-        [DeliveryNotificationStage.OutForDelivery] = "Kargonuz yola cikti, tahmini varis: {ETA}. Takip: {TrackingUrl}",
+        [DeliveryNotificationStage.OrderConfirmed] = "Siparişiniz onaylandı. Takip: {TrackingUrl}",
+        [DeliveryNotificationStage.OutForDelivery] = "Kargonuz yola çıktı, tahmini varış: {ETA}. Takip: {TrackingUrl}",
         [DeliveryNotificationStage.Approaching] = "Kargonuz {MinutesLeft} dk sonra teslim edilecek.",
-        [DeliveryNotificationStage.Delivered] = "Kargonuz teslim edildi. Degerlendirmenizi bekliyoruz: {FeedbackUrl}",
-        [DeliveryNotificationStage.FailedAttempt] = "Teslimat yapilamadi, yeniden randevu alin: {RescheduleUrl}"
+        [DeliveryNotificationStage.Delivered] = "Kargonuz teslim edildi. Değerlendirmenizi bekliyoruz: {FeedbackUrl}",
+        [DeliveryNotificationStage.FailedAttempt] = "Teslimat yapılamadı, yeniden randevu alın: {RescheduleUrl}"
     };
 
     private static readonly Dictionary<DeliveryNotificationStage, string> DefaultEmailSubjects = new()
     {
-        [DeliveryNotificationStage.OrderConfirmed] = "Siparissiniz Onaylandi",
-        [DeliveryNotificationStage.OutForDelivery] = "Kargonuz Yola Cikti",
+        [DeliveryNotificationStage.OrderConfirmed] = "Siparişiniz Onaylandı",
+        [DeliveryNotificationStage.OutForDelivery] = "Kargonuz Yola Çıktı",
         [DeliveryNotificationStage.Approaching] = "Kargonuz Yaklasıyor",
         [DeliveryNotificationStage.Delivered] = "Kargonuz Teslim Edildi",
-        [DeliveryNotificationStage.FailedAttempt] = "Teslimat Yapilamadi"
+        [DeliveryNotificationStage.FailedAttempt] = "Teslimat Yapılamadı"
     };
 
     private static readonly Dictionary<DeliveryNotificationStage, string> DefaultEmailTemplates = new()
     {
         [DeliveryNotificationStage.OrderConfirmed] =
-            "Sayin {CustomerName},\n\nSiparissiniz onaylandi ve hazirlaniyor.\nTakip linki: {TrackingUrl}\n\nTesekkurler.",
+            "Sayın {CustomerName},\n\nSiparişiniz onaylandı ve hazırlanıyor.\nTakip linki: {TrackingUrl}\n\nTeşekkürler.",
         [DeliveryNotificationStage.OutForDelivery] =
-            "Sayin {CustomerName},\n\nKargonuz yola cikti.\nTahmini varis saati: {ETA}\nTakip: {TrackingUrl}\n\nTesekkurler.",
+            "Sayın {CustomerName},\n\nKargonuz yola çıktı.\nTahmini varış saati: {ETA}\nTakip: {TrackingUrl}\n\nTeşekkürler.",
         [DeliveryNotificationStage.Approaching] =
-            "Sayin {CustomerName},\n\nKargonuz yaklasik {MinutesLeft} dakika sonra teslim edilecek.\nLutfen hazir olun.\n\nTesekkurler.",
+            "Sayın {CustomerName},\n\nKargonuz yaklaşık {MinutesLeft} dakika sonra teslim edilecek.\nLütfen hazır olun.\n\nTeşekkürler.",
         [DeliveryNotificationStage.Delivered] =
-            "Sayin {CustomerName},\n\nKargonuz basariyla teslim edildi.\nDeneyiminizi degerlendirin: {FeedbackUrl}\n\nTesekkurler.",
+            "Sayın {CustomerName},\n\nKargonuz başarıyla teslim edildi.\nDeneyiminizi değerlendirin: {FeedbackUrl}\n\nTeşekkürler.",
         [DeliveryNotificationStage.FailedAttempt] =
-            "Sayin {CustomerName},\n\nTeslimat yapilamadi.\nYeni randevu almak icin: {RescheduleUrl}\n\nTesekkurler."
+            "Sayın {CustomerName},\n\nTeslimat yapılamadı.\nYeni randevu almak için: {RescheduleUrl}\n\nTeşekkürler."
     };
 
     public async Task SendDeliveryNotificationAsync(Guid tenantId, DeliveryNotificationStage stage,

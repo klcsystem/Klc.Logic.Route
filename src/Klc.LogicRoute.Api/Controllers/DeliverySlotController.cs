@@ -34,10 +34,10 @@ public class DeliverySlotController(
         var slot = await deliverySlotRepository.GetByIdAsync(request.SlotId, tenantId);
 
         if (slot == null)
-            return NotFound(ApiResponse<Guid>.Fail("Teslimat slotu bulunamadi"));
+            return NotFound(ApiResponse<Guid>.Fail("Teslimat slotu bulunamadı"));
 
         if (slot.Status != DeliverySlotStatus.Available)
-            return BadRequest(ApiResponse<Guid>.Fail("Bu slot artik musait degil"));
+            return BadRequest(ApiResponse<Guid>.Fail("Bu slot artık müsait değil"));
 
         var expiresAt = DateTime.UtcNow.AddMinutes(30);
         await deliverySlotRepository.ReserveAsync(request.SlotId, tenantId, request.CustomerName, request.CustomerPhone, expiresAt);
@@ -52,15 +52,15 @@ public class DeliverySlotController(
         var slot = await deliverySlotRepository.GetByIdAsync(id, tenantId);
 
         if (slot == null)
-            return NotFound(ApiResponse<Guid>.Fail("Teslimat slotu bulunamadi"));
+            return NotFound(ApiResponse<Guid>.Fail("Teslimat slotu bulunamadı"));
 
         if (slot.Status != DeliverySlotStatus.Reserved)
-            return BadRequest(ApiResponse<Guid>.Fail("Slot rezerve durumunda degil"));
+            return BadRequest(ApiResponse<Guid>.Fail("Slot rezerve durumunda değil"));
 
         if (slot.ExpiresAt.HasValue && slot.ExpiresAt.Value < DateTime.UtcNow)
         {
             await deliverySlotRepository.UpdateStatusAsync(id, tenantId, DeliverySlotStatus.Expired);
-            return BadRequest(ApiResponse<Guid>.Fail("Rezervasyon suresi dolmus"));
+            return BadRequest(ApiResponse<Guid>.Fail("Rezervasyon süresi dolmuş"));
         }
 
         await deliverySlotRepository.ConfirmAsync(id, tenantId);

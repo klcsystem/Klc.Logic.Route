@@ -314,7 +314,7 @@ export default function ReportsPage() {
                         <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                         <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
                         <Tooltip formatter={(v) => `${Number(v).toFixed(1)}%`} />
-                        <Bar dataKey="onTime" name="Zamaninda %" fill="#f97316" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="onTime" name="Zamanında %" fill="#f97316" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
@@ -329,8 +329,8 @@ export default function ReportsPage() {
                 <table className="w-full">
                   <thead><tr className="border-b border-slate-100">
                     <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Taşıyıcı</th>
-                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Zamaninda %</th>
-                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Ort. Sure (saat)</th>
+                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Zamanında %</th>
+                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Ort. Süre (saat)</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Hasar</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Toplam Sevkiyat</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Ort. Maliyet/kg</th>

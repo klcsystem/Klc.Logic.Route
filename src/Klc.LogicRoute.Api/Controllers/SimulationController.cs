@@ -60,7 +60,7 @@ public class SimulationController(
         var tenantId = tenantProvider.GetTenantId();
         var scenario = await simulationRepository.GetScenarioByIdAsync(id, tenantId);
         if (scenario == null)
-            return NotFound(ApiResponse<SimulationResult>.Fail("Senaryo bulunamadi"));
+            return NotFound(ApiResponse<SimulationResult>.Fail("Senaryo bulunamadı"));
 
         scenario.Status = "Running";
         scenario.UpdatedAt = DateTime.UtcNow;
@@ -93,7 +93,7 @@ public class SimulationController(
             await simulationHub.Clients.Group($"simulation-{id}")
                 .SendAsync("SimulationProgress", new { scenarioId = id, status = "Failed", error = ex.Message });
 
-            return BadRequest(ApiResponse<SimulationResult>.Fail($"Simulasyon basarisiz: {ex.Message}"));
+            return BadRequest(ApiResponse<SimulationResult>.Fail($"Simülasyon başarısız: {ex.Message}"));
         }
 
         return Ok(ApiResponse<SimulationResult>.Ok(result));
@@ -105,7 +105,7 @@ public class SimulationController(
         var tenantId = tenantProvider.GetTenantId();
         var result = await simulationRepository.GetResultByScenarioIdAsync(id, tenantId);
         if (result == null)
-            return NotFound(ApiResponse<SimulationResult>.Fail("Sonuc bulunamadi"));
+            return NotFound(ApiResponse<SimulationResult>.Fail("Sonuç bulunamadı"));
         return Ok(ApiResponse<SimulationResult>.Ok(result));
     }
 

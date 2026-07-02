@@ -105,8 +105,8 @@ export default function LocationDirectoryPage() {
 
   const handleExport = () => {
     const csv = [
-      'Kod,Ad,Tip,Adres,Şehir,Ilce,Aktif',
-      ...locations.map(l => `${l.code || ''},${l.name},${locationTypeLabels[l.locationType] || l.locationType},${l.address || ''},${l.city || ''},${l.district || ''},${l.isActive ? 'Evet' : 'Hayir'}`),
+      'Kod,Ad,Tip,Adres,Şehir,İlçe,Aktif',
+      ...locations.map(l => `${l.code || ''},${l.name},${locationTypeLabels[l.locationType] || l.locationType},${l.address || ''},${l.city || ''},${l.district || ''},${l.isActive ? 'Evet' : 'Hayır'}`),
     ].join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -115,7 +115,7 @@ export default function LocationDirectoryPage() {
     a.download = 'lokasyonlar.csv'
     a.click()
     URL.revokeObjectURL(url)
-    toast('success', 'Lokasyonlar disari aktarildi')
+    toast('success', 'Lokasyonlar dışarı aktarıldı')
   }
 
   const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white'
@@ -125,11 +125,11 @@ export default function LocationDirectoryPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Lokasyon Dizini</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Teslimat ve toplanma noktalarini yonetin</p>
+          <p className="text-[14px] text-slate-400 mt-1">Teslimat ve toplanma noktalarını yönetin</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-            <Download className="w-4 h-4" /> Disari Aktar
+            <Download className="w-4 h-4" /> Dışarı Aktar
           </button>
           <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
             <Plus className="w-4 h-4" /> Lokasyon Ekle
@@ -170,7 +170,7 @@ export default function LocationDirectoryPage() {
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ad</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tip</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adres</th>
-                  <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-24">Islemler</th>
+                  <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-24">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
@@ -218,7 +218,7 @@ export default function LocationDirectoryPage() {
         title={editingId ? 'Lokasyon Düzenle' : 'Lokasyon Ekle'}
         footer={
           <div className="flex justify-end gap-3">
-            <button onClick={() => { setDrawerOpen(false); setEditingId(null) }} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">Iptal</button>
+            <button onClick={() => { setDrawerOpen(false); setEditingId(null) }} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">İptal</button>
             <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold disabled:opacity-50">
               {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
               Kaydet
@@ -243,12 +243,12 @@ export default function LocationDirectoryPage() {
               <option value="Hub">Hub</option>
               <option value="Customer">Müşteri</option>
               <option value="CrossDock">Cross-Dock</option>
-              <option value="PickupPoint">Teslim Noktasi</option>
+              <option value="PickupPoint">Teslim Noktası</option>
             </select>
           </div>
           <div>
             <label className="block text-[13px] font-semibold text-slate-700 mb-2">Adres</label>
-            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={inputClass} placeholder="Ikitelli OSB, Basakşehir, Istanbul" />
+            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={inputClass} placeholder="İkitelli OSB, Başakşehir, İstanbul" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -256,8 +256,8 @@ export default function LocationDirectoryPage() {
               <input type="text" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className={inputClass} placeholder="Istanbul" />
             </div>
             <div>
-              <label className="block text-[13px] font-semibold text-slate-700 mb-2">Ilce</label>
-              <input type="text" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className={inputClass} placeholder="Basakşehir" />
+              <label className="block text-[13px] font-semibold text-slate-700 mb-2">İlçe</label>
+              <input type="text" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className={inputClass} placeholder="Başakşehir" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">

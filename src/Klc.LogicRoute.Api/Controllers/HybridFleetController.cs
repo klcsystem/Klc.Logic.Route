@@ -53,7 +53,7 @@ public class HybridFleetController(
     {
         var carrier = await carrierNetworkRepository.GetByIdAsync(id);
         if (carrier == null)
-            return NotFound(ApiResponse<CarrierNetwork>.Fail("Carrier bulunamadi"));
+            return NotFound(ApiResponse<CarrierNetwork>.Fail("Carrier bulunamadı"));
         return Ok(ApiResponse<CarrierNetwork>.Ok(carrier));
     }
 
@@ -75,13 +75,13 @@ public class HybridFleetController(
     {
         var existing = await carrierNetworkRepository.GetByIdAsync(id);
         if (existing == null)
-            return NotFound(ApiResponse<bool>.Fail("Carrier bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Carrier bulunamadı"));
 
         carrier.Id = id;
         carrier.TenantId = existing.TenantId;
         carrier.UpdatedBy = tenantProvider.GetUserId();
         await carrierNetworkRepository.UpdateAsync(carrier);
-        return Ok(ApiResponse<bool>.Ok(true, "Carrier guncellendi"));
+        return Ok(ApiResponse<bool>.Ok(true, "Carrier güncellendi"));
     }
 
     /// <summary>Delete a carrier network partner (soft delete)</summary>
@@ -90,7 +90,7 @@ public class HybridFleetController(
     {
         var existing = await carrierNetworkRepository.GetByIdAsync(id);
         if (existing == null)
-            return NotFound(ApiResponse<bool>.Fail("Carrier bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Carrier bulunamadı"));
 
         await carrierNetworkRepository.DeleteAsync(id);
         return Ok(ApiResponse<bool>.Ok(true, "Carrier silindi"));

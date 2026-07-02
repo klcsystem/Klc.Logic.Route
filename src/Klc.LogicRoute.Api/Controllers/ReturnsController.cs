@@ -27,7 +27,7 @@ public class ReturnsController(IReturnRequestRepository returnRequestRepository,
         var tenantId = tenantProvider.GetTenantId();
         var returnRequest = await returnRequestRepository.GetByIdAsync(id, tenantId);
         return returnRequest == null
-            ? NotFound(ApiResponse<ReturnRequest>.Fail("Iade talebi bulunamadi"))
+            ? NotFound(ApiResponse<ReturnRequest>.Fail("İade talebi bulunamadı"))
             : Ok(ApiResponse<ReturnRequest>.Ok(returnRequest));
     }
 
@@ -48,7 +48,7 @@ public class ReturnsController(IReturnRequestRepository returnRequestRepository,
         var tenantId = tenantProvider.GetTenantId();
         var existing = await returnRequestRepository.GetByIdAsync(id, tenantId);
         if (existing == null)
-            return NotFound(ApiResponse<string>.Fail("Iade talebi bulunamadi"));
+            return NotFound(ApiResponse<string>.Fail("İade talebi bulunamadı"));
 
         DateTime? receivedAt = request.Status == ReturnStatus.Received ? DateTime.UtcNow : null;
         await returnRequestRepository.UpdateStatusAsync(id, tenantId, request.Status.ToString(), receivedAt);

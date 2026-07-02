@@ -195,7 +195,7 @@ export default function OrdersPage() {
                 <div className="border border-slate-200 rounded-xl overflow-hidden">
                   <table className="w-full">
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Urun</th>
+                      <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ürün</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Adet</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                     </tr></thead>
@@ -254,18 +254,18 @@ export default function OrdersPage() {
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.priority}</label>
               <select value={orderForm.priority} onChange={(e) => setOrderForm({ ...orderForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
-                <option value="Normal">Normal</option><option value="Priority">Oncelikli</option><option value="Urgent">Acil</option>
+                <option value="Normal">Normal</option><option value="Priority">Öncelikli</option><option value="Urgent">Acil</option>
               </select>
             </div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Urun Kategorisi</label>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ürün Kategorisi</label>
               <select value={orderForm.productCategory} onChange={(e) => setOrderForm({ ...orderForm, productCategory: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
-                <option value="Gida">Gida</option><option value="FMCG">FMCG</option><option value="Temizlik">Temizlik</option><option value="Kimyasal">Kimyasal</option><option value="Elektronik">Elektronik</option>
+                <option value="Gida">Gıda</option><option value="FMCG">FMCG</option><option value="Temizlik">Temizlik</option><option value="Kimyasal">Kimyasal</option><option value="Elektronik">Elektronik</option>
               </select>
             </div>
           </div>
           <div className="flex items-center gap-6 pt-2">
             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={orderForm.isHazardous} onChange={(e) => setOrderForm({ ...orderForm, isHazardous: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /><span className="text-[13px] font-medium text-slate-700">Tehlikeli Madde (ADR)</span></label>
-            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={orderForm.requiresColdChain} onChange={(e) => setOrderForm({ ...orderForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /><span className="text-[13px] font-medium text-slate-700">Soguk Zincir</span></label>
+            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={orderForm.requiresColdChain} onChange={(e) => setOrderForm({ ...orderForm, requiresColdChain: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20" /><span className="text-[13px] font-medium text-slate-700">Soğuk Zincir</span></label>
           </div>
         </div>
       </Drawer>

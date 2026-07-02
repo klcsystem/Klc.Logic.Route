@@ -17,7 +17,7 @@ public class RiskScoringService : IRiskScoringService
             _ => 5m
         };
         score += valueFactor;
-        if (valueFactor >= 20) factors.Add($"Yuksek kargo degeri: {input.CargoValue:N0} TRY");
+        if (valueFactor >= 20) factors.Add($"Yüksek kargo değeri: {input.CargoValue:N0} TRY");
 
         // Route distance factor (0-15 points)
         var distanceFactor = input.RouteDistanceKm switch
@@ -41,7 +41,7 @@ public class RiskScoringService : IRiskScoringService
             _ => 20m
         };
         score += driverFactor;
-        if (driverFactor >= 15) factors.Add($"Dusuk surucu puani: {input.DriverScore}");
+        if (driverFactor >= 15) factors.Add($"Düşük sürücü puanı: {input.DriverScore}");
 
         // Vehicle age factor (0-15 points)
         var ageFactor = input.VehicleAgeYears switch
@@ -53,20 +53,20 @@ public class RiskScoringService : IRiskScoringService
             _ => 1m
         };
         score += ageFactor;
-        if (ageFactor >= 12) factors.Add($"Eski arac: {input.VehicleAgeYears} yil");
+        if (ageFactor >= 12) factors.Add($"Eski araç: {input.VehicleAgeYears} yıl");
 
         // Hazardous cargo (0-15 points)
         if (input.IsHazardous)
         {
             score += 15;
-            factors.Add("Tehlikeli madde tasiyor");
+            factors.Add("Tehlikeli madde taşıyor");
         }
 
         // Cold chain (0-5 points)
         if (input.RequiresColdChain)
         {
             score += 5;
-            factors.Add("Soguk zincir gerekli");
+            factors.Add("Soğuk zincir gerekli");
         }
 
         // Historical damage rate (0-5 points)
@@ -75,7 +75,7 @@ public class RiskScoringService : IRiskScoringService
             var damageFactor = input.HistoricalDamageRate.Value * 5m;
             score += Math.Min(5m, damageFactor);
             if (input.HistoricalDamageRate.Value > 0.1m)
-                factors.Add($"Gecmis hasar orani: %{input.HistoricalDamageRate.Value * 100:N1}");
+                factors.Add($"Geçmiş hasar oranı: %{input.HistoricalDamageRate.Value * 100:N1}");
         }
 
         score = Math.Min(100, Math.Round(score, 1));

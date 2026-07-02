@@ -32,10 +32,10 @@ export default function ReturnsPage() {
   const totalRefund = returns.reduce((sum, r) => sum + (r.refundAmount || 0), 0)
 
   const kpis = [
-    { label: 'Toplam Iade', value: returns.length.toString(), icon: RotateCcw, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Toplam İade', value: returns.length.toString(), icon: RotateCcw, color: 'text-blue-600 bg-blue-50' },
     { label: 'Bekleyen', value: pendingCount.toString(), icon: RotateCcw, color: 'text-amber-600 bg-amber-50' },
     { label: 'Tamamlanan', value: completedCount.toString(), icon: RotateCcw, color: 'text-green-600 bg-green-50' },
-    { label: 'Toplam Iade Tutari', value: `${totalRefund.toLocaleString()} TRY`, icon: RotateCcw, color: 'text-red-600 bg-red-50' },
+    { label: 'Toplam İade Tutarı', value: `${totalRefund.toLocaleString()} TRY`, icon: RotateCcw, color: 'text-red-600 bg-red-50' },
   ]
 
   const statusVariant: Record<string, 'default' | 'warning' | 'success' | 'error' | 'info' | 'orange'> = {
@@ -49,8 +49,8 @@ export default function ReturnsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Iade Yönetimi</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Iade talepleri ve ters lojistik sureclerini yonetin</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">İade Yönetimi</h1>
+        <p className="text-[14px] text-slate-400 mt-1">İade talepleri ve ters lojistik süreçlerini yönetin</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -59,7 +59,7 @@ export default function ReturnsPage() {
 
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100">
-          <h3 className="text-[15px] font-semibold text-slate-800">Iade Talepleri</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800">İade Talepleri</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -69,7 +69,7 @@ export default function ReturnsPage() {
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Müşteri</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sebep</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adet</th>
-                <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Iade Tutari</th>
+                <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">İade Tutarı</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Durum</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Talep Tarihi</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Toplama Tarihi</th>

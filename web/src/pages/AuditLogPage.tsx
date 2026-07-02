@@ -123,7 +123,7 @@ export default function AuditLogPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <span className="text-[13px] text-slate-500">
-            Toplam {totalCount} kayit - Sayfa {page} / {totalPages}
+            Toplam {totalCount} kayıt - Sayfa {page} / {totalPages}
           </span>
           <div className="flex items-center gap-2">
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">

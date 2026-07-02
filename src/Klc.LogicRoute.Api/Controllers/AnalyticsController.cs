@@ -19,7 +19,7 @@ public class AnalyticsController(
         [FromQuery] int days = 7)
     {
         if (days is < 1 or > 30)
-            return BadRequest(ApiResponse<DemandForecastResult>.Fail("days parametresi 1-30 arasinda olmalidir."));
+            return BadRequest(ApiResponse<DemandForecastResult>.Fail("days parametresi 1-30 arasında olmalıdır."));
 
         var tenantId = tenantProvider.GetTenantId();
         var result = await demandForecastService.ForecastAsync(tenantId, days);
@@ -31,7 +31,7 @@ public class AnalyticsController(
         [FromQuery] int lookbackDays = 30)
     {
         if (lookbackDays is < 1 or > 365)
-            return BadRequest(ApiResponse<IEnumerable<RegionDemand>>.Fail("lookbackDays parametresi 1-365 arasinda olmalidir."));
+            return BadRequest(ApiResponse<IEnumerable<RegionDemand>>.Fail("lookbackDays parametresi 1-365 arasında olmalıdır."));
 
         var tenantId = tenantProvider.GetTenantId();
         var result = await demandForecastService.GetDemandByRegionAsync(tenantId, lookbackDays);

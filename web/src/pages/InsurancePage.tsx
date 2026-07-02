@@ -89,7 +89,7 @@ export default function InsurancePage() {
             <select value={quoteForm.cargoType} onChange={e => setQuoteForm({ ...quoteForm, cargoType: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
               <option value="Genel">Genel</option>
               <option value="Kimyasal">Kimyasal</option>
-              <option value="Soguk Zincir">Soguk Zincir</option>
+              <option value="Soguk Zincir">Soğuk Zincir</option>
               <option value="Elektronik">Elektronik</option>
             </select>
           </div>

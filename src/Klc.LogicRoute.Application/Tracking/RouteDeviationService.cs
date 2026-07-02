@@ -104,8 +104,8 @@ public class RouteDeviationService : IRouteDeviationService
                         // Send notification
                         await _notificationService.SendToAllAsync(
                             tenantId,
-                            "Rota Sapma Uyarisi",
-                            $"Surucu rotasindan {minDistance:F0}m sapma gosteriyor. Konum: ({lat:F5}, {lng:F5})",
+                            "Rota Sapma Uyarısı",
+                            $"Sürücü rotasından {minDistance:F0}m sapma gösteriyor. Konum: ({lat:F5}, {lng:F5})",
                             NotificationType.Warning);
 
                         _logger.LogWarning(

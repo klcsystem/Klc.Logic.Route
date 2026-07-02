@@ -193,8 +193,8 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
                         <p className="font-bold text-[13px]">{stop.address}</p>
                         <div className="mt-1 space-y-0.5 text-gray-500">
                           <p>Durum: <span className="font-medium" style={{ color: STATUS_COLORS[status] }}>{STATUS_LABELS[status]}</span></p>
-                          <p>Arac: <span className="font-medium text-gray-700">{route.plateNumber}</span></p>
-                          <p>Sira: <span className="font-medium text-gray-700">#{stop.sequence}</span></p>
+                          <p>Araç: <span className="font-medium text-gray-700">{route.plateNumber}</span></p>
+                          <p>Sıra: <span className="font-medium text-gray-700">#{stop.sequence}</span></p>
                           <p>Varış: <span className="font-medium text-gray-700">{stop.arrivalTime}</span></p>
                         </div>
                       </div>

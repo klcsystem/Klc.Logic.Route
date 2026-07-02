@@ -91,7 +91,7 @@ export default function SustainabilityPage() {
                     <span className="text-[15px] font-bold text-green-700">{(savingsData.routeOptimizationSavings ?? 0).toLocaleString()} kg CO2</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200/60">
-                    <span className="text-[13px] font-medium text-blue-800">Arac Konsolidasyonu</span>
+                    <span className="text-[13px] font-medium text-blue-800">Araç Konsolidasyonu</span>
                     <span className="text-[15px] font-bold text-blue-700">{(savingsData.vehicleConsolidationSavings ?? 0).toLocaleString()} kg CO2</span>
                   </div>
                   <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200/60">
@@ -108,7 +108,7 @@ export default function SustainabilityPage() {
           {/* Arac Tipi Dağılımı */}
           {carbonData?.vehicleBreakdown && carbonData.vehicleBreakdown.length > 0 && (
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Arac Tipi Bazında Emisyon</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Araç Tipi Bazında Emisyon</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {carbonData.vehicleBreakdown.map(item => (
                   <div key={item.vehicleType} className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">

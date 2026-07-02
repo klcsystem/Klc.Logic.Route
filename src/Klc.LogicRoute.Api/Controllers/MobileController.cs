@@ -38,10 +38,10 @@ public class MobileController(
         var tenantId = tenantProvider.GetTenantId();
         var user = await userRepository.GetByEmailAsync(request.Email, tenantId);
         if (user == null || !user.IsActive || string.IsNullOrEmpty(user.PasswordHash))
-            return Unauthorized(ApiResponse<MobileLoginResponse>.Fail("Gecersiz kullanici bilgileri"));
+            return Unauthorized(ApiResponse<MobileLoginResponse>.Fail("Geçersiz kullanıcı bilgileri"));
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return Unauthorized(ApiResponse<MobileLoginResponse>.Fail("Gecersiz kullanici bilgileri"));
+            return Unauthorized(ApiResponse<MobileLoginResponse>.Fail("Geçersiz kullanıcı bilgileri"));
 
         await userRepository.UpdateLastLoginAsync(user.Id, user.TenantId);
 
@@ -80,7 +80,7 @@ public class MobileController(
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
         if (shipment == null)
-            return NotFound(ApiResponse<Shipment>.Fail("Sevkiyat bulunamadi"));
+            return NotFound(ApiResponse<Shipment>.Fail("Sevkiyat bulunamadı"));
         return Ok(ApiResponse<Shipment>.Ok(shipment));
     }
 
@@ -92,7 +92,7 @@ public class MobileController(
         var tenantId = tenantProvider.GetTenantId();
         var result = await mediator.Send(new UpdateShipmentStatusCommand(id, tenantId, request.Status, request.Notes));
         if (!result.Success)
-            return BadRequest(ApiResponse<UpdateShipmentStatusResult>.Fail(result.Message ?? "Guncelleme basarisiz"));
+            return BadRequest(ApiResponse<UpdateShipmentStatusResult>.Fail(result.Message ?? "Güncelleme başarısız"));
         return Ok(ApiResponse<UpdateShipmentStatusResult>.Ok(result));
     }
 
@@ -130,7 +130,7 @@ public class MobileController(
             id, tenantId, recipientName, notes, lat, lng, photoPath, signaturePath, userId));
 
         if (!result.Success)
-            return BadRequest(ApiResponse<UploadProofOfDeliveryResult>.Fail(result.Message ?? "Kayit basarisiz"));
+            return BadRequest(ApiResponse<UploadProofOfDeliveryResult>.Fail(result.Message ?? "Kayıt başarısız"));
         return Ok(ApiResponse<UploadProofOfDeliveryResult>.Ok(result));
     }
 
@@ -187,12 +187,12 @@ public class MobileController(
                 : NotificationType.GeofenceDeparted;
 
             var title = geofenceEvent.EventType == GeofenceEventType.Arrived
-                ? "Surucu teslimat noktasina ulasti"
-                : "Surucu teslimat noktasindan ayrildi";
+                ? "Sürücü teslimat noktasına ulaştı"
+                : "Sürücü teslimat noktasından ayrıldı";
 
             await notificationService.SendToAllAsync(
                 tenantId, title,
-                $"Sevkiyat {geofenceEvent.ShipmentId}: Surucu {geofenceEvent.DistanceMeters:F0}m mesafede",
+                $"Sevkiyat {geofenceEvent.ShipmentId}: Sürücü {geofenceEvent.DistanceMeters:F0}m mesafede",
                 notifType);
         }
 

@@ -43,10 +43,10 @@ public class CrossDockController(
     {
         var existing = await crossDockRepository.GetByIdAsync(id);
         if (existing == null)
-            return NotFound(ApiResponse<bool>.Fail("Cross-dock operasyonu bulunamadi"));
+            return NotFound(ApiResponse<bool>.Fail("Cross-dock operasyonu bulunamadı"));
 
         await crossDockRepository.UpdateStatusAsync(id, request.Status);
-        return Ok(ApiResponse<bool>.Ok(true, "Status guncellendi"));
+        return Ok(ApiResponse<bool>.Ok(true, "Status güncellendi"));
     }
 
     /// <summary>List available hub locations (distinct hubs from operations)</summary>

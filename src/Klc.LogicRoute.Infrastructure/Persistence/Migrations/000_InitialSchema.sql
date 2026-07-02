@@ -55,3 +55,8 @@ CREATE TABLE IF NOT EXISTS auth.users (
 CREATE INDEX IF NOT EXISTS idx_users_tenant_email ON auth.users(tenant_id, email);
 CREATE INDEX IF NOT EXISTS idx_users_role_id ON auth.users(role_id);
 CREATE INDEX IF NOT EXISTS idx_operation_claims_tenant ON auth.operation_claims(tenant_id);
+
+-- Varsayilan tenant — 006_SeedData bu tenant'a ihtiyac duyuyor (AuthMigrations daha sonra calisiyor)
+INSERT INTO auth.tenants (id, name, domain, is_active)
+VALUES ('00000000-0000-0000-0000-000000000001', 'LogicRoute Default', 'logicroute.com', TRUE)
+ON CONFLICT (id) DO NOTHING;

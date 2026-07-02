@@ -39,7 +39,7 @@ public class FeedbackController(
         };
 
         await feedbackRepository.InsertAsync(feedback);
-        return Ok(ApiResponse<Guid>.Ok(feedback.Id, "Geri bildiriminiz icin tesekkurler."));
+        return Ok(ApiResponse<Guid>.Ok(feedback.Id, "Geri bildiriminiz için teşekkürler."));
     }
 
     /// <summary>

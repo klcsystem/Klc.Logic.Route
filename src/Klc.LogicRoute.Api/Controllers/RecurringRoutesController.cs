@@ -30,7 +30,7 @@ public class RecurringRoutesController(
         {
             var optimization = await optimizationRepository.GetByIdAsync(request.SourceOptimizationId.Value, tenantId);
             if (optimization == null)
-                return NotFound(ApiResponse<RecurringRoute>.Fail("Kaynak optimizasyon bulunamadi"));
+                return NotFound(ApiResponse<RecurringRoute>.Fail("Kaynak optimizasyon bulunamadı"));
 
             var stopOrder = 0;
             foreach (var route in optimization.Routes)
@@ -98,7 +98,7 @@ public class RecurringRoutesController(
         }
 
         recurringRoute.Stops = templateStops;
-        return Ok(ApiResponse<RecurringRoute>.Ok(recurringRoute, "Tekrarlayan rota olusturuldu"));
+        return Ok(ApiResponse<RecurringRoute>.Ok(recurringRoute, "Tekrarlayan rota oluşturuldu"));
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class RecurringRoutesController(
         var tenantId = tenantProvider.GetTenantId();
         var result = await recurringRouteRepository.GetByIdAsync(id, tenantId);
         if (result == null)
-            return NotFound(ApiResponse<RecurringRoute>.Fail("Tekrarlayan rota bulunamadi"));
+            return NotFound(ApiResponse<RecurringRoute>.Fail("Tekrarlayan rota bulunamadı"));
         return Ok(ApiResponse<RecurringRoute>.Ok(result));
     }
 
@@ -136,14 +136,14 @@ public class RecurringRoutesController(
 
         var recurring = await recurringRouteRepository.GetByIdAsync(id, tenantId);
         if (recurring == null)
-            return NotFound(ApiResponse<RouteOptimizationResult>.Fail("Tekrarlayan rota bulunamadi"));
+            return NotFound(ApiResponse<RouteOptimizationResult>.Fail("Tekrarlayan rota bulunamadı"));
 
         if (!recurring.IsActive)
-            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail("Bu rota aktif degil"));
+            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail("Bu rota aktif değil"));
 
         // Check if schedule matches today
         if (!IsScheduleMatchToday(recurring))
-            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail("Bu rota bugun icin planlanmamis"));
+            return BadRequest(ApiResponse<RouteOptimizationResult>.Fail("Bu rota bugün için planlanmamış"));
 
         // Create a new optimization result from the template
         var optimization = new RouteOptimizationResult
@@ -196,7 +196,7 @@ public class RecurringRoutesController(
         await recurringRouteRepository.UpdateAsync(recurring);
 
         var result = await optimizationRepository.GetByIdAsync(optimization.Id, tenantId);
-        return Ok(ApiResponse<RouteOptimizationResult>.Ok(result!, "Rota sablondan olusturuldu"));
+        return Ok(ApiResponse<RouteOptimizationResult>.Ok(result!, "Rota şablondan oluşturuldu"));
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public class RecurringRoutesController(
         var tenantId = tenantProvider.GetTenantId();
         var existing = await recurringRouteRepository.GetByIdAsync(id, tenantId);
         if (existing == null)
-            return NotFound(ApiResponse<object>.Fail("Tekrarlayan rota bulunamadi"));
+            return NotFound(ApiResponse<object>.Fail("Tekrarlayan rota bulunamadı"));
 
         await recurringRouteRepository.DeleteAsync(id, tenantId);
         return Ok(ApiResponse<object>.Ok(new { deleted = true }, "Tekrarlayan rota silindi"));
@@ -224,7 +224,7 @@ public class RecurringRoutesController(
         var userId = tenantProvider.GetUserId();
         var existing = await recurringRouteRepository.GetByIdAsync(id, tenantId);
         if (existing == null)
-            return NotFound(ApiResponse<RecurringRoute>.Fail("Tekrarlayan rota bulunamadi"));
+            return NotFound(ApiResponse<RecurringRoute>.Fail("Tekrarlayan rota bulunamadı"));
 
         existing.IsActive = !existing.IsActive;
         existing.UpdatedAt = DateTime.UtcNow;

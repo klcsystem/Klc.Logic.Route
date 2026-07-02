@@ -436,7 +436,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
                   </div>
                 ) : (
                   <div className="text-[13px] font-medium text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-center">
-                    En uygun secenek!
+                    En uygun seçenek!
                   </div>
                 )}
               </div>
@@ -503,7 +503,7 @@ function OperationsDashboard({ summary, recentShipments }: { summary: DashboardS
             )}
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-            <h4 className="text-[13px] font-semibold text-slate-800 mb-3">Ozet</h4>
+            <h4 className="text-[13px] font-semibold text-slate-800 mb-3">Özet</h4>
             <div className="space-y-2">
               <div className="flex justify-between"><span className="text-[12px] text-slate-500">Aktif Anlasma</span><span className="text-[13px] font-semibold">{summary?.activeContracts || 0}</span></div>
               <div className="flex justify-between"><span className="text-[12px] text-slate-500">Aktif Taşıyıcı</span><span className="text-[13px] font-semibold">{summary?.activeProviders || 0}</span></div>
@@ -538,7 +538,7 @@ function FinanceDashboard({ summary, monthlyCosts, providerCosts }: { summary: D
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
                 <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
                 <Tooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} formatter={(v) => `${v}K TL`} />
-                <Bar dataKey="gerçeklesen" name="Gerçeklesen" fill="#f97316" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gerçeklesen" name="Gerçekleşen" fill="#f97316" radius={[4, 4, 0, 0]} />
                 <Legend />
               </BarChart>
             </ResponsiveContainer>
@@ -668,9 +668,9 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">
-            {greeting()}, {user?.firstName || 'Kullanici'}
+            {greeting()}, {user?.firstName || 'Kullanıcı'}
           </h1>
-          <p className="text-[14px] text-slate-400 mt-1">Lojistik operasyonlarinizin guncel özeti.</p>
+          <p className="text-[14px] text-slate-400 mt-1">Lojistik operasyonlarınızın güncel özeti.</p>
         </div>
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-slate-400" />

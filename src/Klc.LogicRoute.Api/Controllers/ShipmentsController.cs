@@ -39,7 +39,7 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<Shipment>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<Shipment>.Fail("Sevkiyat bulunamadı"));
         return Ok(ApiResponse<Shipment>.Ok(shipment));
     }
 
@@ -79,7 +79,7 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<Recommendation>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<Recommendation>.Fail("Sevkiyat bulunamadı"));
 
         criteria ??= new DecisionCriteria();
 
@@ -106,9 +106,9 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<bool>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<bool>.Fail("Sevkiyat bulunamadı"));
         if (shipment.Status != ShipmentStatus.Calculated && shipment.Status != ShipmentStatus.PendingApproval)
-            return BadRequest(ApiResponse<bool>.Fail("Sevkiyat onaylanabilir durumda degil"));
+            return BadRequest(ApiResponse<bool>.Fail("Sevkiyat onaylanabilir durumda değil"));
 
         await shipmentRepository.UpdateStatusAsync(id, tenantId, (int)ShipmentStatus.Approved);
         return Ok(ApiResponse<bool>.Ok(true));
@@ -119,14 +119,14 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<string>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<string>.Fail("Sevkiyat bulunamadı"));
         if (shipment.Status != ShipmentStatus.Approved)
-            return BadRequest(ApiResponse<string>.Fail("Sevkiyat onaylanmamis"));
+            return BadRequest(ApiResponse<string>.Fail("Sevkiyat onaylanmamış"));
         if (!shipment.SelectedProviderId.HasValue)
-            return BadRequest(ApiResponse<string>.Fail("Provider secilmemis"));
+            return BadRequest(ApiResponse<string>.Fail("Provider seçilmemiş"));
 
         var provider = await providerRepository.GetByIdAsync(shipment.SelectedProviderId.Value, tenantId);
-        if (provider == null) return NotFound(ApiResponse<string>.Fail("Provider bulunamadi"));
+        if (provider == null) return NotFound(ApiResponse<string>.Fail("Provider bulunamadı"));
 
         var adapter = providerAdapters.FirstOrDefault(a =>
             a.ProviderCode.Equals(provider.Code, StringComparison.OrdinalIgnoreCase));
@@ -148,7 +148,7 @@ public class ShipmentsController(
         await shipmentRepository.UpdateAsync(shipment);
         await shipmentRepository.UpdateStatusAsync(id, tenantId, (int)ShipmentStatus.SentToProvider);
 
-        return Ok(ApiResponse<string>.Ok(shipment.ProviderReferenceId, "Sevkiyat provider'a gonderildi"));
+        return Ok(ApiResponse<string>.Ok(shipment.ProviderReferenceId, "Sevkiyat provider'a gönderildi"));
     }
 
     [HttpGet("{id:guid}/tracking")]
@@ -156,7 +156,7 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<object>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<object>.Fail("Sevkiyat bulunamadı"));
 
         var tracking = new
         {
@@ -180,9 +180,9 @@ public class ShipmentsController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var shipment = await shipmentRepository.GetByIdAsync(id, tenantId);
-        if (shipment == null) return NotFound(ApiResponse<bool>.Fail("Sevkiyat bulunamadi"));
+        if (shipment == null) return NotFound(ApiResponse<bool>.Fail("Sevkiyat bulunamadı"));
         if (shipment.Status == ShipmentStatus.Delivered || shipment.Status == ShipmentStatus.Completed)
-            return BadRequest(ApiResponse<bool>.Fail("Teslim edilmis sevkiyat iptal edilemez"));
+            return BadRequest(ApiResponse<bool>.Fail("Teslim edilmiş sevkiyat iptal edilemez"));
 
         await shipmentRepository.UpdateStatusAsync(id, tenantId, (int)ShipmentStatus.Cancelled);
         return Ok(ApiResponse<bool>.Ok(true));
@@ -211,7 +211,7 @@ public class ShipmentsController(
         var userId = tenantProvider.GetUserId();
         var result = await mediator.Send(new SendEtaNotificationCommand(id, tenantId, userId));
         if (!result.Success)
-            return BadRequest(ApiResponse<SendEtaNotificationResult>.Fail(result.Message ?? "Bildirim gonderilemedi"));
+            return BadRequest(ApiResponse<SendEtaNotificationResult>.Fail(result.Message ?? "Bildirim gönderilemedi"));
         return Ok(ApiResponse<SendEtaNotificationResult>.Ok(result));
     }
 
@@ -221,7 +221,7 @@ public class ShipmentsController(
         var tenantId = tenantProvider.GetTenantId();
         var recs = await recommendationRepository.GetByOrderIdAsync(id, tenantId);
         var rec = recs.FirstOrDefault();
-        if (rec == null) return NotFound(ApiResponse<Recommendation>.Fail("Oneri bulunamadi"));
+        if (rec == null) return NotFound(ApiResponse<Recommendation>.Fail("Öneri bulunamadı"));
         return Ok(ApiResponse<Recommendation>.Ok(rec));
     }
 

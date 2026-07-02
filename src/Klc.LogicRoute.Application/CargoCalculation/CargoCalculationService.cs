@@ -32,11 +32,11 @@ public class CargoCalculationService : ICargoCalculationService
 
         var notes = new List<string>();
         if (volumetricWeight > actualWeight)
-            notes.Add($"Hacimsel agirlik ({volumetricWeight:F1} kg) > gercek agirlik ({actualWeight:F1} kg), hacimsel baz alinir");
+            notes.Add($"Hacimsel ağırlık ({volumetricWeight:F1} kg) > gerçek ağırlık ({actualWeight:F1} kg), hacimsel baz alınır");
         if (order.IsHazardous)
-            notes.Add("ADR tehlikeli madde tasimaciligi gerekli");
+            notes.Add("ADR tehlikeli madde taşımacılığı gerekli");
         if (order.RequiresColdChain)
-            notes.Add($"Soguk zincir gerekli ({order.TemperatureMin}C - {order.TemperatureMax}C)");
+            notes.Add($"Soğuk zincir gerekli ({order.TemperatureMin}C - {order.TemperatureMax}C)");
 
         return new CargoDetail
         {

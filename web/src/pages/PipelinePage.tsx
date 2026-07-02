@@ -77,7 +77,7 @@ export default function PipelinePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Pipeline</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Veri isleme pipeline durumu ve manuel tetikleme</p>
+          <p className="text-[14px] text-slate-400 mt-1">Veri işleme pipeline durumu ve manuel tetikleme</p>
         </div>
         <button onClick={handleTrigger} disabled={isTriggering || statusData?.isRunning} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all">
           {isTriggering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}

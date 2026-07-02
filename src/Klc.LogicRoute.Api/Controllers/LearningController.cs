@@ -65,7 +65,7 @@ public class LearningController(
     public async Task<ActionResult<ApiResponse<string>>> Retrain()
     {
         _ = Task.Run(() => learningOrchestrator.TriggerManualRunAsync(CancellationToken.None));
-        return Ok(ApiResponse<string>.Ok("Ogrenme sureci baslatildi. Sonuclar birkac dakika icinde guncellenecektir."));
+        return Ok(ApiResponse<string>.Ok("Öğrenme süreci başlatıldı. Sonuçlar birkaç dakika içinde güncellenecektir."));
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public class LearningController(
     {
         var tenantId = tenantProvider.GetTenantId();
         _ = Task.Run(() => driverFamiliarityService.RebuildFamiliarityAsync(tenantId, CancellationToken.None));
-        return Ok(ApiResponse<string>.Ok("Surucu bolge ogrenme sureci baslatildi."));
+        return Ok(ApiResponse<string>.Ok("Sürücü bölge öğrenme süreci başlatıldı."));
     }
 
     /// <summary>

@@ -86,10 +86,10 @@ const statusLabelsMap: Record<DriverStatus, string> = {
 }
 
 const filterChips: { key: DriverStatus | 'all'; label: string; icon: React.ElementType; color: string }[] = [
-  { key: 'all', label: 'Tumu', icon: Users, color: 'text-slate-600' },
+  { key: 'all', label: 'Tümü', icon: Users, color: 'text-slate-600' },
   { key: 'Failed', label: 'Başarısız', icon: XCircle, color: 'text-red-500' },
   { key: 'OnRoute', label: 'Rotada', icon: Truck, color: 'text-orange-500' },
-  { key: 'Scheduled', label: 'Planli', icon: Clock, color: 'text-blue-500' },
+  { key: 'Scheduled', label: 'Planlı', icon: Clock, color: 'text-blue-500' },
   { key: 'Servicing', label: 'Serviste', icon: MapPin, color: 'text-purple-500' },
   { key: 'Completed', label: 'Tamamlandı', icon: CheckCircle, color: 'text-green-500' },
 ]
@@ -179,14 +179,14 @@ export default function LiveTrackingPage() {
             <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center"><Users className="w-5 h-5" /></div>
           </div>
           <div className="text-[28px] font-bold text-slate-900 tracking-tight">{onDuty}</div>
-          <div className="text-[13px] text-slate-400 mt-0.5">Gorevde</div>
+          <div className="text-[13px] text-slate-400 mt-0.5">Görevde</div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><Users className="w-5 h-5" /></div>
           </div>
           <div className="text-[28px] font-bold text-slate-900 tracking-tight">{offDuty}</div>
-          <div className="text-[13px] text-slate-400 mt-0.5">Gorev Disi</div>
+          <div className="text-[13px] text-slate-400 mt-0.5">Görev Dışı</div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-2">

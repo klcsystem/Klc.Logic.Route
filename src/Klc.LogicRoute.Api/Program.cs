@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "Klc LogicRoute API",
         Version = "v1",
-        Description = "Rota Optimizasyon ve Lojistik Yonetim Platformu API"
+        Description = "Rota Optimizasyon ve Lojistik Yönetim Platformu API"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

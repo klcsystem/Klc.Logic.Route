@@ -37,7 +37,7 @@ public class MLModelRepository(IPostgresConnectionFactory connectionFactory) : I
             @"INSERT INTO logistics.ml_models
               (id, tenant_id, model_type, model_version, file_path, metrics, training_records,
                is_active, trained_at, is_deleted, created_at, created_by)
-              VALUES (@Id, @TenantId, @ModelType, @ModelVersion, @FilePath, @Metrics, @TrainingRecords,
+              VALUES (@Id, @TenantId, @ModelType, @ModelVersion, @FilePath, @Metrics::jsonb, @TrainingRecords,
                @IsActive, @TrainedAt, FALSE, @CreatedAt, @CreatedBy)",
             model);
         return model.Id;
@@ -49,7 +49,7 @@ public class MLModelRepository(IPostgresConnectionFactory connectionFactory) : I
         await conn.OpenAsync();
         await conn.ExecuteAsync(
             @"UPDATE logistics.ml_models
-              SET is_active = @IsActive, metrics = @Metrics, updated_at = @UpdatedAt
+              SET is_active = @IsActive, metrics = @Metrics::jsonb, updated_at = @UpdatedAt
               WHERE id = @Id",
             model);
     }
@@ -75,7 +75,7 @@ public class PredictionLogRepository(IPostgresConnectionFactory connectionFactor
             @"INSERT INTO logistics.prediction_log
               (id, tenant_id, model_id, model_type, input_features, predicted_value, actual_value,
                prediction_at, is_deleted, created_at, created_by)
-              VALUES (@Id, @TenantId, @ModelId, @ModelType, @InputFeatures, @PredictedValue, @ActualValue,
+              VALUES (@Id, @TenantId, @ModelId, @ModelType, @InputFeatures::jsonb, @PredictedValue, @ActualValue,
                @PredictionAt, FALSE, @CreatedAt, @CreatedBy)",
             log);
         return log.Id;

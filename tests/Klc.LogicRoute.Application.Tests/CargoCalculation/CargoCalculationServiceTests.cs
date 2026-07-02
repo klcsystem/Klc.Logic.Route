@@ -196,7 +196,7 @@ public class CargoCalculationServiceTests
         order.TemperatureMax = 8;
         var result = _sut.Calculate(order);
 
-        result.CalculationNotes.Should().Contain("Soguk zincir");
+        result.CalculationNotes.Should().Contain("Soğuk zincir");
         result.CalculationNotes.Should().Contain("2");
         result.CalculationNotes.Should().Contain("8");
     }

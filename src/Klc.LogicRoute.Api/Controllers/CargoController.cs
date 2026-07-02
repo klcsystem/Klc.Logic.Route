@@ -23,7 +23,7 @@ public class CargoController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var order = await orderRepository.GetByIdAsync(orderId, tenantId);
-        if (order == null) return NotFound(ApiResponse<CargoDetail>.Fail("Siparis bulunamadi"));
+        if (order == null) return NotFound(ApiResponse<CargoDetail>.Fail("Sipariş bulunamadı"));
 
         var cargoDetail = cargoCalculationService.Calculate(order);
         cargoDetail.CreatedBy = tenantProvider.GetUserId();
@@ -42,7 +42,7 @@ public class CargoController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var detail = await cargoDetailRepository.GetByOrderIdAsync(orderId, tenantId);
-        if (detail == null) return NotFound(ApiResponse<CargoDetail>.Fail("Kargo detayi bulunamadi"));
+        if (detail == null) return NotFound(ApiResponse<CargoDetail>.Fail("Kargo detayı bulunamadı"));
         return Ok(ApiResponse<CargoDetail>.Ok(detail));
     }
 }

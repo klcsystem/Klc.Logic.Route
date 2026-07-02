@@ -58,7 +58,7 @@ public class MidRouteStopService(
         // If not found by optimization scan, try to get stops directly
         var existingStops = (await routeRepository.GetStopsByRouteIdAsync(routeId, tenantId)).ToList();
         if (existingStops.Count == 0)
-            throw new InvalidOperationException($"Rota bulunamadi veya durak yok: {routeId}");
+            throw new InvalidOperationException($"Rota bulunamadı veya durak yok: {routeId}");
 
         existingStops = existingStops.OrderBy(s => s.StopOrder).ToList();
 
