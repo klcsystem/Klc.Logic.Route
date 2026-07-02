@@ -81,15 +81,15 @@ export default function CarrierScorecardPage() {
 
       {!isLoading && scores.length === 0 && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-12 text-center">
-          <p className="text-[15px] text-slate-500">Henuz tasiyici performans verisi yok.</p>
-          <p className="text-[13px] text-slate-400 mt-1">Sevkiyatlar tamamlandikca performans verileri burada gorunecektir.</p>
+          <p className="text-[15px] text-slate-500">Henüz taşıyıcı performans verisi yok.</p>
+          <p className="text-[13px] text-slate-400 mt-1">Sevkiyatlar tamamlandıkca performans verileri burada gorunecektir.</p>
         </div>
       )}
 
       {/* Monthly trend */}
       {!isLoading && monthlyTrendChart.length > 1 && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Zamaninda Teslim Trendi</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylık Zamaninda Teslim Trendi</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={monthlyTrendChart}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -168,11 +168,11 @@ export default function CarrierScorecardPage() {
       {/* Performance comparison table */}
       {!isLoading && scores.length > 0 && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Performans Karsilastirma Tablosu</h3></div>
+          <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Performans Karşılaştırma Tablosu</h3></div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead><tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Tasiyici</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Taşıyıcı</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Genel Puan</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Zamaninda %</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Geciken</th>

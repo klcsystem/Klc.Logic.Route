@@ -81,17 +81,17 @@ const statusLabelsMap: Record<DriverStatus, string> = {
   OnRoute: 'Rotada',
   Scheduled: 'Planli',
   Servicing: 'Serviste',
-  Completed: 'Tamamlandi',
-  Failed: 'Basarisiz',
+  Completed: 'Tamamlandı',
+  Failed: 'Başarısız',
 }
 
 const filterChips: { key: DriverStatus | 'all'; label: string; icon: React.ElementType; color: string }[] = [
   { key: 'all', label: 'Tumu', icon: Users, color: 'text-slate-600' },
-  { key: 'Failed', label: 'Basarisiz', icon: XCircle, color: 'text-red-500' },
+  { key: 'Failed', label: 'Başarısız', icon: XCircle, color: 'text-red-500' },
   { key: 'OnRoute', label: 'Rotada', icon: Truck, color: 'text-orange-500' },
   { key: 'Scheduled', label: 'Planli', icon: Clock, color: 'text-blue-500' },
   { key: 'Servicing', label: 'Serviste', icon: MapPin, color: 'text-purple-500' },
-  { key: 'Completed', label: 'Tamamlandi', icon: CheckCircle, color: 'text-green-500' },
+  { key: 'Completed', label: 'Tamamlandı', icon: CheckCircle, color: 'text-green-500' },
 ]
 
 export default function LiveTrackingPage() {
@@ -126,7 +126,7 @@ export default function LiveTrackingPage() {
         const raw = Array.isArray(driversRes.value.data) ? driversRes.value.data : driversRes.value.data?.items || []
         setDrivers(raw.map((d: Record<string, unknown>, idx: number) => ({
           id: (d.id as string) || String(idx),
-          name: (d.fullName as string) || (d.name as string) || `Surucu ${idx + 1}`,
+          name: (d.fullName as string) || (d.name as string) || `Sürücü ${idx + 1}`,
           phone: (d.phone as string) || '',
           plateNumber: (d.plateNumber as string) || (d.plate as string) || '',
           status: ((d.status as DriverStatus) || 'Scheduled'),
@@ -193,7 +193,7 @@ export default function LiveTrackingPage() {
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><Truck className="w-5 h-5" /></div>
           </div>
           <div className="text-[28px] font-bold text-slate-900 tracking-tight">{totalDrivers}</div>
-          <div className="text-[13px] text-slate-400 mt-0.5">Toplam Surucu</div>
+          <div className="text-[13px] text-slate-400 mt-0.5">Toplam Sürücü</div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
@@ -208,7 +208,7 @@ export default function LiveTrackingPage() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
           <button onClick={() => setViewMode('planned')} className={`px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all ${viewMode === 'planned' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Planlanan</button>
-          <button onClick={() => setViewMode('actual')} className={`px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all ${viewMode === 'actual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Gercek</button>
+          <button onClick={() => setViewMode('actual')} className={`px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all ${viewMode === 'actual' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Gerçek</button>
         </div>
         <div className="h-6 w-px bg-slate-200" />
         {filterChips.map(chip => {
@@ -261,7 +261,7 @@ export default function LiveTrackingPage() {
                             <div className="mt-2 h-1.5 bg-gray-200 rounded-full">
                               <div className="h-full bg-orange-500 rounded-full" style={{ width: `${d.progress}%` }} />
                             </div>
-                            <p className="text-gray-400 text-[10px] mt-1">{d.progress}% tamamlandi</p>
+                            <p className="text-gray-400 text-[10px] mt-1">{d.progress}% tamamlandı</p>
                           </>
                         )}
                       </div>
@@ -270,12 +270,12 @@ export default function LiveTrackingPage() {
 
                   {d.originLat && d.originLng && (
                     <Marker position={[d.originLat, d.originLng]} icon={pinIcon('#22c55e')}>
-                      <Popup><span className="text-[11px]">Cikis</span></Popup>
+                      <Popup><span className="text-[11px]">Çıkış</span></Popup>
                     </Marker>
                   )}
                   {d.destLat && d.destLng && (
                     <Marker position={[d.destLat, d.destLng]} icon={pinIcon('#ef4444')}>
-                      <Popup><span className="text-[11px]">Varis</span></Popup>
+                      <Popup><span className="text-[11px]">Varış</span></Popup>
                     </Marker>
                   )}
 
@@ -315,7 +315,7 @@ export default function LiveTrackingPage() {
                     <p className="text-[18px] font-bold text-slate-800">{completedCount}/{drivers.length}</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-3">
-                    <p className="text-[10px] text-slate-400 uppercase font-medium">Basarisiz</p>
+                    <p className="text-[10px] text-slate-400 uppercase font-medium">Başarısız</p>
                     <p className="text-[18px] font-bold text-red-500">{failedCount}</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-3">
@@ -329,7 +329,7 @@ export default function LiveTrackingPage() {
                 </div>
                 {selected.timeWorkedMin > 0 && (
                   <div className="mt-3 bg-slate-50 rounded-xl p-3">
-                    <p className="text-[10px] text-slate-400 uppercase font-medium">Calisma Suresi</p>
+                    <p className="text-[10px] text-slate-400 uppercase font-medium">Çalışma Suresi</p>
                     <p className="text-[16px] font-bold text-slate-800">{Math.floor(selected.timeWorkedMin / 60)}s {selected.timeWorkedMin % 60}dk</p>
                   </div>
                 )}
@@ -349,10 +349,10 @@ export default function LiveTrackingPage() {
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-8 text-center">
                 <MapPin className="w-10 h-10 text-slate-300 mx-auto mb-3" />
                 <p className="text-[14px] font-medium text-slate-500">
-                  {drivers.length === 0 ? 'Aktif plan yok' : 'Detay icin bir surucu secin'}
+                  {drivers.length === 0 ? 'Aktif plan yok' : 'Detay için bir sürücü seçin'}
                 </p>
                 <p className="text-[12px] text-slate-400 mt-1">
-                  {drivers.length === 0 ? 'Henuz aktif rota plani bulunmuyor.' : 'Haritadaki isaretcilere tiklayarak detaylari gorebilirsiniz.'}
+                  {drivers.length === 0 ? 'Henüz aktif rota planı bulunmuyor.' : 'Haritadaki işaretçilere tıklayarak detayları görebilirsiniz.'}
                 </p>
               </div>
             )}
@@ -361,7 +361,7 @@ export default function LiveTrackingPage() {
             {delayAlerts.length > 0 && (
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4">
                 <h3 className="text-[13px] font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-500" /> Gecikme Uyarilari
+                  <AlertTriangle className="w-4 h-4 text-amber-500" /> Gecikme Uyarıları
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {delayAlerts.slice(0, 10).map((alert) => (
@@ -473,7 +473,7 @@ export default function LiveTrackingPage() {
                           {Array.from({ length: totalStops }, (_, i) => {
                             const stopStatus = i < completedStops ? 'completed' : i < completedStops + inProgressStops ? 'inprogress' : i < completedStops + inProgressStops + failedStops ? 'failed' : 'pending'
                             const dotColor = stopStatus === 'completed' ? 'bg-green-500' : stopStatus === 'inprogress' ? 'bg-amber-400' : stopStatus === 'failed' ? 'bg-red-500' : 'bg-slate-300'
-                            const statusLabel = stopStatus === 'completed' ? 'Tamamlandi' : stopStatus === 'inprogress' ? 'Devam Ediyor' : stopStatus === 'failed' ? 'Basarisiz' : 'Bekliyor'
+                            const statusLabel = stopStatus === 'completed' ? 'Tamamlandı' : stopStatus === 'inprogress' ? 'Devam Ediyor' : stopStatus === 'failed' ? 'Başarısız' : 'Bekliyor'
                             return (
                               <div key={i} className="flex items-center gap-2 py-1">
                                 <span className={`w-2 h-2 rounded-full ${dotColor} shrink-0`} />

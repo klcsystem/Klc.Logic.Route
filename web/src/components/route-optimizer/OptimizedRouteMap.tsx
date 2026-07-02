@@ -40,11 +40,11 @@ const STATUS_COLORS: Record<DeliveryStatus, string> = {
 }
 
 const STATUS_LABELS: Record<DeliveryStatus, string> = {
-  completed: 'Tamamlandi',
+  completed: 'Tamamlandı',
   inprogress: 'Devam Ediyor',
-  failed: 'Basarisiz',
+  failed: 'Başarısız',
   pending: 'Bekliyor',
-  current: 'Surucu Konumu',
+  current: 'Sürücü Konumu',
 }
 
 function statusStopIcon(status: DeliveryStatus, sequence: number) {
@@ -195,7 +195,7 @@ export default function OptimizedRouteMap({ solution, stops, depotLat, depotLng 
                           <p>Durum: <span className="font-medium" style={{ color: STATUS_COLORS[status] }}>{STATUS_LABELS[status]}</span></p>
                           <p>Arac: <span className="font-medium text-gray-700">{route.plateNumber}</span></p>
                           <p>Sira: <span className="font-medium text-gray-700">#{stop.sequence}</span></p>
-                          <p>Varis: <span className="font-medium text-gray-700">{stop.arrivalTime}</span></p>
+                          <p>Varış: <span className="font-medium text-gray-700">{stop.arrivalTime}</span></p>
                         </div>
                       </div>
                     </Popup>

@@ -224,6 +224,12 @@ public static class DependencyInjection
         // Hybrid Fleet / 3P Carrier Network
         services.AddScoped<ICarrierNetworkRepository, CarrierNetworkRepository>();
 
+        // Locations / Depots
+        services.AddScoped<ILocationRepository, LocationRepository>();
+
+        // Provider Portal
+        services.AddScoped<IProviderPortalRepository, ProviderPortalRepository>();
+
         return services;
     }
 }

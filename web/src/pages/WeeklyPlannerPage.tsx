@@ -124,8 +124,8 @@ export default function WeeklyPlannerPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Haftalik Planlama</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Haftalik siparis ve rota planlama takvimi</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Haftalık Planlama</h1>
+        <p className="text-[14px] text-slate-400 mt-1">Haftalık sipariş ve rota planlama takvimi</p>
       </div>
 
       {/* Week Selector */}
@@ -159,7 +159,7 @@ export default function WeeklyPlannerPage() {
       {loading && (
         <div className="flex items-center justify-center py-16">
           <div className="w-6 h-6 border-2 border-orange-400 border-t-transparent rounded-full animate-spin mr-3" />
-          <span className="text-[14px] text-slate-400">Siparisler yukleniyor...</span>
+          <span className="text-[14px] text-slate-400">Siparişler yükleniyor...</span>
         </div>
       )}
 
@@ -194,7 +194,7 @@ export default function WeeklyPlannerPage() {
                   <div className="flex items-center gap-2">
                     <Package className="w-3.5 h-3.5 text-blue-500" />
                     <span className="text-[12px] text-slate-600">
-                      <span className="font-semibold">{day.orders.length}</span> siparis
+                      <span className="font-semibold">{day.orders.length}</span> sipariş
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export default function WeeklyPlannerPage() {
 
                 {!hasOrders && (
                   <div className="text-center py-2">
-                    <p className="text-[10px] text-slate-300">Siparis yok</p>
+                    <p className="text-[10px] text-slate-300">Sipariş yok</p>
                   </div>
                 )}
               </div>

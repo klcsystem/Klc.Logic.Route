@@ -73,12 +73,14 @@ export default function FleetPage() {
         api.get('/drivers').then(r => r.data),
       ])
 
-      if (vehiclesRes.status === 'fulfilled' && vehiclesRes.value?.data) {
-        const raw = Array.isArray(vehiclesRes.value.data) ? vehiclesRes.value.data : vehiclesRes.value.data?.items || []
+      if (vehiclesRes.status === 'fulfilled' && vehiclesRes.value) {
+        const v = vehiclesRes.value
+        const raw = Array.isArray(v) ? v : Array.isArray(v.data) ? v.data : v.data?.items || v.items || []
         setVehicles(raw)
       }
-      if (driversRes.status === 'fulfilled' && driversRes.value?.data) {
-        const raw = Array.isArray(driversRes.value.data) ? driversRes.value.data : driversRes.value.data?.items || []
+      if (driversRes.status === 'fulfilled' && driversRes.value) {
+        const d = driversRes.value
+        const raw = Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : d.data?.items || d.items || []
         setDrivers(raw.map((d: DriverRecord, idx: number) => ({
           ...d,
           colorDot: driverColors[idx % driverColors.length],
@@ -105,7 +107,7 @@ export default function FleetPage() {
   const handleSaveVehicle = async () => {
     try {
       await api.post('/vehicles', vehicleForm)
-      toast('success', 'Arac eklendi')
+      toast('success', 'Araç eklendi')
       setVehicleDrawerOpen(false)
       fetchData()
     } catch {
@@ -164,7 +166,7 @@ export default function FleetPage() {
       {/* Tabs */}
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
         <button onClick={() => { setTab('vehicles'); setSearchTerm('') }} className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[13px] font-medium transition-all ${tab === 'vehicles' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-          <Truck className="w-4 h-4" /> Araclar ({vehicles.length})
+          <Truck className="w-4 h-4" /> Araçlar ({vehicles.length})
         </button>
         <button onClick={() => { setTab('drivers'); setSearchTerm('') }} className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[13px] font-medium transition-all ${tab === 'drivers' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
           <User className="w-4 h-4" /> Şoförler ({drivers.length})
@@ -329,15 +331,15 @@ export default function FleetPage() {
         </div>
       }>
         <div className="space-y-4">
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ad Soyad</label><input type="text" value={driverForm.fullName} onChange={e => setDriverForm({ ...driverForm, fullName: e.target.value })} className={inputClass} placeholder="Ahmet Yilmaz" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ad Soyad</label><input type="text" value={driverForm.fullName} onChange={e => setDriverForm({ ...driverForm, fullName: e.target.value })} className={inputClass} placeholder="Ahmet Yılmaz" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Telefon</label><input type="text" value={driverForm.phone} onChange={e => setDriverForm({ ...driverForm, phone: e.target.value })} className={inputClass} placeholder="532 111 2233" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ehliyet No</label><input type="text" value={driverForm.licenseNumber} onChange={e => setDriverForm({ ...driverForm, licenseNumber: e.target.value })} className={inputClass} placeholder="B-34-12345" /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Ehliyet Bitiş</label><input type="date" value={driverForm.licenseExpiry} onChange={e => setDriverForm({ ...driverForm, licenseExpiry: e.target.value })} className={inputClass} /></div>
           </div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Taşıyıcı</label><input type="text" value={driverForm.providerName} onChange={e => setDriverForm({ ...driverForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adı" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Yetenekler (virgul ile)</label><input type="text" value={driverForm.skills} onChange={e => setDriverForm({ ...driverForm, skills: e.target.value })} className={inputClass} placeholder="ADR, Frigo, Uluslararasi" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Sertifikalar (virgul ile)</label><input type="text" value={driverForm.certifications} onChange={e => setDriverForm({ ...driverForm, certifications: e.target.value })} className={inputClass} placeholder="SRC1, ADR, Psikoteknik" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Yetenekler (virgül ile)</label><input type="text" value={driverForm.skills} onChange={e => setDriverForm({ ...driverForm, skills: e.target.value })} className={inputClass} placeholder="ADR, Frigo, Uluslararası" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Sertifikalar (virgül ile)</label><input type="text" value={driverForm.certifications} onChange={e => setDriverForm({ ...driverForm, certifications: e.target.value })} className={inputClass} placeholder="SRC1, ADR, Psikoteknik" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Maks Çalışma Saati</label><input type="number" value={driverForm.maxHoursPerDay} onChange={e => setDriverForm({ ...driverForm, maxHoursPerDay: Number(e.target.value) })} className={inputClass} /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Tercih Bölgeleri</label><input type="text" value={driverForm.preferredZones} onChange={e => setDriverForm({ ...driverForm, preferredZones: e.target.value })} className={inputClass} placeholder="Marmara, Ege" /></div>

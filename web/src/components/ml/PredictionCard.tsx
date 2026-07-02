@@ -14,9 +14,9 @@ const mockDeliveryTime: DeliveryTimePrediction = {
   confidencePercent: 87,
   factors: [
     { name: 'Mesafe', impact: 0.45 },
-    { name: 'Trafik yogunlugu', impact: 0.25 },
+    { name: 'Trafik yoğunluğu', impact: 0.25 },
     { name: 'Hava durumu', impact: 0.15 },
-    { name: 'Tasiyici performansi', impact: 0.15 },
+    { name: 'Taşıyıcı performansı', impact: 0.15 },
   ],
 }
 
@@ -24,7 +24,7 @@ const mockDelayRisk: DelayRiskPrediction = {
   shipmentId: 's1',
   riskLevel: 'Medium',
   riskPercent: 35,
-  reasons: ['Ankara girisi trafik yogunlugu', 'Tasiyicinin son 5 sevkiyatta %20 gecikme'],
+  reasons: ['Ankara girişi trafik yoğunluğu', 'Taşıyıcınin son 5 sevkiyatta %20 gecikme'],
 }
 
 const mockCostAnomaly: CostAnomalyPrediction = {

@@ -14,7 +14,7 @@ interface RoutingProfile {
 
 const defaultProfile: RoutingProfile = {
   id: 'default',
-  name: 'Varsayilan',
+  name: 'Varsayılan',
   vehicleType: 'standard',
   hazardousMaterial: false,
   tollsAndFerries: 'all_roads',
@@ -29,14 +29,14 @@ const vehicleTypes = [
 ]
 
 const tollOptions = [
-  { key: 'all_roads' as const, label: 'Tum Yollari Kullan', desc: 'Otoyol ve feribotlar dahil' },
+  { key: 'all_roads' as const, label: 'Tüm Yollari Kullan', desc: 'Otoyol ve feribotlar dahil' },
   { key: 'avoid_tolls' as const, label: 'Otoyollardan Kacin', desc: 'Ucretli yollardan kacin' },
   { key: 'avoid_ferries' as const, label: 'Feribotlardan Kacin', desc: 'Feribot hatlarindan kacin' },
 ]
 
 const approachOptions = [
-  { key: 'no_restrictions' as const, label: 'Kisitlama Yok', desc: 'Tum manevralar serbest' },
-  { key: 'avoid_uturns' as const, label: 'U Donuslerden Kacin', desc: 'U donuslerden kacinarak rota olustur' },
+  { key: 'no_restrictions' as const, label: 'Kisitlama Yok', desc: 'Tüm manevralar serbest' },
+  { key: 'avoid_uturns' as const, label: 'U Donuslerden Kacin', desc: 'U donuslerden kacinarak rota oluştur' },
 ]
 
 const serviceOptions = [
@@ -69,7 +69,7 @@ export default function RoutingProfilesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Rotalama Profilleri</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Arac tipi, yol tercihleri ve teslimat yaklasimi ayarlari</p>
+        <p className="text-[14px] text-slate-400 mt-1">Araç tipi, yol tercihleri ve teslimat yaklaşımı ayarları</p>
       </div>
 
       {/* Profile Selector */}
@@ -164,7 +164,7 @@ export default function RoutingProfilesPage() {
 
       {/* Drivers Approach */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Surucu Yaklasimi</h3>
+        <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Sürücü Yaklaşımı</h3>
         <div className="grid md:grid-cols-2 gap-4">
           {approachOptions.map(opt => {
             const selected = profile.driversApproach === opt.key

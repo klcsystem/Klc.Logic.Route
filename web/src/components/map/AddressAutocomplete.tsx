@@ -52,7 +52,7 @@ export default function AddressAutocomplete({ label, value, placeholder, onSelec
         setIsOpen(false)
       }
     } catch {
-      setError('Adres aranirken hata olustu')
+      setError('Adres aranırken hata oluştu')
       setResults([])
       setIsOpen(false)
     } finally {
@@ -92,7 +92,7 @@ export default function AddressAutocomplete({ label, value, placeholder, onSelec
           value={query}
           onChange={handleChange}
           onFocus={() => { if (results.length > 0) setIsOpen(true) }}
-          placeholder={placeholder || 'Adres aramak icin yazin...'}
+          placeholder={placeholder || 'Adres aramak için yazın...'}
           className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white"
         />
         {isLoading && (

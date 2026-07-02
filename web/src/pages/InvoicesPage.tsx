@@ -43,7 +43,7 @@ const invoicesApi = {
 function getStatusBadge(status: string) {
   switch (status) {
     case 'Draft': return <Badge variant="default">Taslak</Badge>
-    case 'Sent': return <Badge variant="info">Gonderildi</Badge>
+    case 'Sent': return <Badge variant="info">Gönderildi</Badge>
     case 'Paid': return <Badge variant="success">Odendi</Badge>
     default: return <Badge>{status}</Badge>
   }
@@ -108,7 +108,7 @@ export default function InvoicesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Faturalar</h1>
-          <p className="text-sm text-slate-500 mt-1">Tamamlanan sevkiyatlardan otomatik fatura olusturma</p>
+          <p className="text-sm text-slate-500 mt-1">Tamamlanan sevkiyatlardan otomatik fatura oluşturma</p>
         </div>
       </div>
 
@@ -117,12 +117,12 @@ export default function InvoicesPage() {
         <StatCard label="Toplam Fatura" value={invoices.length} icon={FileText} color="bg-blue-50 text-blue-600" />
         <StatCard label="Toplam Tutar" value={`${totalAmount.toLocaleString('tr-TR')} TRY`} icon={FileText} color="bg-green-50 text-green-600" />
         <StatCard label="Taslak" value={draftCount} icon={FileText} color="bg-amber-50 text-amber-600" />
-        <StatCard label="Odenmis" value={paidCount} icon={CheckCircle} color="bg-emerald-50 text-emerald-600" />
+        <StatCard label="Ödenmiş" value={paidCount} icon={CheckCircle} color="bg-emerald-50 text-emerald-600" />
       </div>
 
       {/* Generate Form */}
       <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-700 mb-3">Yeni Fatura Olustur</h2>
+        <h2 className="text-sm font-semibold text-slate-700 mb-3">Yeni Fatura Oluştur</h2>
         <div className="flex items-end gap-3">
           <div>
             <label className="block text-xs text-slate-500 mb-1">Ay</label>
@@ -144,7 +144,7 @@ export default function InvoicesPage() {
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-            Fatura Olustur
+            Fatura Oluştur
           </button>
         </div>
       </div>
@@ -155,16 +155,16 @@ export default function InvoicesPage() {
           <h2 className="text-sm font-semibold text-slate-700">Fatura Listesi</h2>
         </div>
         {isLoading ? (
-          <div className="flex items-center justify-center h-32 text-slate-400">Yukleniyor...</div>
+          <div className="flex items-center justify-center h-32 text-slate-400">Yükleniyor...</div>
         ) : invoices.length === 0 ? (
-          <div className="flex items-center justify-center h-32 text-slate-400">Henuz fatura yok</div>
+          <div className="flex items-center justify-center h-32 text-slate-400">Henüz fatura yok</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Fatura No</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Musteri</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">Müşteri</th>
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Donem</th>
                   <th className="text-right px-4 py-3 font-medium text-slate-500">Tutar</th>
                   <th className="text-left px-4 py-3 font-medium text-slate-500">Durum</th>
@@ -220,14 +220,14 @@ export default function InvoicesPage() {
               {getStatusBadge(selectedInvoice.status)}
             </div>
             {loadingDetail ? (
-              <div className="flex items-center justify-center h-32 text-slate-400">Yukleniyor...</div>
+              <div className="flex items-center justify-center h-32 text-slate-400">Yükleniyor...</div>
             ) : (
               <div className="p-6">
                 {selectedInvoice.lines && selectedInvoice.lines.length > 0 ? (
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-100">
-                        <th className="text-left py-2 font-medium text-slate-500">Aciklama</th>
+                        <th className="text-left py-2 font-medium text-slate-500">Açıklama</th>
                         <th className="text-right py-2 font-medium text-slate-500">Adet</th>
                         <th className="text-right py-2 font-medium text-slate-500">Birim Fiyat</th>
                         <th className="text-right py-2 font-medium text-slate-500">Tutar</th>
@@ -253,7 +253,7 @@ export default function InvoicesPage() {
                     </tfoot>
                   </table>
                 ) : (
-                  <p className="text-slate-400 text-center py-8">Kalem detayi bulunamadi</p>
+                  <p className="text-slate-400 text-center py-8">Kalem detayi bulunamadı</p>
                 )}
               </div>
             )}

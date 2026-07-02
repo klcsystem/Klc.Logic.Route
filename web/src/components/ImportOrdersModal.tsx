@@ -24,11 +24,11 @@ interface ColumnMapping {
 }
 
 const FIELD_LABELS: Record<keyof ColumnMapping, string> = {
-  customerName: 'Musteri Adi',
+  customerName: 'Müşteri Adi',
   destinationAddress: 'Teslimat Adresi',
-  destinationCity: 'Sehir',
-  orderNumber: 'Siparis No',
-  totalWeightKg: 'Agirlik (kg)',
+  destinationCity: 'Şehir',
+  orderNumber: 'Sipariş No',
+  totalWeightKg: 'Ağırlık (kg)',
   priority: 'Oncelik',
 }
 
@@ -64,11 +64,11 @@ function guessMapping(headers: string[]): ColumnMapping {
   }
 
   return {
-    customerName: find(['musteri', 'customer', 'firma', 'alici']),
+    customerName: find(['müşteri', 'customer', 'firma', 'alıcı']),
     destinationAddress: find(['adres', 'address', 'teslimat']),
-    destinationCity: find(['sehir', 'city', 'il']),
-    orderNumber: find(['siparis', 'order', 'no', 'numara']),
-    totalWeightKg: find(['agirlik', 'weight', 'kg']),
+    destinationCity: find(['şehir', 'city', 'il']),
+    orderNumber: find(['sipariş', 'order', 'no', 'numara']),
+    totalWeightKg: find(['ağırlık', 'weight', 'kg']),
     priority: find(['oncelik', 'priority']),
   }
 }
@@ -111,7 +111,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
   const processText = useCallback((text: string) => {
     const { headers: h, rows: r } = parseCSV(text)
     if (h.length === 0) {
-      toast('error', 'Dosya bos veya gecersiz format')
+      toast('error', 'Dosya boş veya geçersiz format')
       return
     }
     setHeaders(h)
@@ -183,14 +183,14 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
       }
 
       if (successCount > 0) {
-        toast('success', `${successCount} siparis basariyla eklendi${failCount > 0 ? `, ${failCount} hata` : ''}`)
+        toast('success', `${successCount} sipariş başarıyla eklendi${failCount > 0 ? `, ${failCount} hata` : ''}`)
         onImportComplete?.()
         handleClose()
       } else {
-        toast('error', 'Hicbir siparis eklenemedi')
+        toast('error', 'Hiçbir sipariş eklenemedi')
       }
     } catch {
-      toast('error', 'Import sirasinda hata olustu')
+      toast('error', 'Import sırasında hata oluştu')
     } finally {
       setIsImporting(false)
     }
@@ -204,7 +204,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
     <Drawer
       isOpen={isOpen}
       onClose={handleClose}
-      title="Siparis Import"
+      title="Sipariş Import"
       width="max-w-2xl"
       footer={
         step === 'mapping' ? (
@@ -296,7 +296,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
                     <Upload className={`w-10 h-10 ${isDragging ? 'text-orange-400' : 'text-slate-300'}`} />
                     <div>
                       <p className="text-[14px] font-medium text-slate-600">Dosyayi surukleyip birakin</p>
-                      <p className="text-[12px] text-slate-400 mt-1">veya dosya secmek icin tiklayin</p>
+                      <p className="text-[12px] text-slate-400 mt-1">veya dosya secmek için tiklayin</p>
                     </div>
                     <p className="text-[11px] text-slate-400">CSV, TSV, Excel (.xlsx, .xls)</p>
                   </div>
@@ -309,7 +309,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
                 <textarea
                   value={pasteText}
                   onChange={(e) => setPasteText(e.target.value)}
-                  placeholder="Her satira bir adres yazin veya yapistirin...&#10;&#10;Istanbul Kadikoy Bagdat Caddesi No:123&#10;Ankara Cankaya Ataturk Bulvari No:45&#10;Izmir Karsiyaka Cemal Gursel Caddesi No:78"
+                  placeholder="Her satıra bir adres  yazın veya yapıştırın...&#10;&#10;Istanbul Kadıköy Bagdat Caddesi No:123&#10;Ankara Çankaya Ataturk Bulvari No:45&#10;Izmir Karşıyaka Cemal Gursel Caddesi No:78"
                   rows={8}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white resize-none"
                 />
@@ -381,7 +381,7 @@ export default function ImportOrdersModal({ isOpen, onClose, onImportComplete }:
               {rows.length === 0 ? (
                 <div className="flex items-center gap-2 p-4 rounded-xl bg-amber-50 border border-amber-200">
                   <AlertCircle className="w-4 h-4 text-amber-500" />
-                  <span className="text-[13px] text-amber-700">Veri bulunamadi</span>
+                  <span className="text-[13px] text-amber-700">Veri bulunamadı</span>
                 </div>
               ) : (
                 <div className="border border-slate-200 rounded-xl overflow-hidden">

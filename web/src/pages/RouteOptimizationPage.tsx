@@ -57,10 +57,10 @@ export default function RouteOptimizationPage() {
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
             <h3 className="text-[15px] font-semibold text-slate-800 mb-4">{t.routeOptimization.shipmentInfo}</h3>
             <div className="space-y-3">
-              <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Cikis</label><input type="text" value={origin} onChange={(e) => setOrigin(e.target.value)} className={inputClass} /></div>
-              <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Varis</label><input type="text" value={destination} onChange={(e) => setDestination(e.target.value)} className={inputClass} /></div>
+              <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Çıkış</label><input type="text" value={origin} onChange={(e) => setOrigin(e.target.value)} className={inputClass} /></div>
+              <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Varış</label><input type="text" value={destination} onChange={(e) => setDestination(e.target.value)} className={inputClass} /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Agirlik (kg)</label><input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className={inputClass} /></div>
+                <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Ağırlık (kg)</label><input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className={inputClass} /></div>
                 <div><label className="block text-[12px] font-semibold text-slate-500 mb-1">Hacim (m³)</label><input type="number" step="0.1" value={volume} onChange={(e) => setVolume(Number(e.target.value))} className={inputClass} /></div>
               </div>
               <div className="flex items-center gap-4">

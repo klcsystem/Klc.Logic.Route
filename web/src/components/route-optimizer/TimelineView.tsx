@@ -54,7 +54,7 @@ export default function TimelineView({ routes }: TimelineViewProps) {
 
       {routes.length === 0 ? (
         <div className="px-5 py-12 text-center text-[13px] text-slate-400">
-          Henuz planlanmis rota yok
+          Henüz planlanmis rota yok
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -62,7 +62,7 @@ export default function TimelineView({ routes }: TimelineViewProps) {
             {/* Hour headers */}
             <div className="flex border-b border-slate-100">
               <div className="w-[160px] shrink-0 px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">
-                Surucu
+                Sürücü
               </div>
               <div className="flex-1 relative flex">
                 {hours.map((h) => (
@@ -130,7 +130,7 @@ export default function TimelineView({ routes }: TimelineViewProps) {
                               backgroundColor: color,
                               opacity: 0.9,
                             }}
-                            title={`${stop.address}\nVaris: ${stop.arrivalTime}\nAyrilis: ${stop.departureTime}`}
+                            title={`${stop.address}\nVarış: ${stop.arrivalTime}\nAyrilis: ${stop.departureTime}`}
                           >
                             {stopIdx + 1}
                           </div>

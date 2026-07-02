@@ -79,13 +79,13 @@ export default function RouteOptimizerPage() {
         setSkippedOrders(skipped)
 
         if (skipped.length > 0) {
-          toast('warning', `${skipped.length} siparis koordinat bilgisi eksik oldugu icin atlanadi`)
+          toast('warning', `${skipped.length} sipariş koordinat bilgisi eksik olduğu için atlandı`)
         }
         if (newStops.length > 0) {
-          toast('success', `${newStops.length} siparis rota optimizasyonuna eklendi`)
+          toast('success', `${newStops.length} sipariş rota optimizasyonuna eklendi`)
         }
       } catch {
-        toast('error', 'Siparisler yuklenirken hata olustu')
+        toast('error', 'Siparişler yuklenirken hata oluştu')
       } finally {
         setIsLoadingOrders(false)
       }
@@ -117,9 +117,9 @@ export default function RouteOptimizerPage() {
       const res = await routeOptimizationApi.solve(request)
       if (res.success && res.data) {
         setSolution(res.data)
-        toast('success', 'Rota optimizasyonu tamamlandi!')
+        toast('success', 'Rota optimizasyonu tamamlandı!')
       } else {
-        toast('error', res.message || 'Optimizasyon basarisiz')
+        toast('error', res.message || 'Optimizasyon başarısız')
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Bilinmeyen hata'
@@ -134,7 +134,7 @@ export default function RouteOptimizerPage() {
     if (!solution) return
     setIsConfirming(true)
     try {
-      // Siparislerin durumunu "Assigned" yap
+      // Siparişlerin durumunu "Assigned" yap
       const orderIds = searchParams.get('orderIds')?.split(',').filter(Boolean) || []
       for (const id of orderIds) {
         try {
@@ -142,7 +142,7 @@ export default function RouteOptimizerPage() {
         } catch { /* skip */ }
       }
       setIsConfirmed(true)
-      toast('success', `Rota onaylandi! ${solution.routes.length} arac, ${solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak atandi.`)
+      toast('success', `Rota onaylandı! ${solution.routes.length} arac, ${solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak atandı.`)
     } catch {
       toast('error', 'Rota onaylama hatasi')
     } finally {
@@ -164,7 +164,7 @@ export default function RouteOptimizerPage() {
         <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
           <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-[13px] font-semibold text-amber-800">Koordinat bilgisi eksik siparisler ({skippedOrders.length})</p>
+            <p className="text-[13px] font-semibold text-amber-800">Koordinat bilgisi eksik siparişler ({skippedOrders.length})</p>
             <p className="text-[12px] text-amber-600 mt-1">{skippedOrders.join(', ')}</p>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function RouteOptimizerPage() {
       {isLoadingOrders && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-orange-400 mr-3" />
-          <span className="text-[14px] text-slate-500">Siparisler yukleniyor...</span>
+          <span className="text-[14px] text-slate-500">Siparişler yükleniyor...</span>
         </div>
       )}
 
@@ -284,13 +284,13 @@ export default function RouteOptimizerPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
-                <span className="text-[13px] font-semibold text-green-700">Rota onaylandi ve atandi!</span>
+                <span className="text-[13px] font-semibold text-green-700">Rota onaylandı ve atandı!</span>
               </div>
               <button
                 onClick={() => navigate('/orders')}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50"
               >
-                <ArrowLeft className="w-4 h-4" /> Siparislere Don
+                <ArrowLeft className="w-4 h-4" /> Siparişlere Don
               </button>
             </div>
           )}
@@ -318,7 +318,7 @@ export default function RouteOptimizerPage() {
               <>
                 {/* Donut Charts Row */}
                 <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                  <h3 className="text-[15px] font-semibold text-slate-800 mb-5">Cozum Ozeti</h3>
+                  <h3 className="text-[15px] font-semibold text-slate-800 mb-5">Cozum Özeti</h3>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="flex flex-col items-center">
                       <DonutChart
@@ -328,7 +328,7 @@ export default function RouteOptimizerPage() {
                         color="#3b82f6"
                         size={130}
                       />
-                      <p className="text-[12px] text-slate-500 mt-2">Zaman Dagilimi</p>
+                      <p className="text-[12px] text-slate-500 mt-2">Zaman Dağılımı</p>
                       <p className="text-[10px] text-slate-400">Seyahat: {Math.round(Math.max(0, totalTravelMin))} dk / Servis: {totalServiceMin} dk</p>
                     </div>
                     <div className="flex flex-col items-center">
@@ -339,7 +339,7 @@ export default function RouteOptimizerPage() {
                         color="#f97316"
                         size={130}
                       />
-                      <p className="text-[12px] text-slate-500 mt-2">Agirlik Kullanimi</p>
+                      <p className="text-[12px] text-slate-500 mt-2">Ağırlık Kullanimi</p>
                       <p className="text-[10px] text-slate-400">{totalLoadKg.toLocaleString()} / {totalCapacityKg.toLocaleString()} kg</p>
                     </div>
                     <div className="flex flex-col items-center">
@@ -359,7 +359,7 @@ export default function RouteOptimizerPage() {
                 {/* Summary Stats Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                   {[
-                    { label: 'Siparis', value: totalStops.toString(), icon: Package, color: 'text-blue-600 bg-blue-50' },
+                    { label: 'Sipariş', value: totalStops.toString(), icon: Package, color: 'text-blue-600 bg-blue-50' },
                     { label: 'Rota', value: solution.routes.length.toString(), icon: MapPin, color: 'text-green-600 bg-green-50' },
                     { label: 'Toplam Mesafe', value: `${solution.totalDistanceKm.toLocaleString()} km`, icon: Truck, color: 'text-orange-600 bg-orange-50' },
                     { label: 'Toplam Sure', value: `${Math.round(solution.totalDurationMin / 60)} saat`, icon: Clock, color: 'text-indigo-600 bg-indigo-50' },
@@ -379,13 +379,13 @@ export default function RouteOptimizerPage() {
                 {/* Route Summary Table */}
                 <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
                   <div className="px-5 py-4 border-b border-slate-100">
-                    <h3 className="text-[15px] font-semibold text-slate-800">Rota Detaylari</h3>
+                    <h3 className="text-[15px] font-semibold text-slate-800">Rota Detayları</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-slate-100">
-                          {['Rota', 'Arac', 'Durak', 'Mesafe', 'Sure', 'Agirlik', 'Hacim', 'Doluluk', 'Maliyet'].map(h => (
+                          {['Rota', 'Arac', 'Durak', 'Mesafe', 'Sure', 'Ağırlık', 'Hacim', 'Doluluk', 'Maliyet'].map(h => (
                             <th key={h} className="px-4 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{h}</th>
                           ))}
                         </tr>
@@ -434,7 +434,7 @@ export default function RouteOptimizerPage() {
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-12 text-center">
               <Zap className="w-16 h-16 text-slate-200 mx-auto mb-4" />
               <p className="text-[15px] font-medium text-slate-400 mb-2">{t.vrp.title}</p>
-              <p className="text-[13px] text-slate-300">{stops.length > 0 ? `${stops.length} durak yuklendi — Optimize Et butonuna basin` : t.vrp.emptyState}</p>
+              <p className="text-[13px] text-slate-300">{stops.length > 0 ? `${stops.length} durak yüklendi — Optimize Et butonuna basin` : t.vrp.emptyState}</p>
             </div>
           )}
         </div>

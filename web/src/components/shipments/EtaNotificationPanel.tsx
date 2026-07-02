@@ -115,7 +115,7 @@ export default function EtaNotificationPanel({ shipmentId, trackingToken }: EtaN
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            placeholder="musteri@firma.com"
+            placeholder="müşteri@firma.com"
             className={inputClass}
           />
           <button

@@ -102,7 +102,7 @@ export default function ShipmentsPage() {
           <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder={`${t.common.search}...`} className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
         </div>
         <select value={providerFilter} onChange={(e) => setProviderFilter(e.target.value)} className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400">
-          <option value="all">Tum Tasiyicilar</option>
+          <option value="all">Tüm Taşıyıcılar</option>
           {uniqueProviders.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
       </div>
@@ -112,11 +112,11 @@ export default function ShipmentsPage() {
           <table className="w-full">
             <thead><tr className="border-b border-slate-100">
               <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.shipmentNo}</th>
-              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Siparis</th>
+              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sipariş</th>
               <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.carrier}</th>
               <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.common.status}</th>
-              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Cikis Sehir</th>
-              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Varis Sehir</th>
+              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Çıkış Şehir</th>
+              <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Varış Şehir</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.weight}</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.cost}</th>
               <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.vehicle}</th>
@@ -166,8 +166,8 @@ export default function ShipmentsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               {([
-                ['Cikis', selectedShipment.originCity || '--'],
-                ['Varis', selectedShipment.destinationCity || '--'],
+                ['Çıkış', selectedShipment.originCity || '--'],
+                ['Varış', selectedShipment.destinationCity || '--'],
                 [t.shipments.weight, `${selectedShipment.totalWeightKg.toLocaleString()} kg`],
                 ['Hacim', `${selectedShipment.totalVolumeM3} m3`],
                 ['Palet', `${selectedShipment.palletCount}`],
@@ -182,7 +182,7 @@ export default function ShipmentsPage() {
             {/* Tracking Events */}
             {(selectedShipment.events || []).length > 0 && (
               <div>
-                <h4 className="text-[13px] font-semibold text-slate-700 mb-3">Takip Olaylari</h4>
+                <h4 className="text-[13px] font-semibold text-slate-700 mb-3">Takip Olayları</h4>
                 <div className="space-y-3">
                   {(selectedShipment.events || []).map((event) => (
                     <div key={event.id} className="flex gap-3 items-start">
@@ -210,7 +210,7 @@ export default function ShipmentsPage() {
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
                       <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Urun</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Adet</th>
-                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Agirlik</th>
+                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                     </tr></thead>
                     <tbody>{selectedShipment.items.map((item) => (
                       <tr key={item.id} className="border-b border-slate-100 last:border-0">
@@ -245,15 +245,15 @@ export default function ShipmentsPage() {
       }>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Cikis Sehir</label><input type="text" value={shipmentForm.originCity} onChange={(e) => setShipmentForm({ ...shipmentForm, originCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Istanbul" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varis Sehir</label><input type="text" value={shipmentForm.destinationCity} onChange={(e) => setShipmentForm({ ...shipmentForm, destinationCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Ankara" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Şehir</label><input type="text" value={shipmentForm.originCity} onChange={(e) => setShipmentForm({ ...shipmentForm, originCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Istanbul" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Şehir</label><input type="text" value={shipmentForm.destinationCity} onChange={(e) => setShipmentForm({ ...shipmentForm, destinationCity: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Ankara" /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.shipments.weight}</label><input type="number" value={shipmentForm.totalWeightKg} onChange={(e) => setShipmentForm({ ...shipmentForm, totalWeightKg: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Hacim (m3)</label><input type="number" step="0.1" value={shipmentForm.totalVolumeM3} onChange={(e) => setShipmentForm({ ...shipmentForm, totalVolumeM3: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Palet Sayisi</label><input type="number" value={shipmentForm.palletCount} onChange={(e) => setShipmentForm({ ...shipmentForm, palletCount: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Palet Sayısı</label><input type="number" value={shipmentForm.palletCount} onChange={(e) => setShipmentForm({ ...shipmentForm, palletCount: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" /></div>
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Oncelik</label>
               <select value={shipmentForm.priority} onChange={(e) => setShipmentForm({ ...shipmentForm, priority: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white">
                 <option value="Normal">Normal</option><option value="Priority">Oncelikli</option><option value="Urgent">Acil</option>

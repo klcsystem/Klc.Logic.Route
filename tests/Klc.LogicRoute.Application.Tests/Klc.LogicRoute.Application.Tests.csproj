@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Klc.LogicRoute.Api\Klc.LogicRoute.Api.csproj" />
     <ProjectReference Include="..\..\src\Klc.LogicRoute.Application\Klc.LogicRoute.Application.csproj" />
     <ProjectReference Include="..\..\src\Klc.LogicRoute.Domain\Klc.LogicRoute.Domain.csproj" />
     <ProjectReference Include="..\..\src\Klc.LogicRoute.Infrastructure\Klc.LogicRoute.Infrastructure.csproj" />

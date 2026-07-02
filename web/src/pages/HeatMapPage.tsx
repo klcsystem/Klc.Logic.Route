@@ -119,17 +119,17 @@ export default function HeatMapPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Siparis Yogunluk Haritasi</h1>
-          <p className="text-sm text-slate-500 mt-1">Bolgelere gore siparis dagilimi ve yogunluk analizi</p>
+          <h1 className="text-2xl font-bold text-slate-900">Sipariş Yoğunluk Haritasi</h1>
+          <p className="text-sm text-slate-500 mt-1">Bölgelere gore sipariş dağılımı ve yoğunluk analizi</p>
         </div>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard label="Toplam Siparis" value={totalWithCoords} icon={MapPin} color="bg-blue-50 text-blue-600" />
-        <StatCard label="En Yogun Bolge" value={hottestZone} icon={Flame} color="bg-red-50 text-red-600" />
-        <StatCard label="Ort. Siparis/Bolge" value={avgPerZone} icon={BarChart3} color="bg-amber-50 text-amber-600" />
-        <StatCard label="Toplam Bolge" value={clusters.length} icon={MapPin} color="bg-green-50 text-green-600" />
+        <StatCard label="Toplam Sipariş" value={totalWithCoords} icon={MapPin} color="bg-blue-50 text-blue-600" />
+        <StatCard label="En Yogun Bölge" value={hottestZone} icon={Flame} color="bg-red-50 text-red-600" />
+        <StatCard label="Ort. Sipariş/Bölge" value={avgPerZone} icon={BarChart3} color="bg-amber-50 text-amber-600" />
+        <StatCard label="Toplam Bölge" value={clusters.length} icon={MapPin} color="bg-green-50 text-green-600" />
       </div>
 
       {/* Filters */}
@@ -144,7 +144,7 @@ export default function HeatMapPage() {
             onChange={e => setFilterCity(e.target.value)}
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
-            <option value="">Tum Sehirler</option>
+            <option value="">Tüm Şehirler</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <select
@@ -152,7 +152,7 @@ export default function HeatMapPage() {
             onChange={e => setFilterStatus(e.target.value)}
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
-            <option value="">Tum Durumlar</option>
+            <option value="">Tüm Durumlar</option>
             {statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <input
@@ -175,14 +175,14 @@ export default function HeatMapPage() {
       {/* Heat Map Visualization */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-700">Yogunluk Haritasi</h2>
-          <p className="text-xs text-slate-400 mt-0.5">Koordinat kumeleme ile siparis yogunlugu (2 ondalik hassasiyet)</p>
+          <h2 className="text-sm font-semibold text-slate-700">Yoğunluk Haritasi</h2>
+          <p className="text-xs text-slate-400 mt-0.5">Koordinat kumeleme ile sipariş yoğunluğu (2 ondalik hassasiyet)</p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-64 text-slate-400">Yukleniyor...</div>
+          <div className="flex items-center justify-center h-64 text-slate-400">Yükleniyor...</div>
         ) : clusters.length === 0 ? (
-          <div className="flex items-center justify-center h-64 text-slate-400">Koordinat verisi bulunamadi</div>
+          <div className="flex items-center justify-center h-64 text-slate-400">Koordinat verisi bulunamadı</div>
         ) : (
           <div className="relative bg-slate-50" style={{ height: 500 }}>
             {/* Simple SVG-based heat map */}
@@ -227,7 +227,7 @@ export default function HeatMapPage() {
 
             {/* Legend */}
             <div className="absolute bottom-4 right-4 bg-white/90 rounded-lg p-3 shadow-sm border border-slate-200 text-xs">
-              <div className="font-medium text-slate-700 mb-2">Yogunluk</div>
+              <div className="font-medium text-slate-700 mb-2">Yoğunluk</div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <span className="text-slate-600">Yuksek</span>
@@ -248,17 +248,17 @@ export default function HeatMapPage() {
       {/* Cluster Table */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm">
         <div className="p-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-700">Bolge Detaylari</h2>
+          <h2 className="text-sm font-semibold text-slate-700">Bölge Detayları</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/50">
                 <th className="text-left px-4 py-3 font-medium text-slate-500">#</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-500">Bolge</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-500">Bölge</th>
                 <th className="text-left px-4 py-3 font-medium text-slate-500">Koordinat</th>
-                <th className="text-right px-4 py-3 font-medium text-slate-500">Siparis Sayisi</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-500">Yogunluk</th>
+                <th className="text-right px-4 py-3 font-medium text-slate-500">Sipariş Sayısı</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-500">Yoğunluk</th>
               </tr>
             </thead>
             <tbody>

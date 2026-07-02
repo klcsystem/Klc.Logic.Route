@@ -39,7 +39,7 @@ export default function PipelinePage() {
       await pipelineApi.run()
       refetch()
     } catch {
-      // API henuz hazir olmayabilir
+      // API henüz hazir olmayabilir
     } finally {
       setIsTriggering(false)
     }
@@ -66,8 +66,8 @@ export default function PipelinePage() {
   }
 
   const kpis = [
-    { label: 'Toplam Calistirma', value: statusData?.totalRuns?.toString() || '0', icon: Workflow, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Basari Orani', value: statusData ? `%${statusData.successRate?.toFixed(0)}` : '—', icon: Workflow, color: 'text-green-600 bg-green-50' },
+    { label: 'Toplam Çalıştırma', value: statusData?.totalRuns?.toString() || '0', icon: Workflow, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Başarı Oranı', value: statusData ? `%${(statusData.successRate ?? 0).toFixed(0)}` : '—', icon: Workflow, color: 'text-green-600 bg-green-50' },
     { label: 'Son Durum', value: statusData?.lastRunStatus || '—', icon: Workflow, color: 'text-orange-600 bg-orange-50' },
     { label: 'Aktif', value: statusData?.isRunning ? 'Evet' : 'Hayir', icon: Workflow, color: 'text-purple-600 bg-purple-50' },
   ]
@@ -81,7 +81,7 @@ export default function PipelinePage() {
         </div>
         <button onClick={handleTrigger} disabled={isTriggering || statusData?.isRunning} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all">
           {isTriggering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-          Pipeline Calistir
+          Pipeline Çalıştır
         </button>
       </div>
 
@@ -98,14 +98,14 @@ export default function PipelinePage() {
           {statusData?.lastRunAt && (
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 flex items-center gap-3">
               <Clock className="w-5 h-5 text-slate-400" />
-              <span className="text-[13px] text-slate-600">Son calistirma: <span className="font-semibold text-slate-800">{statusData.lastRunAt}</span></span>
+              <span className="text-[13px] text-slate-600">Son çalıştırma: <span className="font-semibold text-slate-800">{statusData.lastRunAt}</span></span>
             </div>
           )}
 
-          {/* Pipeline Adimlari */}
+          {/* Pipeline Adımları */}
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
-              <h3 className="text-[15px] font-semibold text-slate-800">Pipeline Adimlari</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800">Pipeline Adımları</h3>
             </div>
             {steps.length > 0 ? (
               <div className="divide-y divide-slate-50">
@@ -119,7 +119,7 @@ export default function PipelinePage() {
                         {stepStatusIcon(step.status)}
                         <span className="text-[13px] font-semibold text-slate-800">{step.name}</span>
                       </div>
-                      <span className="text-[11px] text-slate-400">Son calistirma: {step.lastRun}</span>
+                      <span className="text-[11px] text-slate-400">Son çalıştırma: {step.lastRun}</span>
                     </div>
                     <span className="text-[12px] text-slate-500">{step.duration}</span>
                     <Badge variant={stepStatusVariant(step.status)}>{step.status}</Badge>
@@ -127,7 +127,7 @@ export default function PipelinePage() {
                 ))}
               </div>
             ) : (
-              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</div>
+              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</div>
             )}
           </div>
         </>

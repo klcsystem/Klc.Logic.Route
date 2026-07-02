@@ -14,14 +14,14 @@ export default function SettingsPage() {
   const sections = [
     { icon: Building2, title: t.settings.general, desc: 'Sirket bilgileri, logo, saat dilimi', path: '', clickable: false },
     { icon: Database, title: t.settings.erp, desc: 'ERP sistem entegrasyonlari', path: '/settings/erp', clickable: true },
-    { icon: Route, title: 'Rotalama Profilleri', desc: 'Arac tipi, yol tercihleri, surucu yaklasimi', path: '/settings/routing-profiles', clickable: true },
+    { icon: Route, title: 'Rotalama Profilleri', desc: 'Araç tipi, yol tercihleri, sürücü yaklaşımı', path: '/settings/routing-profiles', clickable: true },
     { icon: MapPin, title: 'Depo / Ana Konum', desc: 'Rota baslangic noktasi ayari', path: '/settings/depot', clickable: true },
     { icon: Map, title: 'Lokasyon Dizini', desc: 'Teslimat ve toplama noktalarini yonetin', path: '/settings/locations', clickable: true },
-    { icon: FileCheck, title: 'POD Ayarlari', desc: 'Teslimat kaniti gereksinimleri', path: '/settings/pod', clickable: true },
-    { icon: Smartphone, title: 'Surucu Uygulama', desc: 'Mobil uygulama yapilandirmasi', path: '/settings/driver-app', clickable: true },
-    { icon: Key, title: t.settings.api, desc: 'API anahtar yonetimi', path: '', clickable: false },
+    { icon: FileCheck, title: 'POD Ayarları', desc: 'Teslimat kanıtı gereksinimleri', path: '/settings/pod', clickable: true },
+    { icon: Smartphone, title: 'Sürücü Uygulama', desc: 'Mobil uygulama yapılandırması', path: '/settings/driver-app', clickable: true },
+    { icon: Key, title: t.settings.api, desc: 'API anahtar yönetimi', path: '', clickable: false },
     { icon: Webhook, title: t.settings.webhooks, desc: 'Webhook konfigurasyonu', path: '', clickable: false },
-    { icon: Globe, title: t.settings.language, desc: 'Dil ve bolgesel ayarlar', path: '', clickable: false },
+    { icon: Globe, title: t.settings.language, desc: 'Dil ve bölgesel ayarlar', path: '', clickable: false },
   ]
 
   const toggleNotification = (key: keyof typeof notifications) => setNotifications(prev => ({ ...prev, [key]: !prev[key] }))
@@ -50,7 +50,7 @@ export default function SettingsPage() {
             <Route className="w-5 h-5 text-orange-500" />
             <h3 className="text-[15px] font-semibold text-slate-800">{t.routeOptimization.weightSettings}</h3>
           </div>
-          <p className="text-[13px] text-slate-400 mb-4">Karar motoru varsayilan agirliklari. Tum yeni hesaplamalarda bu degerler kullanilir.</p>
+          <p className="text-[13px] text-slate-400 mb-4">Karar motoru varsayılan ağırlıklari. Tüm yeni hesaplamalarda bu degerler kullanilir.</p>
           <div className="space-y-5">
             <div>
               <div className="flex items-center justify-between mb-1"><label className="text-[13px] font-medium text-slate-600">{t.routeOptimization.priceWeight}</label><span className="text-[13px] font-bold text-slate-800">{priceWeight}%</span></div>
@@ -80,16 +80,16 @@ export default function SettingsPage() {
               <button onClick={() => toggleNotification('email')} className={`w-10 h-6 rounded-full transition-colors ${notifications.email ? 'bg-orange-400' : 'bg-slate-200'}`}><div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${notifications.email ? 'translate-x-5' : 'translate-x-1'}`} /></button>
             </div>
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-              <span className="text-[13px] text-slate-700">Uygulama Ici Bildirimler</span>
+              <span className="text-[13px] text-slate-700">Uygulama İçi Bildirimler</span>
               <button onClick={() => toggleNotification('inApp')} className={`w-10 h-6 rounded-full transition-colors ${notifications.inApp ? 'bg-orange-400' : 'bg-slate-200'}`}><div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${notifications.inApp ? 'translate-x-5' : 'translate-x-1'}`} /></button>
             </div>
             <h4 className="text-[12px] font-semibold text-slate-400 uppercase pt-2">Olay Tipleri</h4>
             {([
-              ['shipmentStatus', 'Sevkiyat Durum Degisikligi'],
-              ['delay', 'Gecikme Uyarisi'],
+              ['shipmentStatus', 'Sevkiyat Durum Değişikliği'],
+              ['delay', 'Gecikme Uyarısı'],
               ['erpSync', 'ERP Senkronizasyon'],
               ['contractExpiry', 'Anlasma Suresi Dolmak Uzere'],
-              ['calculation', 'Fiyat Hesaplama Tamamlandi'],
+              ['calculation', 'Fiyat Hesaplama Tamamlandı'],
             ] as const).map(([key, label]) => (
               <div key={key} className="flex items-center justify-between px-3">
                 <span className="text-[13px] text-slate-600">{label}</span>

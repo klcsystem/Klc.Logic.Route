@@ -112,12 +112,12 @@ export default function LocationPicker({ lat, lng, onLocationChange, height = 28
           <span className="text-[11px] text-slate-500">
             {lat.toFixed(5)}, {lng.toFixed(5)}
           </span>
-          {isReverseLoading && <span className="text-[11px] text-orange-400">Adres yukleniyor...</span>}
+          {isReverseLoading && <span className="text-[11px] text-orange-400">Adres yükleniyor...</span>}
         </div>
       )}
 
       {!lat && !lng && (
-        <p className="text-[11px] text-slate-400 mt-2">Haritaya tiklayarak konum secin</p>
+        <p className="text-[11px] text-slate-400 mt-2">Haritaya tıklayarak konum seçin</p>
       )}
     </div>
   )

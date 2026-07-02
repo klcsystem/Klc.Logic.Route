@@ -14,8 +14,8 @@ export const providersApi = {
   update: (id: string, data: Partial<Provider>) =>
     api.put<ApiResponse<Provider>>(`/providers/${id}`, data).then(r => r.data),
 
-  toggleActive: (id: string) =>
-    api.put<ApiResponse<boolean>>(`/providers/${id}/toggle`).then(r => r.data),
+  toggleActive: (id: string, currentlyActive: boolean) =>
+    api.put<ApiResponse<boolean>>(`/providers/${id}`, { isActive: !currentlyActive }).then(r => r.data),
 
   delete: (id: string) =>
     api.delete(`/providers/${id}`).then(r => r.data),

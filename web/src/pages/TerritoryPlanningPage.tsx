@@ -109,7 +109,7 @@ export default function TerritoryPlanningPage() {
     }
   }
 
-  const totalOrders = zones.reduce((sum, z) => sum + z.orderCount, 0)
+  const totalOrders = zones.reduce((sum, z) => sum + (z.orderCount ?? 0), 0)
 
   return (
     <div className="space-y-6">
@@ -177,7 +177,7 @@ export default function TerritoryPlanningPage() {
                   </div>
                   <div className="flex items-center gap-2 mb-2">
                     <Package className={`w-4 h-4 ${color.text}`} />
-                    <span className={`text-[20px] font-bold ${color.text}`}>{zone.orderCount}</span>
+                    <span className={`text-[20px] font-bold ${color.text}`}>{zone.orderCount ?? 0}</span>
                     <span className="text-[12px] text-slate-500">sipariş</span>
                   </div>
                   {zone.centroid && (
@@ -187,7 +187,7 @@ export default function TerritoryPlanningPage() {
                   )}
                   <div className="mt-3 pt-3 border-t border-slate-200/50">
                     <p className="text-[11px] text-slate-400">
-                      Toplam dağılım oranı: %{totalOrders > 0 ? ((zone.orderCount / totalOrders) * 100).toFixed(1) : 0}
+                      Toplam dağılım oranı: %{totalOrders > 0 ? (((zone.orderCount ?? 0) / totalOrders) * 100).toFixed(1) : '0.0'}
                     </p>
                   </div>
                 </div>

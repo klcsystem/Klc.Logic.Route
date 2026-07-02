@@ -39,7 +39,7 @@ export default function LearningPage() {
     { label: 'Toplam Model', value: summaryData?.totalModels?.toString() || '0', icon: Brain, color: 'text-blue-600 bg-blue-50' },
     { label: 'Aktif Model', value: summaryData?.activeModels?.toString() || '0', icon: Brain, color: 'text-green-600 bg-green-50' },
     { label: 'Toplam Tahmin', value: summaryData?.totalPredictions?.toLocaleString() || '0', icon: Brain, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Dogruluk Orani', value: summaryData ? `%${summaryData.accuracyRate?.toFixed(1)}` : '—', icon: Brain, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Dogruluk Oranı', value: summaryData ? `%${summaryData.accuracyRate?.toFixed(1)}` : '—', icon: Brain, color: 'text-purple-600 bg-purple-50' },
   ]
 
   const impactVariant: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
@@ -101,7 +101,7 @@ export default function LearningPage() {
                 ))}
               </div>
             ) : (
-              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</div>
+              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</div>
             )}
           </div>
         </>

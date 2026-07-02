@@ -17,8 +17,8 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' 
   Calculated: 'info', Approved: 'success', SentToProvider: 'info', VehicleAssigned: 'info', Completed: 'success', Cancelled: 'error',
 }
 const statusLabels: Record<string, string> = {
-  Draft: 'Taslak', Loading: 'Yukleniyor', PendingApproval: 'Onay Bekliyor', InTransit: 'Yolda', Delivered: 'Teslim Edildi',
-  Calculated: 'Hesaplandi', Approved: 'Onaylandi', SentToProvider: 'Gonderildi', VehicleAssigned: 'Arac Atandi', Completed: 'Tamamlandi', Cancelled: 'Iptal',
+  Draft: 'Taslak', Loading: 'Yükleniyor', PendingApproval: 'Onay Bekliyor', InTransit: 'Yolda', Delivered: 'Teslim Edildi',
+  Calculated: 'Hesaplandı', Approved: 'Onaylandı', SentToProvider: 'Gönderildi', VehicleAssigned: 'Araç Atandı', Completed: 'Tamamlandı', Cancelled: 'İptal',
 }
 
 
@@ -85,9 +85,9 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
     <div className="space-y-6">
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Toplam Siparis" value={summary?.totalOrders.toLocaleString() || '0'} change={0} icon={Package} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Toplam Sipariş" value={summary?.totalOrders.toLocaleString() || '0'} change={0} icon={Package} color="text-blue-600 bg-blue-50" />
         <StatCard label="Toplam Sevkiyat" value={summary?.totalShipments.toLocaleString() || '0'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
-        <StatCard label="Aktif Tasiyici" value={summary?.activeProviders.toString() || '0'} change={0} icon={CheckCircle2} color="text-emerald-600 bg-emerald-50" />
+        <StatCard label="Aktif Taşıyıcı" value={summary?.activeProviders.toString() || '0'} change={0} icon={CheckCircle2} color="text-emerald-600 bg-emerald-50" />
         <StatCard label="Bu Ay Maliyet" value={summary ? `${(summary.totalCostThisMonth / 1000).toFixed(0)}K TL` : '0'} change={0} icon={DollarSign} color="text-purple-600 bg-purple-50" />
       </div>
 
@@ -96,7 +96,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
         {/* Sevkiyat Trendi from real monthly data */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[15px] font-semibold text-slate-800">Aylik Sevkiyat Trendi</h3>
+            <h3 className="text-[15px] font-semibold text-slate-800">Aylık Sevkiyat Trendi</h3>
           </div>
           {shipmentTrendChart.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
@@ -115,13 +115,13 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Henuz veri yok</div>
+            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Henüz veri yok</div>
           )}
         </div>
 
-        {/* Tasiyici Maliyet Dagilimi */}
+        {/* Taşıyıcı Maliyet Dağılımı */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Maliyet Dagilimi</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Maliyet Dağılımı</h3>
           {providerCostChart.length > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={180}>
@@ -152,9 +152,9 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
 
       {/* Charts Row 2 */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Aylik Maliyet */}
+        {/* Aylık Maliyet */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Maliyet (Bin TL)</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylık Maliyet (Bin TL)</h3>
           {monthlyCostChart.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={monthlyCostChart}>
@@ -167,13 +167,13 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Henuz veri yok</div>
+            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Henüz veri yok</div>
           )}
         </div>
 
-        {/* Tasiyici Performans from API */}
+        {/* Taşıyıcı Performans from API */}
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Performans</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Performans</h3>
           {carrierPerfChart.length > 0 ? (
             <div className="space-y-4">
               {carrierPerfChart.map((c) => (
@@ -197,7 +197,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[200px] text-[13px] text-slate-400">Performans verisi henuz yok</div>
+            <div className="flex items-center justify-center h-[200px] text-[13px] text-slate-400">Performans verisi henüz yok</div>
           )}
         </div>
       </div>
@@ -205,7 +205,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
       {/* Donut Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4 text-center">Zaman Dagilimi</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4 text-center">Zaman Dağılımı</h3>
           <DonutChart
             value={summary ? Math.round((summary.averageDeliveryHours / (summary.averageDeliveryHours + 2)) * 100) : 65}
             label={`${summary?.averageDeliveryHours.toFixed(1) || '0'}s`}
@@ -251,7 +251,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
           <DonutChart
             value={summary ? Math.min(99, Math.round((summary.deliveredShipments / Math.max(summary.totalShipments, 1)) * 100)) : 71}
             label={`${summary ? Math.min(99, Math.round((summary.deliveredShipments / Math.max(summary.totalShipments, 1)) * 100)) : 71}%`}
-            sublabel="Teslim Orani"
+            sublabel="Teslim Oranı"
             color="#3b82f6"
             size={160}
           />
@@ -272,12 +272,12 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Provider cost table */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Bazli Maliyet Ozeti</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Bazli Maliyet Özeti</h3>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100">
-                  <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Tasiyici</th>
+                  <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Taşıyıcı</th>
                   <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Sevkiyat</th>
                   <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Toplam Maliyet</th>
                   <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ortalama</th>
@@ -311,7 +311,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
-            <h4 className="text-[13px] font-semibold text-slate-800 mb-3">Siparis Durumu</h4>
+            <h4 className="text-[13px] font-semibold text-slate-800 mb-3">Sipariş Durumu</h4>
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-[12px] text-slate-600">Bekleyen</span>
@@ -360,7 +360,7 @@ function ExecutiveDashboard({ summary, providerCosts, monthlyCosts, carrierPerfs
             ))}
           </div>
         ) : (
-          <div className="text-center text-[13px] text-slate-400 py-8">Henuz sevkiyat yok</div>
+          <div className="text-center text-[13px] text-slate-400 py-8">Henüz sevkiyat yok</div>
         )}
       </div>
 
@@ -456,7 +456,7 @@ function OperationsDashboard({ summary, recentShipments }: { summary: DashboardS
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Toplam Sevkiyat" value={summary?.totalShipments.toString() || '0'} change={0} icon={Package} color="text-blue-600 bg-blue-50" />
-        <StatCard label="Bekleyen Siparis" value={summary?.pendingOrders.toString() || '0'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
+        <StatCard label="Bekleyen Sipariş" value={summary?.pendingOrders.toString() || '0'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
         <StatCard label="Yoldaki Sevkiyat" value={summary?.inTransitShipments.toString() || '0'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
         <StatCard label="Teslim Edilen" value={summary?.deliveredShipments.toString() || '0'} change={0} icon={CheckCircle2} color="text-green-600 bg-green-50" />
       </div>
@@ -499,14 +499,14 @@ function OperationsDashboard({ summary, recentShipments }: { summary: DashboardS
                 ))}
               </div>
             ) : (
-              <div className="text-center text-[13px] text-slate-400 py-4">Henuz teslim edilen sevkiyat yok</div>
+              <div className="text-center text-[13px] text-slate-400 py-4">Henüz teslim edilen sevkiyat yok</div>
             )}
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
             <h4 className="text-[13px] font-semibold text-slate-800 mb-3">Ozet</h4>
             <div className="space-y-2">
               <div className="flex justify-between"><span className="text-[12px] text-slate-500">Aktif Anlasma</span><span className="text-[13px] font-semibold">{summary?.activeContracts || 0}</span></div>
-              <div className="flex justify-between"><span className="text-[12px] text-slate-500">Aktif Tasiyici</span><span className="text-[13px] font-semibold">{summary?.activeProviders || 0}</span></div>
+              <div className="flex justify-between"><span className="text-[12px] text-slate-500">Aktif Taşıyıcı</span><span className="text-[13px] font-semibold">{summary?.activeProviders || 0}</span></div>
               <div className="flex justify-between"><span className="text-[12px] text-slate-500">Ort. Teslimat</span><span className="text-[13px] font-semibold">{summary?.averageDeliveryHours.toFixed(1) || 0}s</span></div>
             </div>
           </div>
@@ -518,7 +518,7 @@ function OperationsDashboard({ summary, recentShipments }: { summary: DashboardS
 
 function FinanceDashboard({ summary, monthlyCosts, providerCosts }: { summary: DashboardSummary | null; monthlyCosts: MonthlyCostSummary[]; providerCosts: ProviderCostSummary[] }) {
   const monthNames = ['', 'Oca', 'Sub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Agu', 'Eyl', 'Eki', 'Kas', 'Ara']
-  const monthlyCostChart = monthlyCosts.map(m => ({ month: monthNames[m.month] || `${m.month}`, gerceklesen: Math.round(m.totalCost / 1000) }))
+  const monthlyCostChart = monthlyCosts.map(m => ({ month: monthNames[m.month] || `${m.month}`, gerçeklesen: Math.round(m.totalCost / 1000) }))
 
   return (
     <div className="space-y-6">
@@ -530,7 +530,7 @@ function FinanceDashboard({ summary, monthlyCosts, providerCosts }: { summary: D
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Maliyet Trendi (Bin TL)</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylık Maliyet Trendi (Bin TL)</h3>
           {monthlyCostChart.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={monthlyCostChart}>
@@ -538,16 +538,16 @@ function FinanceDashboard({ summary, monthlyCosts, providerCosts }: { summary: D
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#94a3b8' }} />
                 <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} />
                 <Tooltip contentStyle={{ borderRadius: 12, fontSize: 13 }} formatter={(v) => `${v}K TL`} />
-                <Bar dataKey="gerceklesen" name="Gerceklesen" fill="#f97316" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="gerçeklesen" name="Gerçeklesen" fill="#f97316" radius={[4, 4, 0, 0]} />
                 <Legend />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Henuz veri yok</div>
+            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Henüz veri yok</div>
           )}
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Maliyet Ozeti</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Maliyet Özeti</h3>
           {providerCosts.length > 0 ? (
             <div className="space-y-4">
               {providerCosts.map((pc) => (
@@ -583,13 +583,13 @@ function LogisticsManagerDashboard({ summary, carrierPerfs, providerCosts }: { s
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Aktif Sevkiyat" value={summary?.inTransitShipments.toString() || '0'} change={0} icon={Truck} color="text-orange-600 bg-orange-50" />
-        <StatCard label="Bekleyen Siparis" value={summary?.pendingOrders.toString() || '0'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
-        <StatCard label="Aktif Tasiyici" value={summary?.activeProviders.toString() || '0'} change={0} icon={DollarSign} color="text-green-600 bg-green-50" />
+        <StatCard label="Bekleyen Sipariş" value={summary?.pendingOrders.toString() || '0'} change={0} icon={Clock} color="text-amber-600 bg-amber-50" />
+        <StatCard label="Aktif Taşıyıcı" value={summary?.activeProviders.toString() || '0'} change={0} icon={DollarSign} color="text-green-600 bg-green-50" />
         <StatCard label="Teslim Edilen" value={summary?.deliveredShipments.toString() || '0'} change={0} icon={CheckCircle2} color="text-blue-600 bg-blue-50" />
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Performans Karsilastirma</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Performans Karşılaştırma</h3>
           {carrierPerfChart.length > 0 ? (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={carrierPerfChart}>
@@ -601,11 +601,11 @@ function LogisticsManagerDashboard({ summary, carrierPerfs, providerCosts }: { s
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Performans verisi henuz yok</div>
+            <div className="flex items-center justify-center h-[260px] text-[13px] text-slate-400">Performans verisi henüz yok</div>
           )}
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Maliyet Dagilimi</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Maliyet Dağılımı</h3>
           {providerCostChart.length > 0 ? (
             <>
               <ResponsiveContainer width="100%" height={200}>
@@ -652,7 +652,7 @@ export default function DashboardPage() {
   const co2SavedTons = savingsSummary?.totalCO2SavedTons || 0
 
   const roleLabels: Record<string, string> = {
-    Admin: 'Yonetici', Executive: 'Ust Yonetim', LogisticsManager: 'Lojistik Muduru',
+    Admin: 'Yonetici', Executive: 'Ust Yönetim', LogisticsManager: 'Lojistik Muduru',
     OperationsSpecialist: 'Operasyon Uzmani', Finance: 'Finans',
   }
 
@@ -670,7 +670,7 @@ export default function DashboardPage() {
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">
             {greeting()}, {user?.firstName || 'Kullanici'}
           </h1>
-          <p className="text-[14px] text-slate-400 mt-1">Lojistik operasyonlarinizin guncel ozeti.</p>
+          <p className="text-[14px] text-slate-400 mt-1">Lojistik operasyonlarinizin guncel özeti.</p>
         </div>
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-slate-400" />

@@ -136,7 +136,7 @@ export default function StopListPanel({ stops, onStopsChange }: StopListPanelPro
             className={inputClass}
           />
           <div className="grid grid-cols-2 gap-2">
-            <input type="number" value={newWeight} onChange={e => setNewWeight(Number(e.target.value))} placeholder="Agirlik (kg)" className={inputClass} />
+            <input type="number" value={newWeight} onChange={e => setNewWeight(Number(e.target.value))} placeholder="Ağırlık (kg)" className={inputClass} />
             <input type="number" step="0.1" value={newVolume} onChange={e => setNewVolume(Number(e.target.value))} placeholder="Hacim (m3)" className={inputClass} />
           </div>
           <button

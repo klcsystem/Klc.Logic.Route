@@ -139,7 +139,7 @@ export default function ContractsPage() {
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
                       <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Guzergah</th>
                       <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Arac</th>
-                      <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Agirlik</th>
+                      <th className="text-center px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Fiyat</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ek Ucretler</th>
                       <th className="w-10"></th>
@@ -181,8 +181,8 @@ export default function ContractsPage() {
       }>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Cikis Bolge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varis Bolge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="Ic Anadolu" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış Bölge</label><input type="text" value={rateForm.originRegion} onChange={(e) => setRateForm({ ...rateForm, originRegion: e.target.value })} className={inputClass} placeholder="Marmara" /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış Bölge</label><input type="text" value={rateForm.destinationRegion} onChange={(e) => setRateForm({ ...rateForm, destinationRegion: e.target.value })} className={inputClass} placeholder="İç Anadolu" /></div>
           </div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Arac Tipi</label>
             <select value={rateForm.vehicleCategory} onChange={(e) => setRateForm({ ...rateForm, vehicleCategory: e.target.value })} className={inputClass}>
@@ -190,8 +190,8 @@ export default function ContractsPage() {
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Agirlik (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
-            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Agirlik (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Min Ağırlık (kg)</label><input type="number" value={rateForm.minWeightKg} onChange={(e) => setRateForm({ ...rateForm, minWeightKg: Number(e.target.value) })} className={inputClass} /></div>
+            <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Max Ağırlık (kg)</label><input type="number" value={rateForm.maxWeightKg} onChange={(e) => setRateForm({ ...rateForm, maxWeightKg: Number(e.target.value) })} className={inputClass} /></div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Birim Fiyat</label><input type="number" step="0.01" value={rateForm.pricePerUnit} onChange={(e) => setRateForm({ ...rateForm, pricePerUnit: Number(e.target.value) })} className={inputClass} /></div>
@@ -224,7 +224,7 @@ export default function ContractsPage() {
         </div>
       }>
         <div className="space-y-4">
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.carrier}</label><input type="text" value={contractForm.providerName} onChange={(e) => setContractForm({ ...contractForm, providerName: e.target.value })} className={inputClass} placeholder="Tasiyici adi" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.carrier}</label><input type="text" value={contractForm.providerName} onChange={(e) => setContractForm({ ...contractForm, providerName: e.target.value })} className={inputClass} placeholder="Taşıyıcı adi" /></div>
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.contractNo}</label><input type="text" value={contractForm.contractNumber} onChange={(e) => setContractForm({ ...contractForm, contractNumber: e.target.value })} className={inputClass} placeholder="CNT-2024-006" /></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.contracts.startDate}</label><input type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} className={inputClass} /></div>

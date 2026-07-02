@@ -24,12 +24,12 @@ export function useApi<T>(fetcher: () => Promise<ApiResponse<T>>, deps: unknown[
         if (res.success) {
           setData(res.data)
         } else {
-          setError(res.message || 'Bir hata olustu')
+          setError(res.message || 'Bir hata oluştu')
         }
       })
       .catch((err) => {
         if (cancelled) return
-        setError(err?.response?.data?.message || err?.message || 'Bir hata olustu')
+        setError(err?.response?.data?.message || err?.message || 'Bir hata oluştu')
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)

@@ -149,7 +149,7 @@ function CustomerSidebar() {
       icon: Package,
       items: [
         { to: '/plan', icon: Zap, label: 'Plan & Optimize' },
-        { to: '/weekly-plan', icon: CalendarDays, label: 'Haftalik Planlama' },
+        { to: '/weekly-plan', icon: CalendarDays, label: 'Haftalık Planlama' },
         { to: '/orders', icon: Package, label: t.sidebar.orders },
         { to: '/shipments', icon: Truck, label: t.sidebar.shipments },
         { to: '/tracking', icon: MapPin, label: t.sidebar.liveTracking },
@@ -178,7 +178,7 @@ function CustomerSidebar() {
         { to: '/demand-forecast', icon: TrendingUp, label: 'Talep Tahmini' },
         { to: '/sustainability', icon: Leaf, label: 'Sürdürülebilirlik & CO2' },
         { to: '/safety', icon: Shield, label: 'Sürücü Güvenlik' },
-        { to: '/heat-map', icon: Flame, label: 'Yogunluk Haritasi' },
+        { to: '/heat-map', icon: Flame, label: 'Yoğunluk Haritasi' },
         { to: '/invoices', icon: FileText, label: 'Fatura Denetimi' },
         { to: '/billing', icon: Receipt, label: 'Faturalama' },
         { to: '/digital-twin', icon: FlaskConical, label: 'Dijital İkiz' },

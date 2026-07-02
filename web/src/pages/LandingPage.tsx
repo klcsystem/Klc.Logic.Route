@@ -268,7 +268,7 @@ export default function LandingPage() {
                   <div className="flex items-center gap-1 mb-1">
                     {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 text-amber-400 fill-amber-400" />)}
                   </div>
-                  <p className="text-[10px] text-gray-400">12 rota, 3 arac, 47 siparis</p>
+                  <p className="text-[10px] text-gray-400">12 rota, 3 arac, 47 sipariş</p>
                 </div>
               </div>
             </div>
@@ -371,7 +371,7 @@ export default function LandingPage() {
             <div>
               <h4 className="text-[13px] font-semibold text-white uppercase tracking-wider mb-4">Ürün</h4>
               <div className="space-y-3">
-                {['Rota Optimizasyonu', 'Canlı Takip', 'ERP Entegrasyon', 'Mobil Uygulama', 'Analitik Panel', 'Müşteri Portali'].map((item) => (
+                {['Rota Optimizasyonu', 'Canlı Takip', 'ERP Entegrasyon', 'Mobil Uygulama', 'Analitik Panel', 'Müşteri Portalı'].map((item) => (
                   <p key={item} className="text-[13px] text-gray-400 hover:text-blue-400 cursor-pointer transition-colors">{item}</p>
                 ))}
               </div>

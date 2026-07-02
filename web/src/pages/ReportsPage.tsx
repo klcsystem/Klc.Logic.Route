@@ -113,9 +113,9 @@ export default function ReportsPage() {
   const periodLabels: Record<string, string> = { thisWeek: t.reports.lastWeek, thisMonth: t.reports.lastMonth, last3Months: t.reports.last3Months, lastYear: t.reports.lastYear }
 
   const statusLabels: Record<string, string> = {
-    Pending: 'Bekleyen', Assigned: 'Atanmis', InTransit: 'Yolda', Delivered: 'Teslim', Failed: 'Basarisiz', Cancelled: 'Iptal',
-    Draft: 'Taslak', Calculated: 'Hesaplandi', PendingApproval: 'Onay Bekliyor', Approved: 'Onaylandi',
-    SentToProvider: 'Gonderildi', VehicleAssigned: 'Arac Atandi', Loading: 'Yukleniyor', Completed: 'Tamamlandi',
+    Pending: 'Bekleyen', Assigned: 'Atanmış', InTransit: 'Yolda', Delivered: 'Teslim', Failed: 'Başarısız', Cancelled: 'İptal',
+    Draft: 'Taslak', Calculated: 'Hesaplandı', PendingApproval: 'Onay Bekliyor', Approved: 'Onaylandı',
+    SentToProvider: 'Gönderildi', VehicleAssigned: 'Araç Atandı', Loading: 'Yükleniyor', Completed: 'Tamamlandı',
   }
 
   const statusColors: Record<string, string> = {
@@ -167,7 +167,7 @@ export default function ReportsPage() {
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Order status breakdown */}
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Siparis Durumu Dagilimi ({filteredOrders.length} siparis)</h3>
+                <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Sipariş Durumu Dağılımı ({filteredOrders.length} sipariş)</h3>
                 {Object.keys(orderStatusCounts).length > 0 ? (
                   <div className="space-y-3">
                     {Object.entries(orderStatusCounts).sort((a, b) => b[1] - a[1]).map(([status, count]) => {
@@ -186,7 +186,7 @@ export default function ReportsPage() {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center text-[13px] text-slate-400 py-8">Bu donemde siparis yok</div>
+                  <div className="text-center text-[13px] text-slate-400 py-8">Bu donemde sipariş yok</div>
                 )}
               </div>
 
@@ -221,7 +221,7 @@ export default function ReportsPage() {
           {activeTab === 'costReport' && (
             <div className="grid lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylik Maliyet Trendi (Bin TL)</h3>
+                <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Aylık Maliyet Trendi (Bin TL)</h3>
                 {monthlyCostChart.length > 0 ? (
                   <ResponsiveContainer width="100%" height={240}>
                     <BarChart data={monthlyCostChart}>
@@ -233,11 +233,11 @@ export default function ReportsPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Henuz maliyet verisi yok</div>
+                  <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Henüz maliyet verisi yok</div>
                 )}
               </div>
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Tasiyici Bazli Maliyet</h3></div>
+                <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Taşıyıcı Bazli Maliyet</h3></div>
                 <table className="w-full">
                   <thead><tr className="border-b border-slate-100">
                     <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">{t.shipments.carrier}</th>
@@ -268,7 +268,7 @@ export default function ReportsPage() {
               {/* Arrival accuracy */}
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                  <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Varis Dogrulugu</h3>
+                  <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Varış Doğruluğu</h3>
                   {totalDelivered > 0 ? (
                     <>
                       <ResponsiveContainer width="100%" height={200}>
@@ -295,18 +295,18 @@ export default function ReportsPage() {
                         </div>
                         <div className="text-center">
                           <p className="text-[24px] font-bold text-blue-600">{onTimePercent}%</p>
-                          <p className="text-[12px] text-slate-400">Basari Orani</p>
+                          <p className="text-[12px] text-slate-400">Başarı Oranı</p>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="flex items-center justify-center h-[200px] text-[13px] text-slate-400">Performans verisi henuz yok</div>
+                    <div className="flex items-center justify-center h-[200px] text-[13px] text-slate-400">Performans verisi henüz yok</div>
                   )}
                 </div>
 
                 {/* Carrier on-time chart */}
                 <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-                  <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Tasiyici Zamaninda Teslim Orani</h3>
+                  <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Taşıyıcı Zamaninda Teslim Oranı</h3>
                   {carrierPerfChart.length > 0 ? (
                     <ResponsiveContainer width="100%" height={240}>
                       <BarChart data={carrierPerfChart}>
@@ -325,10 +325,10 @@ export default function ReportsPage() {
 
               {/* Carrier performance table */}
               <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Tasiyici Performans Tablosu</h3></div>
+                <div className="px-6 py-4 border-b border-slate-100"><h3 className="text-[15px] font-semibold text-slate-800">Taşıyıcı Performans Tablosu</h3></div>
                 <table className="w-full">
                   <thead><tr className="border-b border-slate-100">
-                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Tasiyici</th>
+                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Taşıyıcı</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Zamaninda %</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Ort. Sure (saat)</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Hasar</th>

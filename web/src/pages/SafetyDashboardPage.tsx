@@ -42,10 +42,10 @@ export default function SafetyDashboardPage() {
   const alerts: SafetyAlert[] = alertsData?.items || []
 
   const kpis = [
-    { label: 'Toplam Surucu', value: dashboardData?.totalDrivers?.toString() || '0', icon: Shield, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Guvenli Surucu', value: dashboardData?.safeDrivers?.toString() || '0', icon: Shield, color: 'text-green-600 bg-green-50' },
+    { label: 'Toplam Sürücü', value: dashboardData?.totalDrivers?.toString() || '0', icon: Shield, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Güvenli Sürücü', value: dashboardData?.safeDrivers?.toString() || '0', icon: Shield, color: 'text-green-600 bg-green-50' },
     { label: 'Risk Altinda', value: dashboardData?.atRiskDrivers?.toString() || '0', icon: AlertTriangle, color: 'text-red-600 bg-red-50' },
-    { label: 'Ort. Guvenlik Skoru', value: dashboardData ? `${dashboardData.averageSafetyScore}/100` : '—', icon: Shield, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Ort. Güvenlik Skoru', value: dashboardData ? `${dashboardData.averageSafetyScore ?? 0}/100` : '—', icon: Shield, color: 'text-purple-600 bg-purple-50' },
   ]
 
   const severityVariant: Record<string, 'default' | 'warning' | 'error' | 'info'> = {
@@ -58,8 +58,8 @@ export default function SafetyDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Surucu Guvenlik Paneli</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Surucu saglik durumu, yorgunluk uyarilari ve filo guvenlik metrikleri</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Sürücü Güvenlik Paneli</h1>
+        <p className="text-[14px] text-slate-400 mt-1">Sürücü sağlık durumu, yorgünlük uyarıları ve filo güvenlik metrikleri</p>
       </div>
 
       {isLoading ? (
@@ -73,24 +73,24 @@ export default function SafetyDashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Olay Ozeti */}
+            {/* Olay Özeti */}
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Olay Ozeti</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Olay Özeti</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-red-50 rounded-xl border border-red-200/60">
                   <span className="text-[13px] font-medium text-red-800">Toplam Olay</span>
                   <span className="text-[18px] font-bold text-red-700">{dashboardData?.totalIncidents || 0}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-200/60">
-                  <span className="text-[13px] font-medium text-amber-800">Yorgunluk Uyarisi</span>
+                  <span className="text-[13px] font-medium text-amber-800">Yorgünlük Uyarısı</span>
                   <span className="text-[18px] font-bold text-amber-700">{dashboardData?.fatigueAlerts || 0}</span>
                 </div>
               </div>
             </div>
 
-            {/* Guvenlik Skoru Dagilimi */}
+            {/* Güvenlik Skoru Dağılımı */}
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Guvenlik Skoru</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Güvenlik Skoru</h3>
               <div className="flex items-center justify-center py-4">
                 <div className="relative w-32 h-32">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
@@ -108,13 +108,13 @@ export default function SafetyDashboardPage() {
           {/* Uyari Listesi */}
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
-              <h3 className="text-[15px] font-semibold text-slate-800">Son Uyarilar</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800">Son Uyarılar</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-100">
-                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Surucu</th>
+                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sürücü</th>
                     <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Uyari Tipi</th>
                     <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ciddiyet</th>
                     <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Mesaj</th>
@@ -129,11 +129,11 @@ export default function SafetyDashboardPage() {
                       <td className="px-6 py-3.5 text-[13px] text-slate-600">{a.alertType}</td>
                       <td className="px-6 py-3.5 text-center"><Badge variant={severityVariant[a.severity] || 'default'}>{a.severity}</Badge></td>
                       <td className="px-6 py-3.5 text-[13px] text-slate-600 max-w-xs truncate">{a.message}</td>
-                      <td className="px-6 py-3.5 text-center"><Badge variant={a.resolved ? 'success' : 'warning'}>{a.resolved ? 'Cozuldu' : 'Aktif'}</Badge></td>
+                      <td className="px-6 py-3.5 text-center"><Badge variant={a.resolved ? 'success' : 'warning'}>{a.resolved ? 'Çözüldü' : 'Aktif'}</Badge></td>
                       <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{a.createdAt}</td>
                     </tr>
                   ))}
-                  {alerts.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</td></tr>}
+                  {alerts.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
                 </tbody>
               </table>
             </div>

@@ -1,41 +1,51 @@
-import { useState } from 'react'
-import { Plus, Pencil, Trash2, Download, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, Pencil, Trash2, Download, Search, Loader2, MapPin } from 'lucide-react'
 import Drawer from '../../components/ui/Drawer'
 import { toast } from '../../components/ui/Toast'
+import { locationsApi } from '../../api/locations'
+import type { LocationEntry } from '../../api/locations'
 
-interface LocationEntry {
-  id: string
-  locationId: string
-  name: string
-  address: string
-  active: boolean
+const locationTypeLabels: Record<string, string> = {
+  Depot: 'Depo', Warehouse: 'Ambar', Hub: 'Hub', Customer: 'Müşteri', CrossDock: 'Cross-Dock', PickupPoint: 'Teslim Noktasi',
 }
 
-const mockLocations: LocationEntry[] = [
-  { id: '1', locationId: 'LOC-001', name: 'Istanbul Depo', address: 'Ikitelli OSB, Basaksehir, Istanbul', active: true },
-  { id: '2', locationId: 'LOC-002', name: 'Ankara Dagitim', address: 'Sincan OSB, Sincan, Ankara', active: true },
-  { id: '3', locationId: 'LOC-003', name: 'Izmir Sube', address: 'Cigli, Izmir', active: false },
-  { id: '4', locationId: 'LOC-004', name: 'Antalya Terminal', address: 'Kepez, Antalya', active: true },
-  { id: '5', locationId: 'LOC-005', name: 'Bursa Fabrika', address: 'Nilufer OSB, Bursa', active: true },
-]
-
-const emptyForm = { locationId: '', name: '', address: '' }
+const emptyForm = { code: '', name: '', address: '', locationType: 'Depot' as LocationEntry['locationType'], city: '', district: '', contactName: '', contactPhone: '' }
 
 export default function LocationDirectoryPage() {
-  const [locations, setLocations] = useState(mockLocations)
+  const [locations, setLocations] = useState<LocationEntry[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState(emptyForm)
+
+  const fetchLocations = async () => {
+    try {
+      const res = await locationsApi.getAll()
+      setLocations(res.data || [])
+    } catch {
+      toast('error', 'Lokasyon listesi yüklenemedi')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchLocations() }, [])
 
   const filtered = locations.filter(l =>
     l.name.toLowerCase().includes(search.toLowerCase()) ||
-    l.locationId.toLowerCase().includes(search.toLowerCase()) ||
-    l.address.toLowerCase().includes(search.toLowerCase())
+    (l.code || '').toLowerCase().includes(search.toLowerCase()) ||
+    (l.address || '').toLowerCase().includes(search.toLowerCase())
   )
 
-  const toggleActive = (id: string) => {
-    setLocations(prev => prev.map(l => l.id === id ? { ...l, active: !l.active } : l))
+  const toggleActive = async (loc: LocationEntry) => {
+    try {
+      await locationsApi.update(loc.id, { isActive: !loc.isActive })
+      fetchLocations()
+    } catch {
+      toast('error', 'Durum güncellenemedi')
+    }
   }
 
   const openAdd = () => {
@@ -46,41 +56,57 @@ export default function LocationDirectoryPage() {
 
   const openEdit = (loc: LocationEntry) => {
     setEditingId(loc.id)
-    setFormData({ locationId: loc.locationId, name: loc.name, address: loc.address })
+    setFormData({
+      code: loc.code || '',
+      name: loc.name,
+      address: loc.address || '',
+      locationType: loc.locationType,
+      city: loc.city || '',
+      district: loc.district || '',
+      contactName: loc.contactName || '',
+      contactPhone: loc.contactPhone || '',
+    })
     setDrawerOpen(true)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.address) {
       toast('error', 'Ad ve adres zorunludur')
       return
     }
-    if (editingId) {
-      setLocations(prev => prev.map(l => l.id === editingId ? { ...l, ...formData } : l))
-      toast('success', 'Lokasyon guncellendi')
-    } else {
-      const newLoc: LocationEntry = {
-        id: `loc_${Date.now()}`,
-        locationId: formData.locationId || `LOC-${String(locations.length + 1).padStart(3, '0')}`,
-        name: formData.name,
-        address: formData.address,
-        active: true,
+    setSaving(true)
+    try {
+      if (editingId) {
+        await locationsApi.update(editingId, formData)
+        toast('success', 'Lokasyon güncellendi')
+      } else {
+        await locationsApi.create(formData)
+        toast('success', 'Lokasyon eklendi')
       }
-      setLocations(prev => [...prev, newLoc])
-      toast('success', 'Lokasyon eklendi')
+      setDrawerOpen(false)
+      setEditingId(null)
+      fetchLocations()
+    } catch {
+      toast('error', 'Kaydetme sırasında hata oluştu')
+    } finally {
+      setSaving(false)
     }
-    setDrawerOpen(false)
   }
 
-  const handleDelete = (id: string) => {
-    setLocations(prev => prev.filter(l => l.id !== id))
-    toast('success', 'Lokasyon silindi')
+  const handleDelete = async (id: string) => {
+    try {
+      await locationsApi.delete(id)
+      toast('success', 'Lokasyon silindi')
+      fetchLocations()
+    } catch {
+      toast('error', 'Silme sırasında hata oluştu')
+    }
   }
 
   const handleExport = () => {
     const csv = [
-      'Lokasyon ID,Ad,Adres,Aktif',
-      ...locations.map(l => `${l.locationId},${l.name},${l.address},${l.active ? 'Evet' : 'Hayir'}`),
+      'Kod,Ad,Tip,Adres,Şehir,Ilce,Aktif',
+      ...locations.map(l => `${l.code || ''},${l.name},${locationTypeLabels[l.locationType] || l.locationType},${l.address || ''},${l.city || ''},${l.district || ''},${l.isActive ? 'Evet' : 'Hayir'}`),
     ].join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -124,78 +150,125 @@ export default function LocationDirectoryPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-16">Aktif</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Lokasyon ID</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ad</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adres</th>
-                <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-24">Islemler</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(loc => (
-                <tr key={loc.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-3.5">
-                    <button
-                      onClick={() => toggleActive(loc.id)}
-                      className={`w-10 h-6 rounded-full transition-colors ${loc.active ? 'bg-orange-400' : 'bg-slate-200'}`}
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${loc.active ? 'translate-x-5' : 'translate-x-1'}`} />
-                    </button>
-                  </td>
-                  <td className="px-6 py-3.5 text-[13px] font-mono text-slate-600">{loc.locationId}</td>
-                  <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{loc.name}</td>
-                  <td className="px-6 py-3.5 text-[13px] text-slate-600">{loc.address}</td>
-                  <td className="px-6 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(loc)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(loc.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Lokasyon bulunamadi</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
         </div>
-      </div>
+      ) : locations.length === 0 && !search ? (
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-12 text-center">
+          <MapPin className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+          <p className="text-[14px] text-slate-400">Henüz lokasyon eklenmedi</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-16">Aktif</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kod</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ad</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tip</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adres</th>
+                  <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-24">Islemler</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(loc => (
+                  <tr key={loc.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-3.5">
+                      <button
+                        onClick={() => toggleActive(loc)}
+                        className={`w-10 h-6 rounded-full transition-colors ${loc.isActive ? 'bg-orange-400' : 'bg-slate-200'}`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${loc.isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                      </button>
+                    </td>
+                    <td className="px-6 py-3.5 text-[13px] font-mono text-slate-600">{loc.code || '—'}</td>
+                    <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{loc.name}</td>
+                    <td className="px-6 py-3.5 text-[13px] text-slate-600">{locationTypeLabels[loc.locationType] || loc.locationType}</td>
+                    <td className="px-6 py-3.5 text-[13px] text-slate-600">{loc.address}</td>
+                    <td className="px-6 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => openEdit(loc)} className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(loc.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-12 text-[14px] text-slate-400">Lokasyon bulunamadı</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Drawer */}
       <Drawer
         isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        title={editingId ? 'Lokasyon Duzenle' : 'Lokasyon Ekle'}
+        onClose={() => { setDrawerOpen(false); setEditingId(null) }}
+        title={editingId ? 'Lokasyon Düzenle' : 'Lokasyon Ekle'}
         footer={
           <div className="flex justify-end gap-3">
-            <button onClick={() => setDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">Iptal</button>
-            <button onClick={handleSave} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">Kaydet</button>
+            <button onClick={() => { setDrawerOpen(false); setEditingId(null) }} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">Iptal</button>
+            <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold disabled:opacity-50">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+              Kaydet
+            </button>
           </div>
         }
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Lokasyon ID</label>
-            <input type="text" value={formData.locationId} onChange={(e) => setFormData({ ...formData, locationId: e.target.value })} className={inputClass} placeholder="LOC-006" />
+            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Kod</label>
+            <input type="text" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} className={inputClass} placeholder="LOC-006" />
           </div>
           <div>
             <label className="block text-[13px] font-semibold text-slate-700 mb-2">Ad</label>
             <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className={inputClass} placeholder="Istanbul Depo" />
           </div>
           <div>
+            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Tip</label>
+            <select value={formData.locationType} onChange={(e) => setFormData({ ...formData, locationType: e.target.value as LocationEntry['locationType'] })} className={inputClass}>
+              <option value="Depot">Depo</option>
+              <option value="Warehouse">Ambar</option>
+              <option value="Hub">Hub</option>
+              <option value="Customer">Müşteri</option>
+              <option value="CrossDock">Cross-Dock</option>
+              <option value="PickupPoint">Teslim Noktasi</option>
+            </select>
+          </div>
+          <div>
             <label className="block text-[13px] font-semibold text-slate-700 mb-2">Adres</label>
-            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={inputClass} placeholder="Ikitelli OSB, Basaksehir, Istanbul" />
+            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className={inputClass} placeholder="Ikitelli OSB, Basakşehir, Istanbul" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[13px] font-semibold text-slate-700 mb-2">Şehir</label>
+              <input type="text" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className={inputClass} placeholder="Istanbul" />
+            </div>
+            <div>
+              <label className="block text-[13px] font-semibold text-slate-700 mb-2">Ilce</label>
+              <input type="text" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className={inputClass} placeholder="Basakşehir" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[13px] font-semibold text-slate-700 mb-2">Yetkili Kisi</label>
+              <input type="text" value={formData.contactName} onChange={(e) => setFormData({ ...formData, contactName: e.target.value })} className={inputClass} placeholder="Ad Soyad" />
+            </div>
+            <div>
+              <label className="block text-[13px] font-semibold text-slate-700 mb-2">Telefon</label>
+              <input type="text" value={formData.contactPhone} onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })} className={inputClass} placeholder="0212 xxx xx xx" />
+            </div>
           </div>
         </div>
       </Drawer>

@@ -42,9 +42,9 @@ export default function FeedbackPage() {
 
   const kpis = [
     { label: 'Toplam Geri Bildirim', value: summaryData?.totalFeedback?.toString() || feedbacks.length.toString(), icon: MessageSquare, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Ortalama Puan', value: summaryData ? `${summaryData.averageRating?.toFixed(1)}/5` : '—', icon: Star, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Olumlu', value: summaryData ? `%${summaryData.positivePercent}` : '—', icon: MessageSquare, color: 'text-green-600 bg-green-50' },
-    { label: 'Olumsuz', value: summaryData ? `%${summaryData.negativePercent}` : '—', icon: MessageSquare, color: 'text-red-600 bg-red-50' },
+    { label: 'Ortalama Puan', value: summaryData ? `${(summaryData.averageRating ?? 0).toFixed(1)}/5` : '—', icon: Star, color: 'text-orange-600 bg-orange-50' },
+    { label: 'Olumlu', value: summaryData ? `%${summaryData.positivePercent ?? 0}` : '—', icon: MessageSquare, color: 'text-green-600 bg-green-50' },
+    { label: 'Olumsuz', value: summaryData ? `%${summaryData.negativePercent ?? 0}` : '—', icon: MessageSquare, color: 'text-red-600 bg-red-50' },
   ]
 
   const ratingVariant = (r: number): 'success' | 'warning' | 'error' => {
@@ -57,24 +57,24 @@ export default function FeedbackPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Geri Bildirim</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Musteri geri bildirimleri ve memnuniyet analizi</p>
+        <p className="text-[14px] text-slate-400 mt-1">Müşteri geri bildirimleri ve memnuniyet analizi</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(kpi => <StatCard key={kpi.label} {...kpi} />)}
       </div>
 
-      {/* Kategori Dagilimi */}
+      {/* Kategori Dağılımı */}
       {summaryData?.categoryBreakdown && summaryData.categoryBreakdown.length > 0 && (
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Kategori Bazinda Analiz</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Kategori Bazında Analiz</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {summaryData.categoryBreakdown.map(cat => (
               <div key={cat.category} className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
                 <div className="text-[13px] font-medium text-slate-700">{cat.category}</div>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-[18px] font-bold text-slate-900">{cat.count}</span>
-                  <Badge variant={ratingVariant(cat.avgRating)}>{cat.avgRating?.toFixed(1)}/5</Badge>
+                  <Badge variant={ratingVariant(cat.avgRating ?? 0)}>{(cat.avgRating ?? 0).toFixed(1)}/5</Badge>
                 </div>
               </div>
             ))}
@@ -91,8 +91,8 @@ export default function FeedbackPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Musteri</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Siparis</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Müşteri</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sipariş</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Puan</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Yorum</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kategori</th>
@@ -115,7 +115,7 @@ export default function FeedbackPage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{f.createdAt}</td>
                 </tr>
               ))}
-              {!isLoading && feedbacks.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</td></tr>}
+              {!isLoading && feedbacks.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
             </tbody>
           </table>
         </div>

@@ -31,7 +31,7 @@ const BUSINESS_TYPES = [
   { id: 'saha', label: 'Saha Servis', icon: Wrench },
   { id: 'atik', label: 'Atik Toplama', icon: Trash2 },
   { id: 'temizlik', label: 'Temizlik Hizmeti', icon: Sparkles },
-  { id: 'saglik', label: 'Saglik/Ilac', icon: Heart },
+  { id: 'sağlık', label: 'Sağlık/Ilac', icon: Heart },
   { id: 'kurye', label: 'Kurye', icon: Bike },
   { id: 'diger_teslimat', label: 'Diger Teslimat', icon: Package },
   { id: 'diger_servis', label: 'Diger Servis', icon: Wrench },
@@ -82,9 +82,9 @@ export default function OnboardingPage() {
   }
 
   const stepTitles = [
-    { title: 'Deponuz nerede?', desc: 'Depo veya merkez konumunuzu haritadan secin' },
-    { title: 'Ne yapiyorsunuz?', desc: 'Is tipinizi secin, rota optimizasyonunu buna gore ayarlayalim' },
-    { title: 'Surucu ve araclarinizi ayarlayin', desc: 'Surucu sayisi, calisma saatleri ve arac tipi bilgilerini girin' },
+    { title: 'Deponuz nerede?', desc: 'Depo veya merkez konumunuzu haritadan seçin' },
+    { title: 'Ne yapiyorsunuz?', desc: 'Is tipinizi seçin, rota optimizasyonunu buna gore ayarlayalim' },
+    { title: 'Sürücü ve araçlarınızı ayarlayın', desc: 'Sürücü sayısı, çalışma saatleri ve araç tipi bilgilerini girin' },
   ]
 
   return (
@@ -125,7 +125,7 @@ export default function OnboardingPage() {
               <AddressAutocomplete
                 label="Depo Adresi"
                 value={depot.address}
-                placeholder="Adres aramak icin yazin..."
+                placeholder="Adres aramak için yazın..."
                 onSelect={(result: GeocodingResult) => {
                   setDepot({
                     address: result.displayName,
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
             <div className="space-y-6">
               {/* Driver count */}
               <div>
-                <label className="block text-[13px] font-semibold text-slate-700 mb-2">Surucu Sayisi</label>
+                <label className="block text-[13px] font-semibold text-slate-700 mb-2">Sürücü Sayısı</label>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setDriverConfig({ ...driverConfig, driverCount: Math.max(1, driverConfig.driverCount - 1) })}
@@ -216,7 +216,7 @@ export default function OnboardingPage() {
               {/* Work time */}
               <div>
                 <label className="block text-[13px] font-semibold text-slate-700 mb-2">
-                  <Clock className="w-4 h-4 inline mr-1.5" />Calisma Saatleri
+                  <Clock className="w-4 h-4 inline mr-1.5" />Çalışma Saatleri
                 </label>
                 <div className="flex items-center gap-3">
                   <select

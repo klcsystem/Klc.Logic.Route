@@ -59,7 +59,7 @@ const defaultConfig: DriverConfig = {
     { id: 'duration', label: 'Sure', visible: true },
     { id: 'location', label: 'Konum', visible: true },
     { id: 'timeWindows', label: 'Zaman Penceresi', visible: true },
-    { id: 'orderId', label: 'Siparis ID', visible: true },
+    { id: 'orderId', label: 'Sipariş ID', visible: true },
     { id: 'notes', label: 'Notlar', visible: true },
     { id: 'email', label: 'E-posta', visible: false },
     { id: 'phone', label: 'Telefon', visible: true },
@@ -150,18 +150,18 @@ export default function DriverAppConfigPage() {
 
   const handleRestore = () => {
     setConfig(defaultConfig)
-    toast('success', 'Varsayilan ayarlara geri yuklendi')
+    toast('success', 'Varsayılan ayarlara geri yüklendi')
   }
 
   const handleSave = () => {
-    toast('success', 'Surucu uygulama ayarlari kaydedildi')
+    toast('success', 'Sürücü uygulama ayarları kaydedildi')
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Surucu Uygulama Yapilandirmasi</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Mobil surucu uygulamasinin gorunum ve davranis ayarlari</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Sürücü Uygulama Yapılandırmasi</h1>
+        <p className="text-[14px] text-slate-400 mt-1">Mobil sürücü uygulamasinin görünüm ve davranış ayarları</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -169,11 +169,11 @@ export default function DriverAppConfigPage() {
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
             <Map className="w-5 h-5 text-orange-500" />
-            <h3 className="text-[15px] font-semibold text-slate-800">Harita Gorunumu</h3>
+            <h3 className="text-[15px] font-semibold text-slate-800">Harita Görünümu</h3>
           </div>
           <div className="space-y-3">
-            <Toggle checked={config.showMap} onChange={(v) => updateConfig('showMap', v)} label="Haritayi Goster" description="Ana ekranda harita gorunsun" />
-            <Toggle checked={config.enableMapTab} onChange={(v) => updateConfig('enableMapTab', v)} label="Harita Sekmesini Etkinlestir" description="Ayri bir harita sekmesi goster" />
+            <Toggle checked={config.showMap} onChange={(v) => updateConfig('showMap', v)} label="Haritayı Göster" description="Ana ekranda harita görünsün" />
+            <Toggle checked={config.enableMapTab} onChange={(v) => updateConfig('enableMapTab', v)} label="Harita Sekmesini Etkinleştir" description="Ayri bir harita sekmesi göster" />
           </div>
         </div>
 
@@ -184,10 +184,10 @@ export default function DriverAppConfigPage() {
             <h3 className="text-[15px] font-semibold text-slate-800">Is Akisi</h3>
           </div>
           <div className="space-y-3">
-            <Toggle checked={config.allowReject} onChange={(v) => updateConfig('allowReject', v)} label="Reddetmeye Izin Ver" description="Surucu siparisi reddedebilsin" />
-            <Toggle checked={config.allowOverrideSchedule} onChange={(v) => updateConfig('allowOverrideSchedule', v)} label="Program Degisikligine Izin Ver" description="Surucu siralamayı degistirebilsin" />
-            <Toggle checked={config.allowUndo} onChange={(v) => updateConfig('allowUndo', v)} label="Geri Almaya Izin Ver" description="Tamamlanan islemi geri alabilsin" />
-            <Toggle checked={config.allowResequence} onChange={(v) => updateConfig('allowResequence', v)} label="Yeniden Siralama" description="Durak sirasini degistirebilsin" />
+            <Toggle checked={config.allowReject} onChange={(v) => updateConfig('allowReject', v)} label="Reddetmeye İzin Ver" description="Sürücü siparişi reddedebilsin" />
+            <Toggle checked={config.allowOverrideSchedule} onChange={(v) => updateConfig('allowOverrideSchedule', v)} label="Program Değişikliğine İzin Ver" description="Sürücü sıralamayı değiştirebilsin" />
+            <Toggle checked={config.allowUndo} onChange={(v) => updateConfig('allowUndo', v)} label="Geri Almaya İzin Ver" description="Tamamlanan işlemi geri alabilsin" />
+            <Toggle checked={config.allowResequence} onChange={(v) => updateConfig('allowResequence', v)} label="Yeniden Sıralama" description="Durak sirasini değiştirebilsin" />
             <Toggle checked={config.allowAddBreak} onChange={(v) => updateConfig('allowAddBreak', v)} label="Mola Ekleme" description="Rota arasina mola ekleyebilsin" />
           </div>
         </div>
@@ -196,9 +196,9 @@ export default function DriverAppConfigPage() {
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
             <Eye className="w-5 h-5 text-orange-500" />
-            <h3 className="text-[15px] font-semibold text-slate-800">Siparis Detay Alanlari</h3>
+            <h3 className="text-[15px] font-semibold text-slate-800">Sipariş Detay Alanları</h3>
           </div>
-          <p className="text-[12px] text-slate-400 mb-4">Surukleyerek siralayin, toggle ile gorunurlugu ayarlayin</p>
+          <p className="text-[12px] text-slate-400 mb-4">Surukleyerek siralayin, toggle ile gorunurlugu ayarlayın</p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={config.fields.map(f => f.id)} strategy={verticalListSortingStrategy}>
               <div className="space-y-2">
@@ -215,9 +215,9 @@ export default function DriverAppConfigPage() {
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
             <div className="flex items-center gap-2 mb-5">
               <Eye className="w-5 h-5 text-orange-500" />
-              <h3 className="text-[15px] font-semibold text-slate-800">Gorsel Ayarlari</h3>
+              <h3 className="text-[15px] font-semibold text-slate-800">Görsel Ayarları</h3>
             </div>
-            <Toggle checked={config.allowGalleryImages} onChange={(v) => updateConfig('allowGalleryImages', v)} label="Galeriden Gorsel Secimi" description="Kamera yerine galeriden gorsel secebilsin" />
+            <Toggle checked={config.allowGalleryImages} onChange={(v) => updateConfig('allowGalleryImages', v)} label="Galeriden Görsel Seçimi" description="Kamera yerine galeriden görsel seçebilsin" />
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
@@ -228,7 +228,7 @@ export default function DriverAppConfigPage() {
             <div className="space-y-3">
               <Toggle checked={config.barcodeScanOnPickup} onChange={(v) => updateConfig('barcodeScanOnPickup', v)} label="Toplamada Barkod Tara" />
               <Toggle checked={config.barcodeScanOnDelivery} onChange={(v) => updateConfig('barcodeScanOnDelivery', v)} label="Teslimatta Barkod Tara" />
-              <Toggle checked={config.barcodeValidation} onChange={(v) => updateConfig('barcodeValidation', v)} label="Barkod Dogrulama" description="Barkod siparis ile eslesmeli" />
+              <Toggle checked={config.barcodeValidation} onChange={(v) => updateConfig('barcodeValidation', v)} label="Barkod Doğrulama" description="Barkod sipariş ile eşleşmeli" />
               <Toggle checked={config.barcodeAutoComplete} onChange={(v) => updateConfig('barcodeAutoComplete', v)} label="Otomatik Tamamla" description="Barkod sonrasi otomatik ilerle" />
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function DriverAppConfigPage() {
       {/* Actions */}
       <div className="flex justify-between">
         <button onClick={handleRestore} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">
-          <RotateCcw className="w-4 h-4" /> Varsayilanlari Yukle
+          <RotateCcw className="w-4 h-4" /> Varsayılanlari Yukle
         </button>
         <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Save className="w-4 h-4" /> Kaydet

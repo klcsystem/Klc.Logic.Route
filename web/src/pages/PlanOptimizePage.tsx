@@ -116,7 +116,7 @@ export default function PlanOptimizePage() {
         setOrders(res.data.items || [])
       }
     } catch {
-      toast('error', 'Siparisler yuklenemedi')
+      toast('error', 'Siparişler yüklenemedi')
     } finally {
       setIsLoadingOrders(false)
     }
@@ -183,7 +183,7 @@ export default function PlanOptimizePage() {
   const handlePlanRoutes = async () => {
     const activeVehicles = vehicles.filter(v => selectedDrivers.has(v.id) && v.available)
     if (activeVehicles.length === 0) {
-      toast('warning', 'En az 1 surucu secmelisiniz')
+      toast('warning', 'En az 1 sürücü seçmelisiniz')
       return
     }
     const stopsToOptimize = pendingOrders
@@ -199,7 +199,7 @@ export default function PlanOptimizePage() {
       }))
 
     if (stopsToOptimize.length === 0) {
-      toast('warning', 'Optimize edilecek koordinatli siparis yok')
+      toast('warning', 'Optimize edilecek koordinatli sipariş yok')
       return
     }
 
@@ -214,10 +214,10 @@ export default function PlanOptimizePage() {
       })
       if (res.success && res.data) {
         setSolution(res.data)
-        toast('success', `${res.data.routes.length} rota olusturuldu!`)
+        toast('success', `${res.data.routes.length} rota oluşturuldu!`)
         setBottomTab('routes')
       } else {
-        toast('error', res.message || 'Optimizasyon basarisiz')
+        toast('error', res.message || 'Optimizasyon başarısız')
       }
     } catch (err: unknown) {
       toast('error', err instanceof Error ? err.message : 'Optimizasyon hatasi')
@@ -254,7 +254,7 @@ export default function PlanOptimizePage() {
   // Delete checked orders
   const handleDeleteChecked = () => {
     if (checkedOrderIds.size === 0) return
-    toast('info', `${checkedOrderIds.size} siparis silme islemi henuz API desteklemiyor`)
+    toast('info', `${checkedOrderIds.size} sipariş silme işlemi henüz API desteklemiyor`)
   }
 
   // Unschedule checked
@@ -262,7 +262,7 @@ export default function PlanOptimizePage() {
     for (const id of checkedOrderIds) {
       try { await ordersApi.updateStatus(id, 'Pending') } catch { /* skip */ }
     }
-    toast('success', `${checkedOrderIds.size} siparis planlamadan cikarildi`)
+    toast('success', `${checkedOrderIds.size} sipariş planlamadan çıkarıldı`)
     setCheckedOrderIds(new Set())
     loadOrders()
   }
@@ -349,10 +349,10 @@ export default function PlanOptimizePage() {
           </div>
 
           <button
-            onClick={() => toast('info', 'Import modal henuz eklenmedi')}
+            onClick={() => toast('info', 'Import modal henüz eklenmedi')}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-colors"
           >
-            <Upload className="w-3.5 h-3.5" /> Siparis Aktar
+            <Upload className="w-3.5 h-3.5" /> Sipariş Aktar
           </button>
 
           <button
@@ -380,7 +380,7 @@ export default function PlanOptimizePage() {
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-slate-500" />
-                <span className="text-[13px] font-semibold text-slate-700">Suruculer</span>
+                <span className="text-[13px] font-semibold text-slate-700">Sürücüler</span>
               </div>
               <button
                 onClick={() => setHideDrivers(true)}
@@ -393,7 +393,7 @@ export default function PlanOptimizePage() {
 
             <div className="px-4 py-2 border-b border-slate-50">
               <span className="text-[11px] text-slate-400">
-                {selectedDrivers.size} surucu secili
+                {selectedDrivers.size} sürücü seçili
               </span>
             </div>
 
@@ -403,7 +403,7 @@ export default function PlanOptimizePage() {
                   <Loader2 className="w-5 h-5 animate-spin text-slate-300" />
                 </div>
               ) : vehicles.length === 0 ? (
-                <div className="text-center py-8 text-[12px] text-slate-400">Surucu bulunamadi</div>
+                <div className="text-center py-8 text-[12px] text-slate-400">Sürücü bulunamadı</div>
               ) : (
                 vehicles.map((v, idx) => {
                   const color = ROUTE_COLORS[idx % ROUTE_COLORS.length]
@@ -426,7 +426,7 @@ export default function PlanOptimizePage() {
                       <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
                       <div className="min-w-0 flex-1">
                         <div className="text-[12px] font-medium text-slate-700 truncate">
-                          Surucu {idx + 1}
+                          Sürücü {idx + 1}
                         </div>
                         <div className="text-[10px] text-slate-400 truncate">{v.plateNumber}</div>
                       </div>
@@ -456,7 +456,7 @@ export default function PlanOptimizePage() {
           <button
             onClick={() => setHideDrivers(false)}
             className="shrink-0 w-8 bg-white border-r border-slate-200/60 flex items-center justify-center hover:bg-slate-50 transition-colors"
-            title="Surculeri Goster"
+            title="Surculeri Göster"
           >
             <Eye className="w-4 h-4 text-slate-400" />
           </button>
@@ -525,7 +525,7 @@ export default function PlanOptimizePage() {
                             <p className="font-bold text-[12px]">{stop.address}</p>
                             <p className="text-gray-500 mt-0.5">Arac: {route.plateNumber}</p>
                             <p className="text-gray-500">Sira: #{stop.sequence}</p>
-                            <p className="text-gray-500">Varis: {stop.arrivalTime}</p>
+                            <p className="text-gray-500">Varış: {stop.arrivalTime}</p>
                           </div>
                         </Popup>
                       </Marker>
@@ -555,7 +555,7 @@ export default function PlanOptimizePage() {
             <div className="flex items-center justify-between px-4 border-b border-slate-100">
               <div className="flex">
                 {([
-                  { key: 'orders' as const, label: 'Siparisler', icon: Package, count: orders.length },
+                  { key: 'orders' as const, label: 'Siparişler', icon: Package, count: orders.length },
                   { key: 'routes' as const, label: 'Rotalar', icon: Route, count: routeCount },
                   { key: 'timeline' as const, label: 'Zaman Cizelgesi', icon: Clock, count: undefined },
                 ]).map(tab => (
@@ -584,7 +584,7 @@ export default function PlanOptimizePage() {
               {/* Actions */}
               {bottomTab === 'orders' && checkedOrderIds.size > 0 && (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => toast('info', 'Kopyalama henuz eklenmedi')} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="Kopyala">
+                  <button onClick={() => toast('info', 'Kopyalama henüz eklenmedi')} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600" title="Kopyala">
                     <Copy className="w-3.5 h-3.5" />
                   </button>
                   <button onClick={handleUnscheduleChecked} className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-600" title="Planlamadan Cikar">
@@ -593,13 +593,13 @@ export default function PlanOptimizePage() {
                   <button onClick={handleDeleteChecked} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600" title="Sil">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-[11px] text-slate-400 ml-1">{checkedOrderIds.size} secili</span>
+                  <span className="text-[11px] text-slate-400 ml-1">{checkedOrderIds.size} seçili</span>
                 </div>
               )}
 
               {bottomTab === 'orders' && (
                 <button
-                  onClick={() => toast('info', 'Yeni siparis ekleme OrdersPage uzerinden yapilabilir')}
+                  onClick={() => toast('info', 'Yeni sipariş ekleme OrdersPage üzerinden yapılabilir')}
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-orange-500 hover:bg-orange-50 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Ekle
@@ -622,13 +622,13 @@ export default function PlanOptimizePage() {
                           className="w-3 h-3 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20"
                         />
                       </th>
-                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Siparis No</th>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sipariş No</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Oncelik</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Konum</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Adres</th>
                       <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sure</th>
                       <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Zaman Araligi</th>
-                      <th className="text-center px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Atanan Surucu</th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Atanan Sürücü</th>
                       <th className="text-center px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Durak #</th>
                     </tr>
                   </thead>
@@ -670,7 +670,7 @@ export default function PlanOptimizePage() {
                       )
                     })}
                     {orders.length === 0 && !isLoadingOrders && (
-                      <tr><td colSpan={9} className="px-6 py-8 text-center text-[13px] text-slate-400">Siparis bulunamadi</td></tr>
+                      <tr><td colSpan={9} className="px-6 py-8 text-center text-[13px] text-slate-400">Sipariş bulunamadı</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -682,14 +682,14 @@ export default function PlanOptimizePage() {
                   {!solution ? (
                     <div className="flex items-center justify-center py-12 text-[13px] text-slate-400">
                       <MapPin className="w-5 h-5 mr-2 text-slate-300" />
-                      Henuz rota planlanmadi - yukaridaki "Rotalari Planla" butonunu kullanin
+                      Henüz rota planlanmadı - yukaridaki "Rotalari Planla" butonunu kullanin
                     </div>
                   ) : (
                     <table className="w-full text-[12px]">
                       <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-100">
                           <th className="w-8 px-2 py-2"></th>
-                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Surucu / Arac</th>
+                          <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sürücü / Arac</th>
                           <th className="text-left px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Teslimat Durumu</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Mesafe</th>
                           <th className="text-right px-3 py-2 font-semibold text-slate-400 uppercase text-[10px]">Sure</th>
@@ -714,12 +714,12 @@ export default function PlanOptimizePage() {
                               </td>
                               <td className="px-3 py-3">
                                 <div className="text-slate-700 font-medium">{ri + 1}. {route.plateNumber}</div>
-                                <div className="text-[10px] text-slate-400 mt-0.5">Surucu {ri + 1}</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">Sürücü {ri + 1}</div>
                               </td>
                               <td className="px-3 py-3 min-w-[220px]">
                                 {/* Completion text */}
                                 <div className="flex items-center justify-between mb-1.5">
-                                  <span className="text-[11px] text-slate-500">{completed}/{totalStops} durak tamamlandi</span>
+                                  <span className="text-[11px] text-slate-500">{completed}/{totalStops} durak tamamlandı</span>
                                   <span className="text-[11px] font-semibold" style={{ color }}>{completionPct}%</span>
                                 </div>
                                 {/* Progress bar gradient */}

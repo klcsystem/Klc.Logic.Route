@@ -63,10 +63,10 @@ export default function OptimizationPresetsPage() {
     try {
       if (isNew) {
         await api.post('/optimization-presets', editing)
-        toast('success', 'Preset olusturuldu')
+        toast('success', 'Preset oluşturuldu')
       } else {
         await api.put(`/optimization-presets/${editing.id}`, editing)
-        toast('success', 'Preset guncellendi')
+        toast('success', 'Preset güncellendi')
       }
       setEditing(null)
       setIsNew(false)
@@ -110,8 +110,8 @@ export default function OptimizationPresetsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Optimizasyon Ayarlari</h1>
-          <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu icin tekrar kullanilabilir ayar sablonlari</p>
+          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Optimizasyon Ayarları</h1>
+          <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu için tekrar kullanilabilir ayar sablonlari</p>
         </div>
         <button onClick={startNew} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
           <Plus className="w-4 h-4" /> Yeni Preset
@@ -147,7 +147,7 @@ export default function OptimizationPresetsPage() {
           </div>
         ))}
         {presets.length === 0 && (
-          <div className="text-center py-12 text-slate-400 text-[14px]">Henuz preset tanimlanmadi</div>
+          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz preset tanimlanmadi</div>
         )}
       </div>
 
@@ -156,7 +156,7 @@ export default function OptimizationPresetsPage() {
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto py-8">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[16px] font-semibold text-slate-800">{isNew ? 'Yeni Preset' : 'Preset Duzenle'}</h3>
+              <h3 className="text-[16px] font-semibold text-slate-800">{isNew ? 'Yeni Preset' : 'Preset Düzenle'}</h3>
               <button onClick={() => { setEditing(null); setIsNew(false) }} className="p-1 rounded-lg hover:bg-slate-100"><X className="w-4 h-4" /></button>
             </div>
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
@@ -166,7 +166,7 @@ export default function OptimizationPresetsPage() {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-slate-500 mb-1">Aciklama</label>
+                <label className="block text-[12px] font-medium text-slate-500 mb-1">Açıklama</label>
                 <input value={editing.description} onChange={e => updateField('description', e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
               </div>
@@ -256,7 +256,7 @@ export default function OptimizationPresetsPage() {
                 <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
                   <input type="checkbox" checked={editing.allowOvernight} onChange={e => updateField('allowOvernight', e.target.checked)}
                     className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400" />
-                  <span className="text-[13px] font-medium text-slate-700">Gece Rotasina Izin Ver</span>
+                  <span className="text-[13px] font-medium text-slate-700">Gece Rotasina İzin Ver</span>
                 </label>
                 <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
                   <input type="checkbox" checked={editing.balanceWorkload} onChange={e => updateField('balanceWorkload', e.target.checked)}
@@ -267,7 +267,7 @@ export default function OptimizationPresetsPage() {
               <label className="flex items-center gap-2 p-3 rounded-xl bg-orange-50 border border-orange-100 cursor-pointer">
                 <input type="checkbox" checked={editing.isDefault} onChange={e => updateField('isDefault', e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400" />
-                <span className="text-[13px] font-medium text-slate-700">Varsayilan Preset</span>
+                <span className="text-[13px] font-medium text-slate-700">Varsayılan Preset</span>
               </label>
             </div>
             <div className="flex justify-end mt-5">

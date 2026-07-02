@@ -49,7 +49,7 @@ export default function ReturnsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Iade Yonetimi</h1>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Iade Yönetimi</h1>
         <p className="text-[14px] text-slate-400 mt-1">Iade talepleri ve ters lojistik sureclerini yonetin</p>
       </div>
 
@@ -65,8 +65,8 @@ export default function ReturnsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Siparis No</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Musteri</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sipariş No</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Müşteri</th>
                 <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sebep</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adet</th>
                 <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Iade Tutari</th>
@@ -89,7 +89,7 @@ export default function ReturnsPage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{r.pickupDate || '—'}</td>
                 </tr>
               ))}
-              {!isLoading && returns.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</td></tr>}
+              {!isLoading && returns.length === 0 && <tr><td colSpan={8} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
             </tbody>
           </table>
         </div>

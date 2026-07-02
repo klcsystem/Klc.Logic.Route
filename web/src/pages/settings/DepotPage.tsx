@@ -53,11 +53,11 @@ export default function DepotPage() {
             address: r.display_name,
           })
         } else {
-          toast('error', 'Adres bulunamadi')
+          toast('error', 'Adres bulunamadı')
         }
       })
       .catch(() => {
-        toast('error', 'Arama sirasinda hata olustu')
+        toast('error', 'Arama sırasında hata oluştu')
       })
   }
 
@@ -70,7 +70,7 @@ export default function DepotPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Depo / Ana Konum</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu icin baslangic noktasi</p>
+        <p className="text-[14px] text-slate-400 mt-1">Rota optimizasyonu için baslangic noktasi</p>
       </div>
 
       {/* Search */}

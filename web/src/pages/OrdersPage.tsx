@@ -91,7 +91,7 @@ export default function OrdersPage() {
         <div className="flex items-center gap-3">
           {checkedIds.size > 1 && (
             <button onClick={handleBulkRoute} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[13px] font-semibold hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/20 transition-all">
-              <Route className="w-4 h-4" /> {checkedIds.size} Siparis Rota Optimize Et
+              <Route className="w-4 h-4" /> {checkedIds.size} Sipariş Rota Optimize Et
             </button>
           )}
           <button onClick={handleSyncErp} disabled={isSyncing} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors">
@@ -191,13 +191,13 @@ export default function OrdersPage() {
             </div>
             {selectedOrder.lines.length > 0 && (
               <div>
-                <h4 className="text-[13px] font-semibold text-slate-700 mb-3">Siparis Kalemleri</h4>
+                <h4 className="text-[13px] font-semibold text-slate-700 mb-3">Sipariş Kalemleri</h4>
                 <div className="border border-slate-200 rounded-xl overflow-hidden">
                   <table className="w-full">
                     <thead><tr className="bg-slate-50 border-b border-slate-200">
                       <th className="text-left px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Urun</th>
                       <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Adet</th>
-                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Agirlik</th>
+                      <th className="text-right px-4 py-2 text-[11px] font-semibold text-slate-400 uppercase">Ağırlık</th>
                     </tr></thead>
                     <tbody>{selectedOrder.lines.map((line) => (
                       <tr key={line.id} className="border-b border-slate-100 last:border-0">
@@ -225,7 +225,7 @@ export default function OrdersPage() {
       }>
         <div className="space-y-4">
           <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.orderNo}</label><input type="text" value={orderForm.orderNumber} onChange={(e) => setOrderForm({ ...orderForm, orderNumber: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="ORD-2024-0827" /></div>
-          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.customer}</label><input type="text" value={orderForm.customerName} onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Musteri adi" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">{t.orders.customer}</label><input type="text" value={orderForm.customerName} onChange={(e) => setOrderForm({ ...orderForm, customerName: e.target.value })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" placeholder="Müşteri adi" /></div>
 
           <div className="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
             <div className="flex items-center gap-2">

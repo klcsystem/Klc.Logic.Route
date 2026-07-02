@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Klc.LogicRoute.Application.DecisionEngine;
+using Klc.LogicRoute.Application.ML.Services;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
@@ -12,12 +13,13 @@ public class DecisionEngineServiceTests
     private readonly IContractRepository _contractRepo = Substitute.For<IContractRepository>();
     private readonly IProviderRepository _providerRepo = Substitute.For<IProviderRepository>();
     private readonly ICarrierPerformanceRepository _perfRepo = Substitute.For<ICarrierPerformanceRepository>();
+    private readonly IMLPredictionService _mlPredictionService = Substitute.For<IMLPredictionService>();
     private readonly DecisionEngineService _sut;
     private readonly Guid _tenantId = Guid.NewGuid();
 
     public DecisionEngineServiceTests()
     {
-        _sut = new DecisionEngineService(_contractRepo, _providerRepo, _perfRepo);
+        _sut = new DecisionEngineService(_contractRepo, _providerRepo, _perfRepo, _mlPredictionService);
     }
 
     private static Shipment CreateShipment(

@@ -19,7 +19,7 @@ const initialRows: PodRow[] = [
   { orderType: 'delivery', label: 'Teslimat', note: 'optional', noteRequired: false, signature: 'enabled', signatureRequired: true, photos: 'optional', photosRequired: false },
   { orderType: 'pickup', label: 'Toplama', note: 'optional', noteRequired: false, signature: 'optional', signatureRequired: false, photos: 'disabled', photosRequired: false },
   { orderType: 'task', label: 'Gorev', note: 'enabled', noteRequired: false, signature: 'disabled', signatureRequired: false, photos: 'disabled', photosRequired: false },
-  { orderType: 'failed', label: 'Basarisiz / Reddedildi', note: 'enabled', noteRequired: true, signature: 'disabled', signatureRequired: false, photos: 'optional', photosRequired: false },
+  { orderType: 'failed', label: 'Başarısız / Reddedildi', note: 'enabled', noteRequired: true, signature: 'disabled', signatureRequired: false, photos: 'optional', photosRequired: false },
 ]
 
 const statusOptions: { value: PodStatus; label: string }[] = [
@@ -56,14 +56,14 @@ export default function PodSettingsPage() {
   }
 
   const handleSave = () => {
-    toast('success', 'POD ayarlari kaydedildi')
+    toast('success', 'POD ayarları kaydedildi')
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Teslimat Kaniti (POD) Ayarlari</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Siparis tipine gore not, imza ve fotograf gereksinimlerini yapilandirin</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Teslimat Kaniti (POD) Ayarları</h1>
+        <p className="text-[14px] text-slate-400 mt-1">Sipariş tipine gore not, imza ve fotograf gereksinimlerini yapilandirin</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
@@ -76,7 +76,7 @@ export default function PodSettingsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-48">Siparis Tipi</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider w-48">Sipariş Tipi</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider" colSpan={2}>Not</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider" colSpan={2}>Imza</th>
                 <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider" colSpan={2}>Fotograf</th>

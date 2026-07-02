@@ -99,7 +99,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Sag Panel — Giris Formu */}
+      {/* Sag Panel — Giriş Formu */}
       <div className="flex-1 flex items-center justify-center px-6 relative">
         <div className="w-full max-w-[380px]">
           {/* Mobil logo */}

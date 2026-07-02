@@ -118,7 +118,7 @@ export default function PlannedVsActualPage() {
           <ArrowLeft className="w-4 h-4" /> Geri
         </button>
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-[14px]">
-          {error || 'Rapor bulunamadi'}
+          {error || 'Rapor bulunamadı'}
         </div>
       </div>
     )
@@ -134,7 +134,7 @@ export default function PlannedVsActualPage() {
           <ArrowLeft className="w-5 h-5 text-slate-500" />
         </button>
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Planlanan vs Gerceklesen</h1>
+          <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Planlanan vs Gerçeklesen</h1>
           <p className="text-[14px] text-slate-400 mt-0.5">{report.optimizationName} - {new Date(report.generatedAt).toLocaleDateString('tr-TR')}</p>
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function PlannedVsActualPage() {
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
-          label="Zamaninda Teslimat Orani"
+          label="Zamaninda Teslimat Oranı"
           value={`${report.onTimeDeliveryRate.toFixed(1)}%`}
           sub={`${report.onTimeCount} / ${report.plannedStopCount} durak`}
           color={report.onTimeDeliveryRate >= 90 ? 'text-green-600' : report.onTimeDeliveryRate >= 70 ? 'text-amber-600' : 'text-red-600'}
@@ -174,7 +174,7 @@ export default function PlannedVsActualPage() {
           </div>
           <div className="space-y-2 text-[13px]">
             <div className="flex justify-between"><span className="text-slate-500">Planlanan</span><span className="font-medium">{report.plannedTotalDistanceKm.toFixed(1)} km</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Gerceklesen</span><span className="font-medium">{report.actualTotalDistanceKm.toFixed(1)} km</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">Gerçeklesen</span><span className="font-medium">{report.actualTotalDistanceKm.toFixed(1)} km</span></div>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
@@ -184,7 +184,7 @@ export default function PlannedVsActualPage() {
           </div>
           <div className="space-y-2 text-[13px]">
             <div className="flex justify-between"><span className="text-slate-500">Planlanan</span><span className="font-medium">{formatMinutes(report.plannedTotalDurationMinutes)}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Gerceklesen</span><span className="font-medium">{formatMinutes(report.actualTotalDurationMinutes)}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">Gerçeklesen</span><span className="font-medium">{formatMinutes(report.actualTotalDurationMinutes)}</span></div>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-5">
@@ -203,7 +203,7 @@ export default function PlannedVsActualPage() {
       {/* Stops Table */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="text-[16px] font-semibold text-slate-800">Durak Detaylari</h2>
+          <h2 className="text-[16px] font-semibold text-slate-800">Durak Detayları</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-[13px]">
@@ -212,8 +212,8 @@ export default function PlannedVsActualPage() {
                 <th className="px-4 py-3 font-medium text-slate-500">#</th>
                 <th className="px-4 py-3 font-medium text-slate-500">Arac</th>
                 <th className="px-4 py-3 font-medium text-slate-500">Gonderi</th>
-                <th className="px-4 py-3 font-medium text-slate-500">Planlanan Varis</th>
-                <th className="px-4 py-3 font-medium text-slate-500">Gercek Varis</th>
+                <th className="px-4 py-3 font-medium text-slate-500">Planlanan Varış</th>
+                <th className="px-4 py-3 font-medium text-slate-500">Gerçek Varış</th>
                 <th className="px-4 py-3 font-medium text-slate-500">Gecikme</th>
                 <th className="px-4 py-3 font-medium text-slate-500">Durum</th>
               </tr>
@@ -243,7 +243,7 @@ export default function PlannedVsActualPage() {
                 ))
               )}
               {allStops.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Durak verisi bulunamadi</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400">Durak verisi bulunamadı</td></tr>
               )}
             </tbody>
           </table>

@@ -121,7 +121,7 @@ export default function MarketplacePage() {
                   <td className="px-6 py-3.5 text-center"><Badge variant={l.status === 'Available' ? 'success' : 'default'}>{l.status}</Badge></td>
                 </tr>
               ))}
-              {!isLoading && listings.length === 0 && <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</td></tr>}
+              {!isLoading && listings.length === 0 && <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
             </tbody>
           </table>
         </div>

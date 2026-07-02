@@ -57,10 +57,10 @@ export default function VehicleProfilesPage() {
     try {
       if (isNew) {
         await api.post('/vehicle-profiles', editing)
-        toast('success', 'Profil olusturuldu')
+        toast('success', 'Profil oluşturuldu')
       } else {
         await api.put(`/vehicle-profiles/${editing.id}`, editing)
-        toast('success', 'Profil guncellendi')
+        toast('success', 'Profil güncellendi')
       }
       setEditing(null)
       setIsNew(false)
@@ -85,7 +85,7 @@ export default function VehicleProfilesPage() {
     try {
       const ids = vehicleIdsText.split(',').map(s => s.trim()).filter(Boolean)
       await api.post(`/vehicle-profiles/${assignProfileId}/assign`, ids)
-      toast('success', 'Profil araclara atandi')
+      toast('success', 'Profil araclara atandı')
       setAssignProfileId(null)
       setVehicleIdsText('')
     } catch {
@@ -153,7 +153,7 @@ export default function VehicleProfilesPage() {
           </div>
         ))}
         {profiles.length === 0 && (
-          <div className="text-center py-12 text-slate-400 text-[14px]">Henuz profil tanimlanmadi</div>
+          <div className="text-center py-12 text-slate-400 text-[14px]">Henüz profil tanimlanmadi</div>
         )}
       </div>
 
@@ -187,7 +187,7 @@ export default function VehicleProfilesPage() {
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 overflow-y-auto py-8">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[16px] font-semibold text-slate-800">{isNew ? 'Yeni Profil' : 'Profil Duzenle'}</h3>
+              <h3 className="text-[16px] font-semibold text-slate-800">{isNew ? 'Yeni Profil' : 'Profil Düzenle'}</h3>
               <button onClick={() => { setEditing(null); setIsNew(false) }} className="p-1 rounded-lg hover:bg-slate-100"><X className="w-4 h-4" /></button>
             </div>
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
@@ -197,13 +197,13 @@ export default function VehicleProfilesPage() {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
               </div>
               <div>
-                <label className="block text-[12px] font-medium text-slate-500 mb-1">Aciklama</label>
+                <label className="block text-[12px] font-medium text-slate-500 mb-1">Açıklama</label>
                 <input value={editing.description} onChange={e => updateField('description', e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Maks Agirlik (kg)</label>
+                  <label className="block text-[12px] font-medium text-slate-500 mb-1">Maks Ağırlık (kg)</label>
                   <input type="number" value={editing.maxWeightKg} onChange={e => updateField('maxWeightKg', +e.target.value)}
                     className="w-full px-3 py-2 border border-slate-200 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400" />
                 </div>
@@ -262,7 +262,7 @@ export default function VehicleProfilesPage() {
               <label className="flex items-center gap-2 p-3 rounded-xl bg-orange-50 border border-orange-100 cursor-pointer">
                 <input type="checkbox" checked={editing.isDefault} onChange={e => updateField('isDefault', e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400" />
-                <span className="text-[13px] font-medium text-slate-700">Varsayilan Profil</span>
+                <span className="text-[13px] font-medium text-slate-700">Varsayılan Profil</span>
               </label>
             </div>
             <div className="flex justify-end mt-5">

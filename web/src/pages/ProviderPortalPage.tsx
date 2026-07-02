@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Truck, Package, CheckCircle2, Clock, MapPin, TrendingUp,
   ShoppingCart, TableProperties, Car, Users, Send, Plus, Trash2, Pencil,
-  DollarSign, Phone, Shield,
+  DollarSign, Phone, Shield, Loader2,
 } from 'lucide-react'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
 import StatCard from '../components/ui/StatCard'
+import { toast } from '../components/ui/Toast'
+import { providerPortalApi } from '../api/providerPortal'
+import type {
+  PortalOrder, PortalVehicle, PortalDriver, PortalShipment,
+  PortalStats, TariffRow, PortalUser,
+} from '../api/providerPortal'
 
 // ── Shared styles ──
 const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white'
@@ -26,63 +32,6 @@ const tabs = [
   { key: 'users', label: 'Kullanıcılar', icon: Shield },
 ] as const
 type TabKey = typeof tabs[number]['key']
-
-// ── Mock: Incoming Orders ──
-const mockIncomingOrders = [
-  { id: 'o1', number: 'ORD-2026-1041', route: 'İstanbul → Ankara', weight: '18.5 ton', vehicleType: 'Tır', customer: 'Çatom A.Ş.', requestDate: '2026-04-28', status: 'open' },
-  { id: 'o2', number: 'ORD-2026-1042', route: 'Bursa → Konya', weight: '8.4 ton', vehicleType: 'Kamyon', customer: 'ABC Gıda', requestDate: '2026-04-28', status: 'open' },
-  { id: 'o3', number: 'ORD-2026-1043', route: 'İzmir → Antalya', weight: '22.0 ton', vehicleType: 'Tır', customer: 'Defne Lojistik', requestDate: '2026-04-29', status: 'open' },
-  { id: 'o4', number: 'ORD-2026-1044', route: 'Ankara → Samsun', weight: '5.2 ton', vehicleType: 'Kamyonet', customer: 'Çatom A.Ş.', requestDate: '2026-04-29', status: 'bid_sent' },
-  { id: 'o5', number: 'ORD-2026-1045', route: 'Eskişehir → İstanbul', weight: '14.0 ton', vehicleType: 'Kamyon', customer: 'Yıldız Holding', requestDate: '2026-04-29', status: 'open' },
-  { id: 'o6', number: 'ORD-2026-1046', route: 'Mersin → Gaziantep', weight: '26.0 ton', vehicleType: 'Tır', customer: 'Güney Nakliyat', requestDate: '2026-04-30', status: 'open' },
-]
-
-// ── Mock: Tariff (km-based) ──
-const defaultTariffRows = [
-  { kmFrom: 1, kmTo: 12, price: 5.41 },
-  { kmFrom: 13, kmTo: 15, price: 5.55 },
-  { kmFrom: 16, kmTo: 18, price: 5.72 },
-  { kmFrom: 19, kmTo: 20, price: 5.89 },
-  { kmFrom: 21, kmTo: 22, price: 6.10 },
-  { kmFrom: 23, kmTo: 25, price: 6.48 },
-  { kmFrom: 26, kmTo: 30, price: 7.25 },
-  { kmFrom: 31, kmTo: 40, price: 7.85 },
-  { kmFrom: 41, kmTo: 50, price: 8.42 },
-  { kmFrom: 51, kmTo: 999, price: 9.10 },
-]
-
-// ── Mock: Vehicles ──
-const mockVehicles = [
-  { id: 'v1', plate: '34 MRT 105', type: 'Tır', body: 'Tenteli', tonnage: 25, insuranceEnd: '2026-08-15' },
-  { id: 'v2', plate: '34 MRT 106', type: 'Kamyon', body: 'Kapalı Kasa', tonnage: 12, insuranceEnd: '2026-11-20' },
-  { id: 'v3', plate: '34 MRT 107', type: 'Kamyonet', body: 'Açık Kasa', tonnage: 3.5, insuranceEnd: '2027-01-10' },
-  { id: 'v4', plate: '16 MRT 201', type: 'Tır', body: 'Frigorifik', tonnage: 24, insuranceEnd: '2026-06-30' },
-  { id: 'v5', plate: '34 MRT 108', type: 'Kamyon', body: 'Tenteli', tonnage: 10, insuranceEnd: '2026-12-05' },
-]
-
-// ── Mock: Drivers ──
-const mockDrivers = [
-  { id: 'd1', name: 'Ahmet Yılmaz', phone: '0532 111 22 33', licenseNo: 'B-2019-45678', licenseEnd: '2028-03-15' },
-  { id: 'd2', name: 'Mehmet Kaya', phone: '0533 222 33 44', licenseNo: 'B-2020-12345', licenseEnd: '2027-09-01' },
-  { id: 'd3', name: 'Hasan Demir', phone: '0535 333 44 55', licenseNo: 'B-2018-98765', licenseEnd: '2027-12-20' },
-  { id: 'd4', name: 'Ali Çelik', phone: '0536 444 55 66', licenseNo: 'B-2021-55555', licenseEnd: '2029-06-10' },
-]
-
-// ── Mock: Assigned Shipments ──
-const mockAssignedShipments = [
-  { id: 's1', number: 'SHP-2026-0412', route: 'İstanbul → Ankara', weight: '18.5 ton', vehicle: 'Tır', assignedDate: '2026-04-29', status: 'InTransit', driverName: 'Ahmet Yılmaz', plate: '34 MRT 105' },
-  { id: 's2', number: 'SHP-2026-0415', route: 'Bursa → Konya', weight: '8.4 ton', vehicle: 'Kamyon', assignedDate: '2026-04-30', status: 'Loading', driverName: 'Mehmet Kaya', plate: '34 MRT 106' },
-  { id: 's3', number: 'SHP-2026-0418', route: 'İzmir → Antalya', weight: '22.0 ton', vehicle: 'Tır', assignedDate: '2026-04-30', status: 'PendingPickup', driverName: null, plate: null },
-  { id: 's4', number: 'SHP-2026-0410', route: 'Ankara → İstanbul', weight: '12.0 ton', vehicle: 'Kamyon', assignedDate: '2026-04-28', status: 'Delivered', driverName: 'Ahmet Yılmaz', plate: '34 MRT 105' },
-]
-
-// ── Mock: Provider Users ──
-const mockProviderUsers = [
-  { id: 'u1', name: 'Murat Öztürk', email: 'murat@muratlojistik.com', role: 'ProviderAdmin', active: true },
-  { id: 'u2', name: 'Ahmet Yılmaz', email: 'ahmet@muratlojistik.com', role: 'ProviderDriver', active: true },
-  { id: 'u3', name: 'Zeynep Koç', email: 'zeynep@muratlojistik.com', role: 'ProviderDispatcher', active: true },
-  { id: 'u4', name: 'Emre Şahin', email: 'emre@muratlojistik.com', role: 'ProviderDriver', active: false },
-]
 
 const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'orange'> = {
   PendingPickup: 'warning', Loading: 'info', InTransit: 'orange', Delivered: 'success',
@@ -106,32 +55,288 @@ const vehicleTypes = ['Tır', 'Kamyon', 'Kamyonet'] as const
 
 export default function ProviderPortalPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('orders')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  // Data states
+  const [stats, setStats] = useState<PortalStats | null>(null)
+  const [orders, setOrders] = useState<PortalOrder[]>([])
+  const [tariffRows, setTariffRows] = useState<TariffRow[]>([])
+  const [vehicles, setVehicles] = useState<PortalVehicle[]>([])
+  const [drivers, setDrivers] = useState<PortalDriver[]>([])
+  const [shipments, setShipments] = useState<PortalShipment[]>([])
+  const [portalUsers, setPortalUsers] = useState<PortalUser[]>([])
 
   // Drawer states
   const [bidDrawerOpen, setBidDrawerOpen] = useState(false)
-  const [selectedOrder, setSelectedOrder] = useState<typeof mockIncomingOrders[0] | null>(null)
+  const [selectedOrder, setSelectedOrder] = useState<PortalOrder | null>(null)
   const [bidForm, setBidForm] = useState({ price: '', estimatedHours: '', vehicleType: 'Tır', note: '' })
 
   const [tariffDrawerOpen, setTariffDrawerOpen] = useState(false)
   const [tariffVehicle, setTariffVehicle] = useState<string>('Tır')
-  const [editTariffRows, setEditTariffRows] = useState([...defaultTariffRows])
+  const [editTariffRows, setEditTariffRows] = useState<TariffRow[]>([])
 
   const [vehicleDrawerOpen, setVehicleDrawerOpen] = useState(false)
+  const [editingVehicleId, setEditingVehicleId] = useState<string | null>(null)
   const [vehicleForm, setVehicleForm] = useState({ plate: '', type: 'Tır', body: '', tonnage: '', insuranceEnd: '' })
 
   const [driverDrawerOpen, setDriverDrawerOpen] = useState(false)
+  const [editingDriverId, setEditingDriverId] = useState<string | null>(null)
   const [driverForm, setDriverForm] = useState({ name: '', phone: '', licenseNo: '', licenseEnd: '' })
 
   const [shipmentDrawerOpen, setShipmentDrawerOpen] = useState(false)
-  const [selectedShipment, setSelectedShipment] = useState<typeof mockAssignedShipments[0] | null>(null)
+  const [selectedShipment, setSelectedShipment] = useState<PortalShipment | null>(null)
   const [updateForm, setUpdateForm] = useState({ status: 'Loading', note: '', latitude: '', longitude: '' })
 
   const [userDrawerOpen, setUserDrawerOpen] = useState(false)
+  const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [userForm, setUserForm] = useState({ name: '', email: '', role: 'ProviderDriver' })
 
+  // ── Fetch functions ──
+  const fetchStats = async () => {
+    try {
+      const res = await providerPortalApi.getStats()
+      setStats(res.data || null)
+    } catch { /* stats are non-critical */ }
+  }
+
+  const fetchOrders = async () => {
+    try {
+      const res = await providerPortalApi.getOrders()
+      setOrders(res.data || [])
+    } catch {
+      toast('error', 'Siparişler yüklenemedi')
+    }
+  }
+
+  const fetchTariff = async (vt?: string) => {
+    try {
+      const res = await providerPortalApi.getTariff(vt || tariffVehicle)
+      setTariffRows(res.data || [])
+    } catch { /* non-critical */ }
+  }
+
+  const fetchVehicles = async () => {
+    try {
+      const res = await providerPortalApi.getVehicles()
+      setVehicles(res.data || [])
+    } catch {
+      toast('error', 'Araclar yüklenemedi')
+    }
+  }
+
+  const fetchDrivers = async () => {
+    try {
+      const res = await providerPortalApi.getDrivers()
+      setDrivers(res.data || [])
+    } catch {
+      toast('error', 'Soforler yüklenemedi')
+    }
+  }
+
+  const fetchShipments = async () => {
+    try {
+      const res = await providerPortalApi.getShipments()
+      setShipments(res.data || [])
+    } catch {
+      toast('error', 'Sevkiyatlar yüklenemedi')
+    }
+  }
+
+  const fetchUsers = async () => {
+    try {
+      const res = await providerPortalApi.getUsers()
+      setPortalUsers(res.data || [])
+    } catch {
+      toast('error', 'Kullanicilar yüklenemedi')
+    }
+  }
+
+  useEffect(() => {
+    Promise.all([fetchStats(), fetchOrders(), fetchTariff(), fetchVehicles(), fetchDrivers(), fetchShipments(), fetchUsers()])
+      .finally(() => setLoading(false))
+  }, [])
+
+  // ── Handlers ──
+  const handleSubmitBid = async () => {
+    if (!selectedOrder || !bidForm.price) {
+      toast('error', 'Fiyat zorunludur')
+      return
+    }
+    setSaving(true)
+    try {
+      await providerPortalApi.submitBid(selectedOrder.id, {
+        price: Number(bidForm.price),
+        estimatedHours: Number(bidForm.estimatedHours),
+        vehicleType: bidForm.vehicleType,
+        note: bidForm.note || undefined,
+      })
+      toast('success', 'Teklif gönderildi')
+      setBidDrawerOpen(false)
+      fetchOrders()
+      fetchStats()
+    } catch {
+      toast('error', 'Teklif gonderilemedi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSaveTariff = async () => {
+    setSaving(true)
+    try {
+      await providerPortalApi.saveTariff(tariffVehicle, editTariffRows)
+      toast('success', 'Tarife kaydedildi')
+      setTariffDrawerOpen(false)
+      fetchTariff()
+    } catch {
+      toast('error', 'Tarife kaydedilemedi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleTariffVehicleChange = (vt: string) => {
+    setTariffVehicle(vt)
+    fetchTariff(vt)
+  }
+
+  const handleSaveVehicle = async () => {
+    if (!vehicleForm.plate) {
+      toast('error', 'Plaka zorunludur')
+      return
+    }
+    setSaving(true)
+    try {
+      const payload = { plate: vehicleForm.plate, type: vehicleForm.type, body: vehicleForm.body, tonnage: Number(vehicleForm.tonnage), insuranceEnd: vehicleForm.insuranceEnd }
+      if (editingVehicleId) {
+        await providerPortalApi.updateVehicle(editingVehicleId, payload)
+        toast('success', 'Araç güncellendi')
+      } else {
+        await providerPortalApi.createVehicle(payload)
+        toast('success', 'Araç eklendi')
+      }
+      setVehicleDrawerOpen(false)
+      setEditingVehicleId(null)
+      fetchVehicles()
+    } catch {
+      toast('error', 'Kaydetme hatasi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteVehicle = async (id: string) => {
+    try {
+      await providerPortalApi.deleteVehicle(id)
+      toast('success', 'Araç silindi')
+      fetchVehicles()
+    } catch {
+      toast('error', 'Silme hatasi')
+    }
+  }
+
+  const handleSaveDriver = async () => {
+    if (!driverForm.name) {
+      toast('error', 'Ad soyad zorunludur')
+      return
+    }
+    setSaving(true)
+    try {
+      if (editingDriverId) {
+        await providerPortalApi.updateDriver(editingDriverId, driverForm)
+        toast('success', 'Sofor güncellendi')
+      } else {
+        await providerPortalApi.createDriver(driverForm)
+        toast('success', 'Sofor eklendi')
+      }
+      setDriverDrawerOpen(false)
+      setEditingDriverId(null)
+      fetchDrivers()
+    } catch {
+      toast('error', 'Kaydetme hatasi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteDriver = async (id: string) => {
+    try {
+      await providerPortalApi.deleteDriver(id)
+      toast('success', 'Sofor silindi')
+      fetchDrivers()
+    } catch {
+      toast('error', 'Silme hatasi')
+    }
+  }
+
+  const handleUpdateShipment = async () => {
+    if (!selectedShipment) return
+    setSaving(true)
+    try {
+      await providerPortalApi.updateShipmentStatus(selectedShipment.id, {
+        status: updateForm.status,
+        note: updateForm.note || undefined,
+        latitude: updateForm.latitude ? Number(updateForm.latitude) : undefined,
+        longitude: updateForm.longitude ? Number(updateForm.longitude) : undefined,
+      })
+      toast('success', 'Sevkiyat güncellendi')
+      setShipmentDrawerOpen(false)
+      fetchShipments()
+      fetchStats()
+    } catch {
+      toast('error', 'Güncelleme hatasi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleSaveUser = async () => {
+    if (!userForm.name || !userForm.email) {
+      toast('error', 'Ad ve e-posta zorunludur')
+      return
+    }
+    setSaving(true)
+    try {
+      if (editingUserId) {
+        await providerPortalApi.updateUser(editingUserId, userForm)
+        toast('success', 'Kullanici güncellendi')
+      } else {
+        await providerPortalApi.createUser(userForm)
+        toast('success', 'Kullanici eklendi')
+      }
+      setUserDrawerOpen(false)
+      setEditingUserId(null)
+      fetchUsers()
+    } catch {
+      toast('error', 'Kaydetme hatasi')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteUser = async (id: string) => {
+    try {
+      await providerPortalApi.deleteUser(id)
+      toast('success', 'Kullanici silindi')
+      fetchUsers()
+    } catch {
+      toast('error', 'Silme hatasi')
+    }
+  }
+
+  // ── Derived values ──
   const providerName = 'Murat Lojistik'
-  const activeShipmentCount = mockAssignedShipments.filter(s => s.status !== 'Delivered').length
-  const pendingBidCount = mockIncomingOrders.filter(o => o.status === 'open').length
+  const activeShipmentCount = stats?.activeShipmentCount ?? shipments.filter(s => s.status !== 'Delivered').length
+  const pendingBidCount = stats?.pendingBidCount ?? orders.filter(o => o.status === 'open').length
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -145,8 +350,8 @@ export default function ProviderPortalPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Aktif Sevkiyat" value={String(activeShipmentCount)} change={1} icon={Truck} color="text-orange-600 bg-orange-50" />
         <StatCard label="Bekleyen Teklif" value={String(pendingBidCount)} change={3} icon={ShoppingCart} color="text-blue-600 bg-blue-50" />
-        <StatCard label="Zamanında Teslimat" value="%94.2" change={2} icon={TrendingUp} color="text-green-600 bg-green-50" />
-        <StatCard label="Bu Ay Gelir" value="₺284.500" change={8} icon={DollarSign} color="text-purple-600 bg-purple-50" />
+        <StatCard label="Zamanında Teslimat" value={stats ? `%${stats.onTimeDeliveryRate}` : '—'} change={2} icon={TrendingUp} color="text-green-600 bg-green-50" />
+        <StatCard label="Bu Ay Gelir" value={stats ? `₺${stats.monthlyRevenue.toLocaleString('tr-TR')}` : '—'} change={8} icon={DollarSign} color="text-purple-600 bg-purple-50" />
       </div>
 
       {/* ── Tab Bar ── */}
@@ -189,7 +394,9 @@ export default function ProviderPortalPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockIncomingOrders.map((o) => (
+                {orders.length === 0 ? (
+                  <tr><td colSpan={8} className="text-center py-12 text-[14px] text-slate-400">Gelen sipariş bulunamadı</td></tr>
+                ) : orders.map((o) => (
                   <tr key={o.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-semibold text-slate-800`}>{o.number}</td>
                     <td className={tdClass}>{o.customer}</td>
@@ -197,7 +404,7 @@ export default function ProviderPortalPage() {
                     <td className={`${tdClass} text-center text-slate-600`}>{o.weight}</td>
                     <td className={`${tdClass} text-center`}><Badge variant="default">{o.vehicleType}</Badge></td>
                     <td className={`${tdClass} text-center text-slate-500 text-[12px]`}>{o.requestDate}</td>
-                    <td className={`${tdClass} text-center`}><Badge variant={orderStatusVariant[o.status]}>{orderStatusLabels[o.status]}</Badge></td>
+                    <td className={`${tdClass} text-center`}><Badge variant={orderStatusVariant[o.status] || 'default'}>{orderStatusLabels[o.status] || o.status}</Badge></td>
                     <td className={`${tdClass} text-center`}>
                       {o.status === 'open' ? (
                         <button
@@ -233,7 +440,7 @@ export default function ProviderPortalPage() {
                 {vehicleTypes.map((vt) => (
                   <button
                     key={vt}
-                    onClick={() => setTariffVehicle(vt)}
+                    onClick={() => handleTariffVehicleChange(vt)}
                     className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
                       tariffVehicle === vt ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
                     }`}
@@ -243,7 +450,7 @@ export default function ProviderPortalPage() {
                 ))}
               </div>
               <button
-                onClick={() => { setEditTariffRows([...defaultTariffRows]); setTariffDrawerOpen(true) }}
+                onClick={() => { setEditTariffRows([...tariffRows]); setTariffDrawerOpen(true) }}
                 className={btnPrimary}
               >
                 <span className="flex items-center gap-1.5"><Pencil className="w-3.5 h-3.5" /> Tarife Düzenle</span>
@@ -259,7 +466,9 @@ export default function ProviderPortalPage() {
                 </tr>
               </thead>
               <tbody>
-                {defaultTariffRows.map((row, i) => (
+                {tariffRows.length === 0 ? (
+                  <tr><td colSpan={2} className="text-center py-12 text-[14px] text-slate-400">Tarife bulunamadı</td></tr>
+                ) : tariffRows.map((row, i) => (
                   <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-medium text-slate-800`}>
                       {row.kmTo === 999 ? `${row.kmFrom}+ km` : `${row.kmFrom} — ${row.kmTo} km`}
@@ -286,9 +495,9 @@ export default function ProviderPortalPage() {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h2 className="text-[15px] font-semibold text-slate-800">Araçlarım</h2>
-              <p className="text-[12px] text-slate-400 mt-0.5">{mockVehicles.length} kayıtlı araç</p>
+              <p className="text-[12px] text-slate-400 mt-0.5">{vehicles.length} kayıtlı araç</p>
             </div>
-            <button onClick={() => { setVehicleForm({ plate: '', type: 'Tır', body: '', tonnage: '', insuranceEnd: '' }); setVehicleDrawerOpen(true) }} className={btnPrimary}>
+            <button onClick={() => { setEditingVehicleId(null); setVehicleForm({ plate: '', type: 'Tır', body: '', tonnage: '', insuranceEnd: '' }); setVehicleDrawerOpen(true) }} className={btnPrimary}>
               <span className="flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Araç Ekle</span>
             </button>
           </div>
@@ -305,7 +514,9 @@ export default function ProviderPortalPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockVehicles.map((v) => {
+                {vehicles.length === 0 ? (
+                  <tr><td colSpan={6} className="text-center py-12 text-[14px] text-slate-400">Kayitli arac bulunamadı</td></tr>
+                ) : vehicles.map((v) => {
                   const insuranceExpired = new Date(v.insuranceEnd) < new Date()
                   return (
                     <tr key={v.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
@@ -317,7 +528,10 @@ export default function ProviderPortalPage() {
                         <Badge variant={insuranceExpired ? 'error' : 'success'}>{v.insuranceEnd}</Badge>
                       </td>
                       <td className={`${tdClass} text-center`}>
-                        <button className={btnSmallOrange}>Düzenle</button>
+                        <div className="flex items-center justify-center gap-1">
+                          <button onClick={() => { setEditingVehicleId(v.id); setVehicleForm({ plate: v.plate, type: v.type, body: v.body, tonnage: String(v.tonnage), insuranceEnd: v.insuranceEnd }); setVehicleDrawerOpen(true) }} className={btnSmallOrange}>Düzenle</button>
+                          <button onClick={() => handleDeleteVehicle(v.id)} className="px-3 py-1 rounded-lg text-[12px] font-medium text-red-500 hover:bg-red-50 transition-colors">Sil</button>
+                        </div>
                       </td>
                     </tr>
                   )
@@ -336,9 +550,9 @@ export default function ProviderPortalPage() {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h2 className="text-[15px] font-semibold text-slate-800">Şoförlerim</h2>
-              <p className="text-[12px] text-slate-400 mt-0.5">{mockDrivers.length} kayıtlı şoför</p>
+              <p className="text-[12px] text-slate-400 mt-0.5">{drivers.length} kayıtlı şoför</p>
             </div>
-            <button onClick={() => { setDriverForm({ name: '', phone: '', licenseNo: '', licenseEnd: '' }); setDriverDrawerOpen(true) }} className={btnPrimary}>
+            <button onClick={() => { setEditingDriverId(null); setDriverForm({ name: '', phone: '', licenseNo: '', licenseEnd: '' }); setDriverDrawerOpen(true) }} className={btnPrimary}>
               <span className="flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Şoför Ekle</span>
             </button>
           </div>
@@ -354,7 +568,9 @@ export default function ProviderPortalPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockDrivers.map((d) => (
+                {drivers.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kayitli sofor bulunamadı</td></tr>
+                ) : drivers.map((d) => (
                   <tr key={d.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-semibold text-slate-800`}>{d.name}</td>
                     <td className={tdClass}>
@@ -365,7 +581,10 @@ export default function ProviderPortalPage() {
                       <Badge variant={new Date(d.licenseEnd) < new Date() ? 'error' : 'success'}>{d.licenseEnd}</Badge>
                     </td>
                     <td className={`${tdClass} text-center`}>
-                      <button className={btnSmallOrange}>Düzenle</button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button onClick={() => { setEditingDriverId(d.id); setDriverForm({ name: d.name, phone: d.phone, licenseNo: d.licenseNo, licenseEnd: d.licenseEnd }); setDriverDrawerOpen(true) }} className={btnSmallOrange}>Düzenle</button>
+                        <button onClick={() => handleDeleteDriver(d.id)} className="px-3 py-1 rounded-lg text-[12px] font-medium text-red-500 hover:bg-red-50 transition-colors">Sil</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -381,9 +600,9 @@ export default function ProviderPortalPage() {
       {activeTab === 'shipments' && (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatCard label="Toplam Sevkiyat" value="48" change={5} icon={Package} color="text-blue-600 bg-blue-50" />
-            <StatCard label="Zamanında Teslimat" value="%94.2" change={2} icon={CheckCircle2} color="text-green-600 bg-green-50" />
-            <StatCard label="Ort. Teslimat Süresi" value="18 saat" change={-3} icon={Clock} color="text-purple-600 bg-purple-50" />
+            <StatCard label="Toplam Sevkiyat" value={stats ? String(stats.totalShipments) : String(shipments.length)} change={5} icon={Package} color="text-blue-600 bg-blue-50" />
+            <StatCard label="Zamanında Teslimat" value={stats ? `%${stats.onTimeDeliveryRate}` : '—'} change={2} icon={CheckCircle2} color="text-green-600 bg-green-50" />
+            <StatCard label="Ort. Teslimat Süresi" value={stats ? `${stats.avgDeliveryHours} saat` : '—'} change={-3} icon={Clock} color="text-purple-600 bg-purple-50" />
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
@@ -402,7 +621,9 @@ export default function ProviderPortalPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mockAssignedShipments.map((s) => (
+                  {shipments.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-12 text-[14px] text-slate-400">Atanmış sevkiyat bulunamadı</td></tr>
+                  ) : shipments.map((s) => (
                     <tr key={s.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                       <td className={`${tdClass} font-semibold text-slate-800`}>{s.number}</td>
                       <td className={tdClass}>{s.route}</td>
@@ -410,7 +631,7 @@ export default function ProviderPortalPage() {
                       <td className={`${tdClass} text-[12px] text-slate-500`}>
                         {s.driverName ? <span>{s.driverName} — {s.plate}</span> : <span className="text-amber-500">Atanmadı</span>}
                       </td>
-                      <td className={`${tdClass} text-center`}><Badge variant={statusVariant[s.status]}>{statusLabels[s.status]}</Badge></td>
+                      <td className={`${tdClass} text-center`}><Badge variant={statusVariant[s.status] || 'default'}>{statusLabels[s.status] || s.status}</Badge></td>
                       <td className={`${tdClass} text-center`}>
                         {s.status !== 'Delivered' && (
                           <button
@@ -440,7 +661,7 @@ export default function ProviderPortalPage() {
               <h2 className="text-[15px] font-semibold text-slate-800">Kullanıcılar</h2>
               <p className="text-[12px] text-slate-400 mt-0.5">Firma kullanıcılarını yönetin</p>
             </div>
-            <button onClick={() => { setUserForm({ name: '', email: '', role: 'ProviderDriver' }); setUserDrawerOpen(true) }} className={btnPrimary}>
+            <button onClick={() => { setEditingUserId(null); setUserForm({ name: '', email: '', role: 'ProviderDriver' }); setUserDrawerOpen(true) }} className={btnPrimary}>
               <span className="flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Kullanıcı Ekle</span>
             </button>
           </div>
@@ -456,16 +677,21 @@ export default function ProviderPortalPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockProviderUsers.map((u) => (
+                {portalUsers.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-12 text-[14px] text-slate-400">Kullanici bulunamadı</td></tr>
+                ) : portalUsers.map((u) => (
                   <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                     <td className={`${tdClass} font-semibold text-slate-800`}>{u.name}</td>
                     <td className={`${tdClass} text-[12px] text-slate-500`}>{u.email}</td>
-                    <td className={`${tdClass} text-center`}><Badge variant="default">{roleLabels[u.role]}</Badge></td>
+                    <td className={`${tdClass} text-center`}><Badge variant="default">{roleLabels[u.role] || u.role}</Badge></td>
                     <td className={`${tdClass} text-center`}>
                       <Badge variant={u.active ? 'success' : 'error'}>{u.active ? 'Aktif' : 'Pasif'}</Badge>
                     </td>
                     <td className={`${tdClass} text-center`}>
-                      <button className={btnSmallOrange}>Düzenle</button>
+                      <div className="flex items-center justify-center gap-1">
+                        <button onClick={() => { setEditingUserId(u.id); setUserForm({ name: u.name, email: u.email, role: u.role }); setUserDrawerOpen(true) }} className={btnSmallOrange}>Düzenle</button>
+                        <button onClick={() => handleDeleteUser(u.id)} className="px-3 py-1 rounded-lg text-[12px] font-medium text-red-500 hover:bg-red-50 transition-colors">Sil</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -483,7 +709,10 @@ export default function ProviderPortalPage() {
       <Drawer isOpen={bidDrawerOpen} onClose={() => setBidDrawerOpen(false)} title={`Teklif Ver — ${selectedOrder?.number || ''}`} footer={
         <div className="flex justify-end gap-3">
           <button onClick={() => setBidDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setBidDrawerOpen(false)} className={btnPrimary}>Teklif Gönder</button>
+          <button onClick={handleSubmitBid} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Teklif Gönder
+          </button>
         </div>
       }>
         <div className="space-y-4">
@@ -518,7 +747,10 @@ export default function ProviderPortalPage() {
       <Drawer isOpen={tariffDrawerOpen} onClose={() => setTariffDrawerOpen(false)} title="Tarife Düzenle" width="max-w-xl" footer={
         <div className="flex justify-end gap-3">
           <button onClick={() => setTariffDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setTariffDrawerOpen(false)} className={btnPrimary}>Kaydet</button>
+          <button onClick={handleSaveTariff} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Kaydet
+          </button>
         </div>
       }>
         <div className="space-y-4">
@@ -601,10 +833,13 @@ export default function ProviderPortalPage() {
       </Drawer>
 
       {/* Vehicle Drawer */}
-      <Drawer isOpen={vehicleDrawerOpen} onClose={() => setVehicleDrawerOpen(false)} title="Araç Ekle" footer={
+      <Drawer isOpen={vehicleDrawerOpen} onClose={() => { setVehicleDrawerOpen(false); setEditingVehicleId(null) }} title={editingVehicleId ? 'Araç Düzenle' : 'Araç Ekle'} footer={
         <div className="flex justify-end gap-3">
-          <button onClick={() => setVehicleDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setVehicleDrawerOpen(false)} className={btnPrimary}>Kaydet</button>
+          <button onClick={() => { setVehicleDrawerOpen(false); setEditingVehicleId(null) }} className={btnSecondary}>İptal</button>
+          <button onClick={handleSaveVehicle} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Kaydet
+          </button>
         </div>
       }>
         <div className="space-y-4">
@@ -634,10 +869,13 @@ export default function ProviderPortalPage() {
       </Drawer>
 
       {/* Driver Drawer */}
-      <Drawer isOpen={driverDrawerOpen} onClose={() => setDriverDrawerOpen(false)} title="Şoför Ekle" footer={
+      <Drawer isOpen={driverDrawerOpen} onClose={() => { setDriverDrawerOpen(false); setEditingDriverId(null) }} title={editingDriverId ? 'Şoför Düzenle' : 'Şoför Ekle'} footer={
         <div className="flex justify-end gap-3">
-          <button onClick={() => setDriverDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setDriverDrawerOpen(false)} className={btnPrimary}>Kaydet</button>
+          <button onClick={() => { setDriverDrawerOpen(false); setEditingDriverId(null) }} className={btnSecondary}>İptal</button>
+          <button onClick={handleSaveDriver} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Kaydet
+          </button>
         </div>
       }>
         <div className="space-y-4">
@@ -664,7 +902,10 @@ export default function ProviderPortalPage() {
       <Drawer isOpen={shipmentDrawerOpen} onClose={() => setShipmentDrawerOpen(false)} title={`Durum Güncelle — ${selectedShipment?.number || ''}`} footer={
         <div className="flex justify-end gap-3">
           <button onClick={() => setShipmentDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setShipmentDrawerOpen(false)} className={btnPrimary}>Güncelle</button>
+          <button onClick={handleUpdateShipment} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Güncelle
+          </button>
         </div>
       }>
         <div className="space-y-4">
@@ -698,10 +939,13 @@ export default function ProviderPortalPage() {
       </Drawer>
 
       {/* User Drawer */}
-      <Drawer isOpen={userDrawerOpen} onClose={() => setUserDrawerOpen(false)} title="Kullanıcı Ekle" footer={
+      <Drawer isOpen={userDrawerOpen} onClose={() => { setUserDrawerOpen(false); setEditingUserId(null) }} title={editingUserId ? 'Kullanıcı Düzenle' : 'Kullanıcı Ekle'} footer={
         <div className="flex justify-end gap-3">
-          <button onClick={() => setUserDrawerOpen(false)} className={btnSecondary}>İptal</button>
-          <button onClick={() => setUserDrawerOpen(false)} className={btnPrimary}>Kaydet</button>
+          <button onClick={() => { setUserDrawerOpen(false); setEditingUserId(null) }} className={btnSecondary}>İptal</button>
+          <button onClick={handleSaveUser} disabled={saving} className={`${btnPrimary} disabled:opacity-50`}>
+            {saving ? <Loader2 className="w-4 h-4 animate-spin inline mr-1" /> : null}
+            Kaydet
+          </button>
         </div>
       }>
         <div className="space-y-4">

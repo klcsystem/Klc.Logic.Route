@@ -129,9 +129,9 @@ export default function ShipmentDetailPage() {
               {shipment.requiresColdChain && <Badge variant="info"><Snowflake className="w-3 h-3 mr-1" />Frigo</Badge>}
             </div>
             <div className="flex items-center gap-2 mt-1 text-[14px] text-slate-500">
-              <span>{shipment.originCity}</span>
+              <span>{shipment.originCity || '—'}</span>
               <ArrowRight className="w-4 h-4 text-orange-400" />
-              <span>{shipment.destinationCity}</span>
+              <span>{shipment.destinationCity || '—'}</span>
               <span className="text-slate-300 mx-2">|</span>
               <span>{t.shipments.requestedDate}: {shipment.requestedDeliveryDate}</span>
             </div>
@@ -173,9 +173,9 @@ export default function ShipmentDetailPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead><tr className="border-b border-slate-100">
-                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Urun</th>
+                    <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ürün</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Adet</th>
-                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Agirlik</th>
+                    <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ağırlık</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Hacim</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Desi</th>
                     <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Boyutlar</th>

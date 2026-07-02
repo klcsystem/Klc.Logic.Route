@@ -88,13 +88,13 @@ export default function CO2Page() {
       {/* Carbon Credit & ESG Score */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Karbon Kredi Degeri</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Karbon Kredi Değeri</h3>
           <div className="text-center py-4">
             <p className="text-[36px] font-extrabold text-green-600">{carbonCreditTons.toFixed(2)}</p>
             <p className="text-[13px] text-slate-500 mt-1">ton karbon kredisi</p>
             <div className="mt-4 p-3 bg-green-50 rounded-xl">
               <p className="text-[20px] font-bold text-green-700">{carbonCreditValue.toFixed(0)} EUR</p>
-              <p className="text-[11px] text-green-500">Tahmini piyasa degeri ({report?.marketPricePerTon || 65} EUR/ton)</p>
+              <p className="text-[11px] text-green-500">Tahmini piyasa değeri ({report?.marketPricePerTon || 65} EUR/ton)</p>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function CO2Page() {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Mesafe Ozeti</h3>
+          <h3 className="text-[15px] font-semibold text-slate-800 mb-4">Mesafe Özeti</h3>
           <div className="space-y-4 py-2">
             <div>
               <p className="text-[12px] text-slate-500 mb-1">Optimize Edilmemis Mesafe</p>
@@ -170,7 +170,7 @@ export default function CO2Page() {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Aylik trend verisi yok</div>
+            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Aylık trend verisi yok</div>
           )}
         </div>
 
@@ -190,7 +190,7 @@ export default function CO2Page() {
               </ResponsiveContainer>
             </>
           ) : (
-            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Arac tipi verisi yok</div>
+            <div className="flex items-center justify-center h-[240px] text-[13px] text-slate-400">Araç tipi verisi yok</div>
           )}
         </div>
       </div>
@@ -205,7 +205,7 @@ export default function CO2Page() {
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Emisyon (kg)</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Tasarruf (kg)</th>
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Mesafe (km)</th>
-              <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Rota Sayisi</th>
+              <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase">Rota Sayısı</th>
             </tr></thead>
             <tbody>
               {vehicleData.map((d) => (

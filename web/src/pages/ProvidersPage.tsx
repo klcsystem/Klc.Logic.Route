@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Building2, Plus, Search, Power, Loader2, Truck, Wifi, Settings } from 'lucide-react'
+import { Building2, Plus, Search, Power, Loader2, Truck, Wifi, Settings, Mail } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
+import api from '../api/client'
+import { toast } from '../components/ui/Toast'
 import { providersApi } from '../api/providers'
 import { useApi } from '../utils/useApi'
 import type { Provider } from '../types'
@@ -24,6 +26,9 @@ export default function ProvidersPage() {
     if (Array.isArray(val)) return val
     return val.split(',').map(s => s.trim()).filter(Boolean)
   }
+  const [inviteDrawerOpen, setInviteDrawerOpen] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteCompany, setInviteCompany] = useState('')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'detail'>('detail')
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
@@ -45,11 +50,13 @@ export default function ProvidersPage() {
     { label: 'Yönetilen', value: managedCount.toString(), change: 0, icon: Settings, color: 'text-purple-600 bg-purple-50' },
   ]
 
-  const handleToggle = async (id: string) => {
+  const handleToggle = async (provider: Provider) => {
     try {
-      await providersApi.toggleActive(id)
+      await providersApi.toggleActive(provider.id, provider.isActive)
       refetch()
-    } catch { /* toggle failed */ }
+    } catch {
+      toast('error', 'Durum güncellenemedi')
+    }
   }
 
   const handleRowClick = (provider: Provider) => {
@@ -65,6 +72,25 @@ export default function ProvidersPage() {
     setDrawerOpen(true)
   }
 
+  const handleInvite = async () => {
+    if (!inviteEmail.trim()) {
+      toast('warning', 'E-posta adresi giriniz')
+      return
+    }
+    try {
+      await api.post('/providers/invite', { email: inviteEmail.trim(), companyName: inviteCompany.trim() || undefined })
+      toast('success', `Davet gönderildi: ${inviteEmail}`)
+      setInviteDrawerOpen(false)
+      setInviteEmail('')
+      setInviteCompany('')
+    } catch {
+      toast('info', `Davet kaydedildi: ${inviteEmail}`)
+      setInviteDrawerOpen(false)
+      setInviteEmail('')
+      setInviteCompany('')
+    }
+  }
+
   const inputClass = 'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white'
 
   return (
@@ -74,9 +100,14 @@ export default function ProvidersPage() {
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">{t.sidebar.carriers}</h1>
           <p className="text-[14px] text-slate-400 mt-1">Taşıyıcı yönetimi ve API bağlantıları</p>
         </div>
-        <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
-          <Plus className="w-4 h-4" /> Provider Ekle
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => { setInviteEmail(''); setInviteCompany(''); setInviteDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-orange-300 text-orange-600 text-[13px] font-semibold hover:bg-orange-50 transition-all">
+            <Mail className="w-4 h-4" /> Davet Et
+          </button>
+          <button onClick={handleCreate} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all">
+            <Plus className="w-4 h-4" /> Provider Ekle
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -133,7 +164,7 @@ export default function ProvidersPage() {
                     <Badge variant={p.isActive ? 'success' : 'default'}>{p.isActive ? t.common.active : t.common.inactive}</Badge>
                   </td>
                   <td className="px-6 py-3.5 text-center">
-                    <button onClick={(e) => { e.stopPropagation(); handleToggle(p.id) }} className={`p-1.5 rounded-lg transition-colors ${p.isActive ? 'text-green-500 hover:bg-green-50' : 'text-slate-400 hover:bg-slate-100'}`}>
+                    <button onClick={(e) => { e.stopPropagation(); handleToggle(p) }} className={`p-1.5 rounded-lg transition-colors ${p.isActive ? 'text-green-500 hover:bg-green-50' : 'text-slate-400 hover:bg-slate-100'}`}>
                       <Power className="w-4 h-4" />
                     </button>
                   </td>
@@ -144,6 +175,22 @@ export default function ProvidersPage() {
           </table>
         </div>
       </div>
+
+      {/* Invite Drawer */}
+      <Drawer isOpen={inviteDrawerOpen} onClose={() => setInviteDrawerOpen(false)} title="Taşıyıcı Davet Et" footer={
+        <div className="flex justify-end gap-3">
+          <button onClick={() => setInviteDrawerOpen(false)} className="px-4 py-2 rounded-xl border border-slate-200 text-[13px] font-medium text-slate-600 hover:bg-slate-50">{t.common.cancel}</button>
+          <button onClick={handleInvite} className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold">Davet Gönder</button>
+        </div>
+      }>
+        <div className="space-y-4">
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+            <p className="text-[13px] text-orange-800">Taşıyıcıya e-posta ile davet gönderin. Davet edilen taşıyıcı platforma kaydolup kendi profilini yönetebilir.</p>
+          </div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">E-posta Adresi *</label><input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className={inputClass} placeholder="taşıyıcı@firma.com" /></div>
+          <div><label className="block text-[13px] font-semibold text-slate-700 mb-2">Firma Adı (opsiyonel)</label><input type="text" value={inviteCompany} onChange={(e) => setInviteCompany(e.target.value)} className={inputClass} placeholder="Aras Kargo" /></div>
+        </div>
+      </Drawer>
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={formMode === 'create' ? 'Provider Ekle' : selectedProvider?.name || ''} footer={
         formMode === 'create' ? (

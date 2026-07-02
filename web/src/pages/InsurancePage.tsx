@@ -53,7 +53,7 @@ export default function InsurancePage() {
         setQuotes(Array.isArray(res.data) ? res.data : [res.data])
       }
     } catch {
-      // API henuz hazir olmayabilir
+      // API henüz hazir olmayabilir
     } finally {
       setIsRequesting(false)
     }
@@ -66,14 +66,14 @@ export default function InsurancePage() {
     { label: 'Toplam Police', value: policies.length.toString(), icon: ShieldCheck, color: 'text-blue-600 bg-blue-50' },
     { label: 'Aktif Police', value: activeCount.toString(), icon: ShieldCheck, color: 'text-green-600 bg-green-50' },
     { label: 'Toplam Prim', value: `${totalPremium.toLocaleString()} TRY`, icon: ShieldCheck, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Teklif Sayisi', value: quotes.length.toString(), icon: ShieldCheck, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Teklif Sayısı', value: quotes.length.toString(), icon: ShieldCheck, color: 'text-purple-600 bg-purple-50' },
   ]
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Sigorta Yonetimi</h1>
-        <p className="text-[14px] text-slate-400 mt-1">Kargo sigortasi policeleri ve teklif yonetimi</p>
+        <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Sigorta Yönetimi</h1>
+        <p className="text-[14px] text-slate-400 mt-1">Kargo sigortasi policeleri ve teklif yönetimi</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -94,15 +94,15 @@ export default function InsurancePage() {
             </select>
           </div>
           <div>
-            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Kargo Degeri (TRY)</label>
+            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Kargo Değeri (TRY)</label>
             <input type="number" value={quoteForm.value} onChange={e => setQuoteForm({ ...quoteForm, value: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" />
           </div>
           <div>
-            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Cikis</label>
+            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Çıkış</label>
             <input type="text" value={quoteForm.origin} onChange={e => setQuoteForm({ ...quoteForm, origin: e.target.value })} placeholder="Istanbul" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" />
           </div>
           <div>
-            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Varis</label>
+            <label className="block text-[13px] font-semibold text-slate-700 mb-2">Varış</label>
             <input type="text" value={quoteForm.destination} onChange={e => setQuoteForm({ ...quoteForm, destination: e.target.value })} placeholder="Ankara" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-[14px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white" />
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function InsurancePage() {
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{p.endDate}</td>
                 </tr>
               ))}
-              {!isLoading && policies.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadi</td></tr>}
+              {!isLoading && policies.length === 0 && <tr><td colSpan={6} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
             </tbody>
           </table>
         </div>
