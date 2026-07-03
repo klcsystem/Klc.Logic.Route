@@ -34,8 +34,11 @@ public class DatabaseInitializer(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to execute migration: {File}", Path.GetFileName(file));
-                throw;
+                // Per-migration izolasyon: bir migration patlarsa TUM zinciri durdurma.
+                // Uzun-omurlu/drift bir DB'de erken bir migration hata verebilir; sonraki
+                // migration'lar (or. 033_ReconcileSchema eksik tablolari tamamlar) yine de
+                // uygulanabilmeli. Hatayi Error seviyesinde logla ve bir sonrakine gec.
+                logger.LogError(ex, "Migration FAILED, continuing to next: {File}", Path.GetFileName(file));
             }
         }
 

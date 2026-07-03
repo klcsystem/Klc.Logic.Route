@@ -652,15 +652,15 @@ export default function DashboardPage() {
   const co2SavedTons = savingsSummary?.totalCO2SavedTons || 0
 
   const roleLabels: Record<string, string> = {
-    Admin: 'Yonetici', Executive: 'Ust Yönetim', LogisticsManager: 'Lojistik Muduru',
-    OperationsSpecialist: 'Operasyon Uzmani', Finance: 'Finans',
+    Admin: 'Yönetici', Executive: 'Üst Yönetim', LogisticsManager: 'Lojistik Müdürü',
+    OperationsSpecialist: 'Operasyon Uzmanı', Finance: 'Finans',
   }
 
   const greeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Gunaydin'
-    if (hour < 18) return 'Iyi gunler'
-    return 'Iyi aksamlar'
+    if (hour < 12) return 'Günaydın'
+    if (hour < 18) return 'İyi günler'
+    return 'İyi akşamlar'
   }
 
   return (
