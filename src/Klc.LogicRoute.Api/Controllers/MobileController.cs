@@ -64,6 +64,15 @@ public class MobileController(
         return Ok(ApiResponse<MobileLoginResponse>.Ok(response));
     }
 
+    [HttpGet("drivers")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<IEnumerable<Driver>>>> GetDrivers([FromQuery] Guid? providerId = null)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var drivers = await driverRepository.GetAllAsync(tenantId, providerId);
+        return Ok(ApiResponse<IEnumerable<Driver>>.Ok(drivers));
+    }
+
     [HttpGet("shipments")]
     [Authorize]
     public async Task<ActionResult<ApiResponse<IEnumerable<Shipment>>>> GetDriverShipments([FromQuery] Guid driverId)

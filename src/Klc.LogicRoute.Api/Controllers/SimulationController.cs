@@ -4,6 +4,7 @@ using Klc.LogicRoute.Application.Common.Models;
 using Klc.LogicRoute.Application.Simulation.Models;
 using Klc.LogicRoute.Application.Simulation.Services;
 using Klc.LogicRoute.Domain.Entities;
+using Klc.LogicRoute.Domain.Enums;
 using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class SimulationController(
     ISimulationEngine simulationEngine,
     ISimulationRepository simulationRepository,
+    IShipmentRepository shipmentRepository,
     ITenantProvider tenantProvider,
     IHubContext<SimulationHub> simulationHub) : ControllerBase
 {
@@ -27,6 +29,44 @@ public class SimulationController(
         var tenantId = tenantProvider.GetTenantId();
         var snapshot = await simulationEngine.TakeSnapshotAsync(tenantId);
         return Ok(ApiResponse<DigitalTwinSnapshot>.Ok(snapshot));
+    }
+
+    [HttpGet("current")]
+    public async Task<ActionResult<ApiResponse<SimulationMetrics>>> GetCurrentMetrics()
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var snapshot = await simulationEngine.TakeSnapshotAsync(tenantId);
+
+        // Gercek zamaninda-teslim orani: teslim edilmis sevkiyatlarda
+        // actual_delivery_date <= requested_delivery_date olanlarin yuzdesi.
+        var shipments = await shipmentRepository.GetAllAsync(tenantId, 1, 500);
+        var delivered = shipments
+            .Where(s => s.Status >= ShipmentStatus.Delivered
+                        && s.ActualDeliveryDate.HasValue
+                        && s.RequestedDeliveryDate.HasValue)
+            .ToList();
+        double onTimePct = delivered.Count > 0
+            ? Math.Round(
+                delivered.Count(s => s.ActualDeliveryDate!.Value <= s.RequestedDeliveryDate!.Value)
+                    * 100.0 / delivered.Count, 1)
+            // Teslim gecmisi yoksa: arac doluluguna gore model tahmini (SimulationEngine ile ayni egilim)
+            : snapshot.VehicleUtilizationPct > 85 ? 70.0 : snapshot.VehicleUtilizationPct > 70 ? 85.0 : 95.0;
+
+        var active = snapshot.ActiveShipments;
+        var fleet = Math.Max(1, snapshot.ActiveVehicles);
+        var metrics = new SimulationMetrics(
+            TotalCost: Math.Round(snapshot.AverageCostPerShipment * active, 2),
+            TotalDistanceKm: Math.Round(snapshot.AverageDistanceKm * active, 1),
+            // Filo paralel calistigi icin toplam sure aktif arac sayisina bolunur (engine ile tutarli).
+            TotalDurationMin: Math.Round(active * snapshot.AverageDurationHours / fleet * 60, 1),
+            Co2EmissionsKg: Math.Round(snapshot.Co2PerShipmentKg * active, 1),
+            VehicleUtilizationPercent: snapshot.VehicleUtilizationPct,
+            AvgDeliveryTimeHours: Math.Round(snapshot.AverageDurationHours, 1),
+            OnTimeDeliveryPercent: onTimePct,
+            ActiveVehicles: snapshot.ActiveVehicles,
+            ActiveShipments: snapshot.ActiveShipments);
+
+        return Ok(ApiResponse<SimulationMetrics>.Ok(metrics));
     }
 
     [HttpPost("scenarios")]

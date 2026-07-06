@@ -15,6 +15,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class MLController(
     IMLPredictionService predictionService,
     IMLModelRepository modelRepository,
+    IPredictionLogRepository predictionLogRepository,
     IShipmentRepository shipmentRepository,
     ModelTrainingJob trainingJob,
     ITenantProvider tenantProvider) : ControllerBase
@@ -58,4 +59,27 @@ public class MLController(
         var models = await modelRepository.GetAllAsync(tenantId);
         return Ok(ApiResponse<IEnumerable<MLModelMetadata>>.Ok(models));
     }
+
+    [HttpGet("models/{type}/predictions-vs-actual")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<PredictionVsActual>>>> GetPredictionsVsActual(string type)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+
+        // Frontend bazen 'DeliveryTimePrediction' gonderir; DB model_type = 'DeliveryTime'.
+        var modelType = type.Replace("Prediction", string.Empty);
+
+        var logs = await predictionLogRepository.GetByModelTypeAsync(modelType, tenantId, 200);
+        var series = logs
+            .Where(l => l.ActualValue.HasValue)
+            .OrderBy(l => l.PredictionAt)
+            .Select(l => new PredictionVsActual(
+                Predicted: Math.Round(l.PredictedValue, 2),
+                Actual: Math.Round(l.ActualValue!.Value, 2),
+                Label: l.PredictionAt.ToString("dd.MM.yyyy")))
+            .ToList();
+
+        return Ok(ApiResponse<IEnumerable<PredictionVsActual>>.Ok(series));
+    }
 }
+
+public record PredictionVsActual(double Predicted, double Actual, string Label);

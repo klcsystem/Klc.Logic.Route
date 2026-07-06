@@ -15,6 +15,19 @@ public record DigitalTwinSnapshot(
     double VehicleUtilizationPct,
     DateTime SnapshotAt);
 
+// Anlik operasyon metrikleri (frontend simulation.ts -> SimulationMetrics ile birebir).
+// DigitalTwinSnapshot'tan turetilir; onTimeDeliveryPercent gercek teslim verisinden hesaplanir.
+public record SimulationMetrics(
+    decimal TotalCost,
+    double TotalDistanceKm,
+    double TotalDurationMin,
+    double Co2EmissionsKg,
+    double VehicleUtilizationPercent,
+    double AvgDeliveryTimeHours,
+    double OnTimeDeliveryPercent,
+    int ActiveVehicles,
+    int ActiveShipments);
+
 public record SimulationModifications(
     int? VehicleCountDelta,
     double? DemandMultiplier,
