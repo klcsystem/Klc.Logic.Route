@@ -43,13 +43,16 @@ function makeStopIcon(color: string, seq: number) {
   })
 }
 
-const pendingIcon = L.divIcon({
-  className: '',
-  html: `<div style="background:#94a3b8;width:18px;height:18px;border-radius:50%;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.2)"></div>`,
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
-  popupAnchor: [0, -9],
-})
+function makeClusterIcon(count: number) {
+  const size = count >= 10 ? 42 : count >= 5 ? 34 : 28
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:linear-gradient(135deg,#3b82f6,#06b6d4);width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 2px 8px rgba(37,99,235,0.4);color:white;font-size:${count >= 10 ? 13 : 12}px;font-weight:700">${count}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  })
+}
 
 // --- OSRM Routing ---
 async function fetchRoadRoute(waypoints: [number, number][]): Promise<[number, number][]> {
@@ -192,6 +195,21 @@ export default function PlanOptimizePage() {
     }
     return pts
   }, [orders, solution])
+
+  // Şehir bazında kümeleme — 200 marker yerine şehir başına 1 küme + sayı (harita "marker çorbası"nı önler).
+  const cityGroups = useMemo(() => {
+    const groups = new Map<string, { city: string; lat: number; lng: number; count: number }>()
+    orders.forEach(o => {
+      const lat = o.destinationLat || o.originLat
+      const lng = o.destinationLng || o.originLng
+      if (!lat || !lng) return
+      const city = o.destinationCity || o.originCity || 'Bilinmeyen'
+      const g = groups.get(city)
+      if (g) { g.lat += lat; g.lng += lng; g.count++ }
+      else groups.set(city, { city, lat, lng, count: 1 })
+    })
+    return Array.from(groups.values()).map(g => ({ city: g.city, lat: g.lat / g.count, lng: g.lng / g.count, count: g.count }))
+  }, [orders])
 
   // Optimize handler
   const handlePlanRoutes = async () => {
@@ -549,23 +567,17 @@ export default function PlanOptimizePage() {
                 <Popup><span className="text-[12px] font-bold">Depo</span></Popup>
               </Marker>
 
-              {/* Pending order markers (when no solution) */}
-              {!solution && orders.map(o => {
-                const lat = o.destinationLat || o.originLat
-                const lng = o.destinationLng || o.originLng
-                if (!lat || !lng) return null
-                return (
-                  <Marker key={o.id} position={[lat, lng]} icon={pendingIcon}>
-                    <Popup>
-                      <div className="text-[11px]">
-                        <p className="font-bold text-[12px]">{o.customerName}</p>
-                        <p className="text-gray-500">{o.orderNumber}</p>
-                        <p className="text-gray-400">{o.destinationCity}</p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                )
-              })}
+              {/* Şehir bazında kümelenmiş sipariş marker'ları (solution yokken) */}
+              {!solution && cityGroups.map(g => (
+                <Marker key={g.city} position={[g.lat, g.lng]} icon={makeClusterIcon(g.count)}>
+                  <Popup>
+                    <div className="text-[11px]">
+                      <p className="font-bold text-[12px]">{g.city}</p>
+                      <p className="text-gray-500">{g.count} sipariş</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
 
               {/* Optimized routes */}
               {solution?.routes.map((route: VrpRoute, ri: number) => {
