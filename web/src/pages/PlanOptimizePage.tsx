@@ -406,48 +406,6 @@ export default function PlanOptimizePage() {
         </div>
       </div>
 
-      {/* ── Stepper (adım-adım akış) ── */}
-      <div className="shrink-0 px-5 py-2.5 bg-white border-b border-slate-200/60 flex items-center gap-2 flex-wrap">
-        {([
-          { n: 1 as const, label: 'Siparişleri Seç' },
-          { n: 2 as const, label: 'Sürücüleri Seç' },
-          { n: 3 as const, label: 'Planla & Rotalar' },
-        ]).map((s, i) => (
-          <div key={s.n} className="flex items-center gap-2">
-            <button
-              onClick={() => setStep(s.n)}
-              className={`flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full text-[12px] font-semibold transition-colors ${
-                step === s.n ? 'bg-orange-500 text-white' : step > s.n ? 'bg-orange-50 text-orange-600' : 'bg-slate-100 text-slate-400'
-              }`}
-            >
-              <span className={`w-5 h-5 rounded-full grid place-items-center text-[11px] ${step === s.n ? 'bg-white/25' : step > s.n ? 'bg-orange-100 text-orange-600' : 'bg-white text-slate-400'}`}>{s.n}</span>
-              {s.label}
-            </button>
-            {i < 2 && <ChevronRight className="w-4 h-4 text-slate-300" />}
-          </div>
-        ))}
-        <div className="ml-auto flex items-center gap-2">
-          {step > 1 && (
-            <button onClick={() => setStep((step - 1) as 1 | 2 | 3)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">← Geri</button>
-          )}
-          {step === 1 && (
-            <button onClick={() => setStep(2)} className="px-4 py-1.5 rounded-lg bg-slate-800 text-white text-[12px] font-semibold hover:bg-slate-900 transition-colors">İleri: Sürücüler →</button>
-          )}
-          {step === 2 && (
-            <button
-              onClick={() => { setStep(3); handlePlanRoutes() }}
-              disabled={isOptimizing || unscheduledCount === 0 || selectedDrivers.size === 0}
-              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 transition-all"
-            >
-              {isOptimizing ? 'Planlanıyor...' : 'İleri: Rotaları Planla →'}
-            </button>
-          )}
-          {step === 3 && (
-            <button onClick={() => { setSolution(null); setStep(1) }} className="px-4 py-1.5 rounded-lg border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors">↺ Yeni Plan</button>
-          )}
-        </div>
-      </div>
-
       {/* ── Main Content: Left Panel + Map ── */}
       <div className="flex flex-1 min-h-0">
         {/* Left Panel: Drivers */}
@@ -541,10 +499,10 @@ export default function PlanOptimizePage() {
           </button>
         )}
 
-        {/* Center: Liste (sol) + Harita (sağ) — CSS order ile yan yana */}
-        <div className="flex-1 flex min-w-0">
-          {/* Map (sağ) */}
-          <div className="flex-1 relative order-2 min-w-0">
+        {/* Center: Map + Bottom Panel */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Map */}
+          <div className="flex-1 min-h-[300px] relative">
             {isLoadingOrders && (
               <div className="absolute inset-0 bg-white/60 z-[1000] flex items-center justify-center">
                 <Loader2 className="w-6 h-6 animate-spin text-orange-400" />
@@ -622,9 +580,8 @@ export default function PlanOptimizePage() {
             )}
           </div>
 
-          {/* ── Liste Paneli (sol) — adım 2'de gizli (o adımda sürücü paneli ana liste) ── */}
-          {step !== 2 && (
-          <div className="shrink-0 bg-white border-r border-slate-200/60 order-1 flex flex-col" style={{ width: 460 }}>
+          {/* ── Bottom Panel ── */}
+          <div className="shrink-0 bg-white border-t border-slate-200/60" style={{ height: 320 }}>
             {/* Tab bar */}
             <div className="flex items-center justify-between px-4 border-b border-slate-100">
               <div className="flex">
@@ -682,7 +639,7 @@ export default function PlanOptimizePage() {
             </div>
 
             {/* Tab content */}
-            <div className="flex-1 overflow-auto">
+            <div className="overflow-auto" style={{ height: 'calc(100% - 41px)' }}>
               {/* Orders Tab */}
               {bottomTab === 'orders' && (
                 <table className="w-full text-[12px]">
@@ -870,6 +827,47 @@ export default function PlanOptimizePage() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ── Stepper (FOOTER — adım-adım akış) ── */}
+      <div className="shrink-0 px-5 py-2.5 bg-white border-t border-slate-200/60 flex items-center gap-2 flex-wrap">
+        {([
+          { n: 1 as const, label: 'Siparişleri Seç' },
+          { n: 2 as const, label: 'Sürücüleri Seç' },
+          { n: 3 as const, label: 'Planla & Rotalar' },
+        ]).map((s, i) => (
+          <div key={s.n} className="flex items-center gap-2">
+            <button
+              onClick={() => setStep(s.n)}
+              className={`flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full text-[12px] font-semibold transition-colors ${
+                step === s.n ? 'bg-orange-500 text-white' : step > s.n ? 'bg-orange-50 text-orange-600' : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              <span className={`w-5 h-5 rounded-full grid place-items-center text-[11px] ${step === s.n ? 'bg-white/25' : step > s.n ? 'bg-orange-100 text-orange-600' : 'bg-white text-slate-400'}`}>{s.n}</span>
+              {s.label}
+            </button>
+            {i < 2 && <ChevronRight className="w-4 h-4 text-slate-300" />}
+          </div>
+        ))}
+        <div className="ml-auto flex items-center gap-2">
+          {step > 1 && (
+            <button onClick={() => setStep((step - 1) as 1 | 2 | 3)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">← Geri</button>
+          )}
+          {step === 1 && (
+            <button onClick={() => setStep(2)} className="px-4 py-1.5 rounded-lg bg-slate-800 text-white text-[12px] font-semibold hover:bg-slate-900 transition-colors">İleri: Sürücüler →</button>
+          )}
+          {step === 2 && (
+            <button
+              onClick={() => { setStep(3); handlePlanRoutes() }}
+              disabled={isOptimizing || unscheduledCount === 0 || selectedDrivers.size === 0}
+              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 transition-all"
+            >
+              {isOptimizing ? 'Planlanıyor...' : 'İleri: Rotaları Planla →'}
+            </button>
+          )}
+          {step === 3 && (
+            <button onClick={() => { setSolution(null); setStep(1) }} className="px-4 py-1.5 rounded-lg border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors">↺ Yeni Plan</button>
           )}
         </div>
       </div>
