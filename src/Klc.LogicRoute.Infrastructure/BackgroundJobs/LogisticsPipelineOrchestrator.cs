@@ -72,9 +72,14 @@ public class LogisticsPipelineOrchestrator : BackgroundService
 
         _logger.LogInformation("Logistics Pipeline Orchestrator started, interval: {Interval}", _interval);
 
+        // Kisa poll ile manuel/anlik tetigi ~5sn icinde yakalariz; zamanlanmis tam
+        // calisma ise _interval'de bir kosar. Boylece yeni SAP siparisi geldiginde
+        // 30 dk beklemeden anlik re-optimize tetiklenir.
+        var pollInterval = TimeSpan.FromSeconds(5);
+        var lastScheduledRun = DateTime.UtcNow - _interval; // baslangicta kisa sure sonra bir kez kos
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            // Check for manual trigger
             Guid? manualTenantId = null;
             lock (Lock)
             {
@@ -88,14 +93,23 @@ public class LogisticsPipelineOrchestrator : BackgroundService
 
             if (manualTenantId.HasValue)
             {
+                _logger.LogInformation("Pipeline anlik/manuel tetik — tenant {TenantId}", manualTenantId.Value);
                 await RunPipelineForTenantAsync(manualTenantId.Value, stoppingToken);
             }
-            else
+            else if (DateTime.UtcNow - lastScheduledRun >= _interval)
             {
                 await RunPipelineAsync(stoppingToken);
+                lastScheduledRun = DateTime.UtcNow;
             }
 
-            await Task.Delay(_interval, stoppingToken);
+            try
+            {
+                await Task.Delay(pollInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
 
         _logger.LogInformation("Logistics Pipeline Orchestrator stopped");

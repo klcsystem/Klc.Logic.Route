@@ -3,6 +3,7 @@ using Klc.LogicRoute.Application.Geocoding;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Interfaces;
 using Klc.LogicRoute.Infrastructure.Persistence;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,22 +19,26 @@ public class ErpAutoSyncJob : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IPostgresConnectionFactory _connectionFactory;
     private readonly ILogger<ErpAutoSyncJob> _logger;
-    private static readonly TimeSpan Interval = TimeSpan.FromMinutes(15);
-    private static readonly TimeSpan MinSyncGap = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _interval;
+    private readonly TimeSpan _minSyncGap;
 
     public ErpAutoSyncJob(
         IServiceScopeFactory scopeFactory,
         IPostgresConnectionFactory connectionFactory,
+        IConfiguration configuration,
         ILogger<ErpAutoSyncJob> logger)
     {
         _scopeFactory = scopeFactory;
         _connectionFactory = connectionFactory;
         _logger = logger;
+        // Anlik ingestion: SAP'i sik ara (varsayilan 60sn). MinSyncGap tekrar-sync korumasi.
+        _interval = TimeSpan.FromSeconds(configuration.GetValue("Erp:SyncIntervalSeconds", 60));
+        _minSyncGap = TimeSpan.FromSeconds(configuration.GetValue("Erp:MinSyncGapSeconds", 30));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("ERP Auto-Sync Job started (interval: {Interval})", Interval);
+        _logger.LogInformation("ERP Auto-Sync Job started (interval: {Interval})", _interval);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -46,7 +51,7 @@ public class ErpAutoSyncJob : BackgroundService
                 _logger.LogError(ex, "ERP Auto-Sync Job encountered an unhandled error");
             }
 
-            await Task.Delay(Interval, stoppingToken);
+            await Task.Delay(_interval, stoppingToken);
         }
 
         _logger.LogInformation("ERP Auto-Sync Job stopped");
@@ -70,7 +75,7 @@ public class ErpAutoSyncJob : BackgroundService
         {
             // Skip if synced less than 5 minutes ago
             if (connection.LastSyncAt.HasValue &&
-                DateTime.UtcNow - connection.LastSyncAt.Value < MinSyncGap)
+                DateTime.UtcNow - connection.LastSyncAt.Value < _minSyncGap)
             {
                 _logger.LogDebug(
                     "ERP Auto-Sync: Skipping {ConnectionName} (last synced {Ago} ago)",
@@ -160,6 +165,16 @@ public class ErpAutoSyncJob : BackgroundService
             _logger.LogInformation(
                 "ERP Auto-Sync: Completed {ConnectionName} — {StatusMessage}",
                 connection.Name, statusMessage);
+
+            // ANLIK RE-OPTIMIZE: yeni siparis geldiyse pipeline'i HEMEN tetikle.
+            // Pipeline yalnizca PENDING siparisleri planladigi icin sevk edilmis rotalar sarsilmaz (hibrit).
+            if (savedCount > 0)
+            {
+                LogisticsPipelineOrchestrator.RequestManualRun(connection.TenantId);
+                _logger.LogInformation(
+                    "ERP Auto-Sync: {Count} yeni siparis → ANLIK re-optimize tetiklendi (tenant {TenantId})",
+                    savedCount, connection.TenantId);
+            }
         }
         catch (Exception ex)
         {
