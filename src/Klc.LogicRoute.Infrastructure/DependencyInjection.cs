@@ -15,6 +15,7 @@ using Klc.LogicRoute.Infrastructure.BackgroundJobs;
 using Klc.LogicRoute.Infrastructure.ExternalServices.Email;
 using Klc.LogicRoute.Infrastructure.ExternalServices.Routing;
 using Klc.LogicRoute.Infrastructure.ExternalServices.Sms;
+using Klc.LogicRoute.Infrastructure.ExternalServices.Traffic;
 using Klc.LogicRoute.Infrastructure.Messaging;
 using Klc.LogicRoute.Infrastructure.Persistence;
 using Klc.LogicRoute.Infrastructure.Persistence.Repositories;
@@ -149,6 +150,9 @@ public static class DependencyInjection
         services.AddHttpClient<OsrmDistanceMatrixProvider>();
         services.AddScoped<OsrmDistanceMatrixProvider>();
         services.AddScoped<IDistanceMatrixProvider, TrafficAwareDistanceProvider>();
+        // Trafik profili (Faz 1: İBB açık veri + öğrenme → mekansal geohash6×saat hız profili)
+        services.AddSingleton<ITrafficProfileProvider, IbbTrafficProfileProvider>();
+        services.AddHttpClient<IbbTrafficImportService>();
         services.AddScoped<IPlannedVsActualService, PlannedVsActualService>();
         services.AddScoped<IDynamicRerouteService, DynamicRerouteService>();
 

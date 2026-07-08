@@ -16,15 +16,18 @@ public class TrafficAwareDistanceProvider : IDistanceMatrixProvider
 {
     private readonly OsrmDistanceMatrixProvider _osrmProvider;
     private readonly TrafficPatternLearningService _trafficLearning;
+    private readonly ITrafficProfileProvider _trafficProfile;
     private readonly ILogger<TrafficAwareDistanceProvider> _logger;
 
     public TrafficAwareDistanceProvider(
         OsrmDistanceMatrixProvider osrmProvider,
         TrafficPatternLearningService trafficLearning,
+        ITrafficProfileProvider trafficProfile,
         ILogger<TrafficAwareDistanceProvider> logger)
     {
         _osrmProvider = osrmProvider;
         _trafficLearning = trafficLearning;
+        _trafficProfile = trafficProfile;
         _logger = logger;
     }
 
@@ -33,28 +36,39 @@ public class TrafficAwareDistanceProvider : IDistanceMatrixProvider
     {
         var baseResult = await _osrmProvider.GetDistanceMatrixAsync(points, cancellationToken);
 
-        var now = DateTime.UtcNow;
-        var multiplier = await GetTrafficMultiplierWithLearningAsync(now);
+        var localNow = DateTime.UtcNow.AddHours(3); // Türkiye saati (UTC+3)
+        var globalMultiplier = await GetTrafficMultiplierWithLearningAsync(DateTime.UtcNow);
 
-        if (Math.Abs(multiplier - 1.0) < 0.001)
+        // Her kalkış noktası için MEKANSAL çarpan: İBB profili varsa hücre-bazlı
+        // (geohash6 × haftalık-saat), yoksa global (öğrenilen/hardcoded) çarpana düşer.
+        var n = points.Length;
+        var legMultiplier = new double[n];
+        var anyProfile = false;
+
+        for (var i = 0; i < n; i++)
         {
-            return baseResult;
+            var m = await _trafficProfile.GetSpeedMultiplierAsync(
+                points[i].Lat, points[i].Lng, localNow, cancellationToken);
+            if (m.HasValue) anyProfile = true;
+            legMultiplier[i] = m ?? globalMultiplier;
         }
 
-        _logger.LogDebug(
-            "Applying traffic multiplier {Multiplier:F2}x to duration estimates",
-            multiplier);
+        // Hiç profil yoksa VE global ~1 ise matrise dokunma (sıfır regresyon).
+        if (!anyProfile && Math.Abs(globalMultiplier - 1.0) < 0.001)
+            return baseResult;
 
-        var n = points.Length;
         var adjustedDurations = new double[n, n];
-
         for (var i = 0; i < n; i++)
         {
             for (var j = 0; j < n; j++)
             {
-                adjustedDurations[i, j] = baseResult.Durations[i, j] * multiplier;
+                adjustedDurations[i, j] = baseResult.Durations[i, j] * legMultiplier[i];
             }
         }
+
+        _logger.LogDebug(
+            "Trafik çarpanı uygulandı — global {Global:F2}x, mekansal profil: {Profile}",
+            globalMultiplier, anyProfile);
 
         return new DistanceMatrixResult(baseResult.Distances, adjustedDurations);
     }
