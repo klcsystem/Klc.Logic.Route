@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   Loader2, Calendar, Upload, Zap, Truck, Package, Route, MapPin,
-  ChevronLeft, ChevronRight, Plus, Trash2, Copy, XCircle, Eye, EyeOff,
+  ChevronLeft, ChevronRight, Plus, Trash2, Copy, XCircle,
   CheckSquare, Square, Clock,
 } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
@@ -104,11 +104,8 @@ export default function PlanOptimizePage() {
 
   // UI state
   const [selectedDrivers, setSelectedDrivers] = useState<Set<string>>(new Set())
-  const [hideDrivers, setHideDrivers] = useState(false)
   const [bottomTab, setBottomTab] = useState<'orders' | 'routes' | 'timeline'>('orders')
   const [checkedOrderIds, setCheckedOrderIds] = useState<Set<string>>(new Set())
-  const [leftPanelWidth, setLeftPanelWidth] = useState(280)
-  const [isResizing, setIsResizing] = useState(false)
   const [step, setStep] = useState<1 | 2 | 3>(1)
 
   // Load orders for selected date
@@ -143,9 +140,8 @@ export default function PlanOptimizePage() {
   useEffect(() => { loadOrders() }, [loadOrders, selectedDate])
   useEffect(() => { loadVehicles() }, [loadVehicles])
 
-  // Adım-tabanlı görünüm: sürücü paneli yalnızca 2. adımda; 3. adımda otomatik "Rotalar" sekmesi.
+  // Adım-tabanlı görünüm: 3. adımda otomatik "Rotalar" sekmesi.
   useEffect(() => {
-    setHideDrivers(step !== 2)
     setBottomTab(step === 3 ? 'routes' : 'orders')
   }, [step])
 
@@ -311,23 +307,6 @@ export default function PlanOptimizePage() {
     setSelectedDate(fmtDate(d))
   }
 
-  // Resize handler
-  const handleMouseDown = () => setIsResizing(true)
-  useEffect(() => {
-    if (!isResizing) return
-    const handleMouseMove = (e: MouseEvent) => {
-      const newWidth = Math.max(220, Math.min(400, e.clientX - 260)) // 260 = sidebar width approx
-      setLeftPanelWidth(newWidth)
-    }
-    const handleMouseUp = () => setIsResizing(false)
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', handleMouseUp)
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [isResizing])
-
   const priorityVariant: Record<string, 'default' | 'warning' | 'error'> = { Normal: 'default', Priority: 'warning', Urgent: 'error' }
   const fmtDateTime = (s?: string | null) => {
     if (!s) return '-'
@@ -408,97 +387,6 @@ export default function PlanOptimizePage() {
 
       {/* ── Main Content: Left Panel + Map ── */}
       <div className="flex flex-1 min-h-0">
-        {/* Left Panel: Drivers */}
-        {!hideDrivers && (
-          <div
-            className="shrink-0 bg-white border-r border-slate-200/60 flex flex-col"
-            style={{ width: leftPanelWidth }}
-          >
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-slate-500" />
-                <span className="text-[13px] font-semibold text-slate-700">Sürücüler</span>
-              </div>
-              <button
-                onClick={() => setHideDrivers(true)}
-                className="p-1 rounded hover:bg-slate-100 transition-colors"
-                title="Surculeri Gizle"
-              >
-                <EyeOff className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-            </div>
-
-            <div className="px-4 py-2 border-b border-slate-50">
-              <span className="text-[11px] text-slate-400">
-                {selectedDrivers.size} sürücü seçili
-              </span>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-              {isLoadingVehicles ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-5 h-5 animate-spin text-slate-300" />
-                </div>
-              ) : vehicles.length === 0 ? (
-                <div className="text-center py-8 text-[12px] text-slate-400">Sürücü bulunamadı</div>
-              ) : (
-                vehicles.map((v, idx) => {
-                  const color = ROUTE_COLORS[idx % ROUTE_COLORS.length]
-                  const isSelected = selectedDrivers.has(v.id)
-                  const routeForDriver = solution?.routes.find(r => r.vehicleId === v.id)
-
-                  return (
-                    <button
-                      key={v.id}
-                      onClick={() => toggleDriver(v.id)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all ${
-                        isSelected ? 'bg-slate-50 border border-slate-200' : 'border border-transparent hover:bg-slate-50/50'
-                      } ${!v.available ? 'opacity-40' : ''}`}
-                    >
-                      {isSelected ? (
-                        <CheckSquare className="w-4 h-4 text-orange-400 shrink-0" />
-                      ) : (
-                        <Square className="w-4 h-4 text-slate-300 shrink-0" />
-                      )}
-                      <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[12px] font-medium text-slate-700 truncate">
-                          Sürücü {idx + 1}
-                        </div>
-                        <div className="text-[10px] text-slate-400 truncate">{v.plateNumber}</div>
-                      </div>
-                      {routeForDriver && (
-                        <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
-                          {routeForDriver.stops.length}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Resize handle */}
-        {!hideDrivers && (
-          <div
-            onMouseDown={handleMouseDown}
-            className="w-1 bg-slate-200/60 hover:bg-orange-300 cursor-col-resize transition-colors shrink-0"
-          />
-        )}
-
-        {/* Show drivers button when hidden */}
-        {hideDrivers && (
-          <button
-            onClick={() => setHideDrivers(false)}
-            className="shrink-0 w-8 bg-white border-r border-slate-200/60 flex items-center justify-center hover:bg-slate-50 transition-colors"
-            title="Surculeri Göster"
-          >
-            <Eye className="w-4 h-4 text-slate-400" />
-          </button>
-        )}
-
         {/* Center: Map + Bottom Panel */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Map */}
@@ -580,7 +468,44 @@ export default function PlanOptimizePage() {
             )}
           </div>
 
-          {/* ── Bottom Panel ── */}
+          {/* ── Adım 2: Sürücü seçimi (alt panel, grid — solda sidebar YOK) ── */}
+          {step === 2 ? (
+            <div className="shrink-0 bg-white border-t border-slate-200/60 flex flex-col" style={{ height: 320 }}>
+              <div className="px-4 py-2.5 border-b border-slate-100 flex items-center gap-2">
+                <Truck className="w-4 h-4 text-slate-500" />
+                <span className="text-[13px] font-semibold text-slate-700">Sürücüler</span>
+                <span className="text-[11px] text-slate-400">· {selectedDrivers.size} seçili</span>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                {isLoadingVehicles ? (
+                  <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-slate-300" /></div>
+                ) : vehicles.length === 0 ? (
+                  <div className="text-center py-8 text-[12px] text-slate-400">Sürücü bulunamadı</div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                    {vehicles.map((v, idx) => {
+                      const color = ROUTE_COLORS[idx % ROUTE_COLORS.length]
+                      const isSelected = selectedDrivers.has(v.id)
+                      return (
+                        <button
+                          key={v.id}
+                          onClick={() => toggleDriver(v.id)}
+                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all ${isSelected ? 'bg-orange-50 border border-orange-200' : 'border border-slate-200 hover:bg-slate-50'} ${!v.available ? 'opacity-40' : ''}`}
+                        >
+                          {isSelected ? <CheckSquare className="w-4 h-4 text-orange-500 shrink-0" /> : <Square className="w-4 h-4 text-slate-300 shrink-0" />}
+                          <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[12px] font-medium text-slate-700 truncate">Sürücü {idx + 1}</div>
+                            <div className="text-[10px] text-slate-400 truncate">{v.plateNumber}</div>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
           <div className="shrink-0 bg-white border-t border-slate-200/60" style={{ height: 320 }}>
             {/* Tab bar */}
             <div className="flex items-center justify-between px-4 border-b border-slate-100">
@@ -827,6 +752,7 @@ export default function PlanOptimizePage() {
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
 
