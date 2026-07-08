@@ -541,10 +541,10 @@ export default function PlanOptimizePage() {
           </button>
         )}
 
-        {/* Center: Map + Bottom Panel */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Map */}
-          <div className="flex-1 min-h-[300px] relative">
+        {/* Center: Liste (sol) + Harita (sağ) — CSS order ile yan yana */}
+        <div className="flex-1 flex min-w-0">
+          {/* Map (sağ) */}
+          <div className="flex-1 relative order-2 min-w-0">
             {isLoadingOrders && (
               <div className="absolute inset-0 bg-white/60 z-[1000] flex items-center justify-center">
                 <Loader2 className="w-6 h-6 animate-spin text-orange-400" />
@@ -622,8 +622,9 @@ export default function PlanOptimizePage() {
             )}
           </div>
 
-          {/* ── Bottom Panel ── */}
-          <div className="shrink-0 bg-white border-t border-slate-200/60" style={{ height: 320 }}>
+          {/* ── Liste Paneli (sol) — adım 2'de gizli (o adımda sürücü paneli ana liste) ── */}
+          {step !== 2 && (
+          <div className="shrink-0 bg-white border-r border-slate-200/60 order-1 flex flex-col" style={{ width: 460 }}>
             {/* Tab bar */}
             <div className="flex items-center justify-between px-4 border-b border-slate-100">
               <div className="flex">
@@ -681,7 +682,7 @@ export default function PlanOptimizePage() {
             </div>
 
             {/* Tab content */}
-            <div className="overflow-auto" style={{ height: 'calc(100% - 41px)' }}>
+            <div className="flex-1 overflow-auto">
               {/* Orders Tab */}
               {bottomTab === 'orders' && (
                 <table className="w-full text-[12px]">
@@ -869,6 +870,7 @@ export default function PlanOptimizePage() {
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
