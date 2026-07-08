@@ -106,6 +106,7 @@ export default function PlanOptimizePage() {
   const [checkedOrderIds, setCheckedOrderIds] = useState<Set<string>>(new Set())
   const [leftPanelWidth, setLeftPanelWidth] = useState(280)
   const [isResizing, setIsResizing] = useState(false)
+  const [step, setStep] = useState<1 | 2 | 3>(1)
 
   // Load orders for selected date
   const loadOrders = useCallback(async () => {
@@ -138,6 +139,12 @@ export default function PlanOptimizePage() {
 
   useEffect(() => { loadOrders() }, [loadOrders, selectedDate])
   useEffect(() => { loadVehicles() }, [loadVehicles])
+
+  // Adım-tabanlı görünüm: sürücü paneli yalnızca 2. adımda; 3. adımda otomatik "Rotalar" sekmesi.
+  useEffect(() => {
+    setHideDrivers(step !== 2)
+    setBottomTab(step === 3 ? 'routes' : 'orders')
+  }, [step])
 
   // Computed
   // Planlanabilir = koordinatı olan + terminal durumda (teslim/iptal/başarısız) olmayan siparişler.
@@ -367,8 +374,9 @@ export default function PlanOptimizePage() {
           </button>
 
           <button
-            onClick={handlePlanRoutes}
+            onClick={() => { setStep(3); handlePlanRoutes() }}
             disabled={isOptimizing || unscheduledCount === 0}
+            title="Mevcut seçimle hızlı planla"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all"
           >
             {isOptimizing ? (
@@ -377,6 +385,48 @@ export default function PlanOptimizePage() {
               <><Zap className="w-4 h-4" /> Rotalari Planla</>
             )}
           </button>
+        </div>
+      </div>
+
+      {/* ── Stepper (adım-adım akış) ── */}
+      <div className="shrink-0 px-5 py-2.5 bg-white border-b border-slate-200/60 flex items-center gap-2 flex-wrap">
+        {([
+          { n: 1 as const, label: 'Siparişleri Seç' },
+          { n: 2 as const, label: 'Sürücüleri Seç' },
+          { n: 3 as const, label: 'Planla & Rotalar' },
+        ]).map((s, i) => (
+          <div key={s.n} className="flex items-center gap-2">
+            <button
+              onClick={() => setStep(s.n)}
+              className={`flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full text-[12px] font-semibold transition-colors ${
+                step === s.n ? 'bg-orange-500 text-white' : step > s.n ? 'bg-orange-50 text-orange-600' : 'bg-slate-100 text-slate-400'
+              }`}
+            >
+              <span className={`w-5 h-5 rounded-full grid place-items-center text-[11px] ${step === s.n ? 'bg-white/25' : step > s.n ? 'bg-orange-100 text-orange-600' : 'bg-white text-slate-400'}`}>{s.n}</span>
+              {s.label}
+            </button>
+            {i < 2 && <ChevronRight className="w-4 h-4 text-slate-300" />}
+          </div>
+        ))}
+        <div className="ml-auto flex items-center gap-2">
+          {step > 1 && (
+            <button onClick={() => setStep((step - 1) as 1 | 2 | 3)} className="px-3 py-1.5 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-colors">← Geri</button>
+          )}
+          {step === 1 && (
+            <button onClick={() => setStep(2)} className="px-4 py-1.5 rounded-lg bg-slate-800 text-white text-[12px] font-semibold hover:bg-slate-900 transition-colors">İleri: Sürücüler →</button>
+          )}
+          {step === 2 && (
+            <button
+              onClick={() => { setStep(3); handlePlanRoutes() }}
+              disabled={isOptimizing || unscheduledCount === 0 || selectedDrivers.size === 0}
+              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 transition-all"
+            >
+              {isOptimizing ? 'Planlanıyor...' : 'İleri: Rotaları Planla →'}
+            </button>
+          )}
+          {step === 3 && (
+            <button onClick={() => { setSolution(null); setStep(1) }} className="px-4 py-1.5 rounded-lg border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors">↺ Yeni Plan</button>
+          )}
         </div>
       </div>
 
