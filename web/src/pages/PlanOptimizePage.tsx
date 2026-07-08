@@ -140,11 +140,14 @@ export default function PlanOptimizePage() {
   useEffect(() => { loadVehicles() }, [loadVehicles])
 
   // Computed
-  const pendingOrders = useMemo(() => orders.filter(o => o.status === 'Pending'), [orders])
-  const scheduledOrders = useMemo(() => orders.filter(o => o.status === 'Assigned'), [orders])
+  // Planlanabilir = koordinatı olan + terminal durumda (teslim/iptal/başarısız) olmayan siparişler.
+  // Not: durum string'ine (Pending/Draft/ReadyForShipment...) bağlı DEĞİL — plan durumu solution'dan gelir.
+  const plannableOrders = useMemo(
+    () => orders.filter(o =>
+      (o.destinationLat || o.originLat) && (o.destinationLng || o.originLng) &&
+      o.status !== 'Delivered' && o.status !== 'Cancelled' && o.status !== 'Failed'),
+    [orders])
 
-  const scheduledCount = scheduledOrders.length
-  const unscheduledCount = pendingOrders.length
   const totalCount = orders.length
   const routeCount = solution?.routes.length || 0
 
@@ -164,6 +167,10 @@ export default function PlanOptimizePage() {
     }
     return map
   }, [solution])
+
+  // Plan durumu solution'a göre: atanan = planlanmış, kalan planlanabilir = planlanmamış.
+  const scheduledCount = orderDriverMap.size
+  const unscheduledCount = plannableOrders.filter(o => !orderDriverMap.has(o.id)).length
 
   // Map points for bounds
   const allMapPoints = useMemo<[number, number][]>(() => {
@@ -186,8 +193,8 @@ export default function PlanOptimizePage() {
       toast('warning', 'En az 1 sürücü seçmelisiniz')
       return
     }
-    const stopsToOptimize = pendingOrders
-      .filter(o => (o.destinationLat || o.originLat) && (o.destinationLng || o.originLng))
+    const stopsToOptimize = plannableOrders
+      .filter(o => !orderDriverMap.has(o.id))
       .map(o => ({
         id: o.id,
         address: `${o.customerName} - ${o.destinationCity || o.originCity || ''}`,
@@ -297,7 +304,11 @@ export default function PlanOptimizePage() {
   }, [isResizing])
 
   const priorityVariant: Record<string, 'default' | 'warning' | 'error'> = { Normal: 'default', Priority: 'warning', Urgent: 'error' }
-  const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'orange'> = { Pending: 'warning', Assigned: 'info', InTransit: 'orange', Delivered: 'success', Failed: 'error', Cancelled: 'default' }
+  const fmtDateTime = (s?: string | null) => {
+    if (!s) return '-'
+    const d = new Date(s)
+    return isNaN(d.getTime()) ? '-' : d.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
@@ -357,7 +368,7 @@ export default function PlanOptimizePage() {
 
           <button
             onClick={handlePlanRoutes}
-            disabled={isOptimizing || pendingOrders.length === 0}
+            disabled={isOptimizing || unscheduledCount === 0}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all"
           >
             {isOptimizing ? (
@@ -652,7 +663,7 @@ export default function PlanOptimizePage() {
                           <td className="px-3 py-2 text-slate-600">{o.destinationCity || o.originCity}</td>
                           <td className="px-3 py-2 text-slate-500 max-w-[180px] truncate">{o.destinationAddress || o.originAddress || '-'}</td>
                           <td className="px-3 py-2 text-right text-slate-500">15 dk</td>
-                          <td className="px-3 py-2 text-slate-500">{o.requestedDeliveryDate || '-'}</td>
+                          <td className="px-3 py-2 text-slate-500">{fmtDateTime(o.requestedDeliveryDate)}</td>
                           <td className="px-3 py-2 text-center">
                             {assignment ? (
                               <span className="inline-flex items-center gap-1">
@@ -660,7 +671,7 @@ export default function PlanOptimizePage() {
                                 <span className="text-slate-600 font-medium">{assignment.plateNumber}</span>
                               </span>
                             ) : (
-                              <Badge variant={statusVariant[o.status]}>{o.status}</Badge>
+                              <span className="text-[11px] text-slate-400">Atanmadı</span>
                             )}
                           </td>
                           <td className="px-3 py-2 text-center text-slate-500">
