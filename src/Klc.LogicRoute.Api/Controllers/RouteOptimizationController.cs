@@ -32,8 +32,8 @@ public class RouteOptimizationController(
         {
             id = v.Id.ToString(),
             plateNumber = v.PlateNumber,
-            capacityKg = v.Tonnage ?? 5000m,
-            capacityM3 = (v.Tonnage ?? 5000m) * 0.005m,
+            capacityKg = (v.Tonnage ?? 5m) * 1000m,   // Tonnage TON cinsinden → KG'a çevir (3.5 ton = 3500 kg)
+            capacityM3 = (v.Tonnage ?? 5m) * 6m,       // ~6 m³/ton — hacim kısıtı bağlayıcı olmasın
             costPerKm = v.VehicleType switch
             {
                 VehicleCategory.Tir => 18.0,
