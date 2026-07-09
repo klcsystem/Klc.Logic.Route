@@ -22,15 +22,28 @@ public class OsrmDistanceMatrixProvider : IDistanceMatrixProvider
         _baseUrl = configuration["Routing:OsrmBaseUrl"] ?? "https://router.project-osrm.org";
     }
 
+    // Public OSRM /table demo sunucusu ~100 koordinat ile sınırlı; üstünde istek asılı kalır/reddedilir.
+    private const int OsrmMaxPoints = 100;
+
     public async Task<DistanceMatrixResult> GetDistanceMatrixAsync(DistanceMatrixPoint[] points, CancellationToken cancellationToken = default)
     {
+        // Çok fazla nokta → public OSRM /table kaldırmaz (asılı kalır); doğrudan Haversine'e düş.
+        if (points.Length > OsrmMaxPoints)
+        {
+            _logger.LogInformation("Matris {Count} nokta > {Max} sınırı; OSRM atlanıp Haversine kullanılıyor", points.Length, OsrmMaxPoints);
+            return CalculateHaversineMatrix(points);
+        }
+
         try
         {
-            return await GetOsrmMatrixAsync(points, cancellationToken);
+            // Yavaş/yanıtsız demo sunucu isteği asılı bırakmasın diye kısa timeout.
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(10));
+            return await GetOsrmMatrixAsync(points, cts.Token);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "OSRM matrix request failed, falling back to Haversine");
+            _logger.LogWarning(ex, "OSRM matrix isteği başarısız/timeout, Haversine'e düşülüyor");
             return CalculateHaversineMatrix(points);
         }
     }
