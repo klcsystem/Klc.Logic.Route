@@ -658,9 +658,19 @@ export default function PlanOptimizePage() {
               {bottomTab === 'routes' && (
                 <>
                   {!solution ? (
-                    <div className="flex items-center justify-center py-12 text-[13px] text-slate-400">
-                      <MapPin className="w-5 h-5 mr-2 text-slate-300" />
-                      Henüz rota planlanmadı - yukarıdaki "Rotaları Planla" butonunu kullanın
+                    <div className="flex flex-col items-center justify-center py-12 gap-3">
+                      <MapPin className="w-8 h-8 text-slate-300" />
+                      <p className="text-[13px] text-slate-400">Henüz rota planlanmadı</p>
+                      <button
+                        onClick={handlePlanRoutes}
+                        disabled={isOptimizing || selectedDrivers.size === 0}
+                        className="px-5 py-2.5 rounded-lg bg-orange-500 text-white text-[13px] font-semibold hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {isOptimizing ? 'Planlanıyor...' : '⚡ Rotaları Planla'}
+                      </button>
+                      {selectedDrivers.size === 0 && (
+                        <p className="text-[11px] text-amber-500">Önce 2. adımdan en az bir sürücü seçin</p>
+                      )}
                     </div>
                   ) : (
                     <table className="w-full text-[12px]">

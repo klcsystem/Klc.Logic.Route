@@ -28,27 +28,39 @@ public class RouteOptimizationController(
     {
         var tenantId = tenantProvider.GetTenantId();
         var vehicles = await vehicleRepository.GetAllAsync(tenantId);
-        var result = vehicles.Select(v => new
+        var result = vehicles.Select(v =>
         {
-            id = v.Id.ToString(),
-            plateNumber = v.PlateNumber,
-            capacityKg = (v.Tonnage ?? 5m) * 1000m,   // Tonnage TON cinsinden → KG'a çevir (3.5 ton = 3500 kg)
-            capacityM3 = (v.Tonnage ?? 5m) * 6m,       // ~6 m³/ton — hacim kısıtı bağlayıcı olmasın
-            costPerKm = v.VehicleType switch
+            var capacityKg = NormalizeCapacityKg(v.Tonnage);
+            return new
             {
-                VehicleCategory.Tir => 18.0,
-                VehicleCategory.Kamyon => 12.5,
-                VehicleCategory.Kamyonet => 8.0,
-                VehicleCategory.Frigorifik => 16.0,
-                _ => 10.0
-            },
-            startLat = 41.0082,
-            startLng = 28.9784,
-            available = v.IsActive,
-            vehicleType = v.VehicleType.ToString(),
-            bodyType = v.BodyType,
+                id = v.Id.ToString(),
+                plateNumber = v.PlateNumber,
+                capacityKg,
+                capacityM3 = capacityKg / 1000m * 6m,   // ~6 m³/ton — hacim kısıtı bağlayıcı olmasın
+                costPerKm = v.VehicleType switch
+                {
+                    VehicleCategory.Tir => 18.0,
+                    VehicleCategory.Kamyon => 12.5,
+                    VehicleCategory.Kamyonet => 8.0,
+                    VehicleCategory.Frigorifik => 16.0,
+                    _ => 10.0
+                },
+                startLat = 41.0082,
+                startLng = 28.9784,
+                available = v.IsActive,
+                vehicleType = v.VehicleType.ToString(),
+                bodyType = v.BodyType,
+            };
         });
         return Ok(ApiResponse<object>.Ok(result));
+    }
+
+    // tonnage kolonu karışık birimde girilmiş: kimi kayıt TON (3.5, 25 → migration), kimi KG (2500, 24000 → SAP ingestion).
+    // <=100 ise ton kabul edip kg'a çevir, aksi halde zaten kg. Böylece her iki veri kaynağı da doğru kapasite verir.
+    private static decimal NormalizeCapacityKg(decimal? tonnage)
+    {
+        var t = tonnage ?? 5m;
+        return t <= 100m ? t * 1000m : t;
     }
 
     [HttpPost("solve")]
