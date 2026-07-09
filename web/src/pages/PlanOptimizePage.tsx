@@ -104,6 +104,8 @@ export default function PlanOptimizePage() {
   const [isLoadingOrders, setIsLoadingOrders] = useState(false)
   const [isLoadingVehicles, setIsLoadingVehicles] = useState(false)
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [isDispatching, setIsDispatching] = useState(false)
+  const [dispatched, setDispatched] = useState(false)
 
   // UI state
   const [selectedDrivers, setSelectedDrivers] = useState<Set<string>>(new Set())
@@ -252,6 +254,28 @@ export default function PlanOptimizePage() {
       toast('error', err instanceof Error ? err.message : 'Optimizasyon hatası')
     } finally {
       setIsOptimizing(false)
+    }
+  }
+
+  // Rotaları sürücülere sevk et — order→InShipment, shipment'a sürücü+plaka, Canlı Takip'e düşer
+  const handleDispatch = async () => {
+    if (!solution || solution.routes.length === 0) {
+      toast('warning', 'Önce rota planlayın')
+      return
+    }
+    setIsDispatching(true)
+    try {
+      const res = await routeOptimizationApi.dispatch(solution)
+      if (res.success && res.data) {
+        setDispatched(true)
+        toast('success', res.data.message || 'Rotalar sürücülere sevk edildi')
+      } else {
+        toast('error', res.message || 'Sevk başarısız')
+      }
+    } catch (err: unknown) {
+      toast('error', err instanceof Error ? err.message : 'Sevk hatası')
+    } finally {
+      setIsDispatching(false)
     }
   }
 
@@ -673,6 +697,29 @@ export default function PlanOptimizePage() {
                       )}
                     </div>
                   ) : (
+                    <>
+                      {/* Sevk aksiyon çubuğu — planlanan rotaları sürücülere gönder */}
+                      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-orange-50 to-white border-b border-orange-100">
+                        <div className="text-[12px] text-slate-600">
+                          <span className="font-semibold text-slate-800">{solution.routes.length} rota</span> · {solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak planlandı
+                        </div>
+                        {dispatched ? (
+                          <div className="flex items-center gap-3">
+                            <span className="text-[12px] font-medium text-green-600">✓ Sürücülere sevk edildi</span>
+                            <button onClick={() => navigate('/tracking')} className="px-4 py-2 rounded-lg bg-slate-800 text-white text-[12px] font-semibold hover:bg-slate-900 transition-colors">
+                              Canlı Takip'e Git →
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleDispatch}
+                            disabled={isDispatching}
+                            className="px-4 py-2 rounded-lg bg-green-600 text-white text-[12px] font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {isDispatching ? 'Sevk ediliyor...' : '✅ Rotaları Onayla ve Sürücülere Gönder'}
+                          </button>
+                        )}
+                      </div>
                     <table className="w-full text-[12px]">
                       <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-100">
@@ -772,6 +819,7 @@ export default function PlanOptimizePage() {
                         </tr>
                       </tfoot>
                     </table>
+                    </>
                   )}
                 </>
               )}

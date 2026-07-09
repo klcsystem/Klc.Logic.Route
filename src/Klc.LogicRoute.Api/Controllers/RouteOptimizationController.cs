@@ -21,6 +21,9 @@ public class RouteOptimizationController(
     IMidRouteStopService midRouteStopService,
     IRouteOptimizationRepository optimizationRepository,
     IVehicleRepository vehicleRepository,
+    IShipmentRepository shipmentRepository,
+    IOrderRepository orderRepository,
+    IDriverRepository driverRepository,
     ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpGet("vehicles")]
@@ -184,6 +187,112 @@ public class RouteOptimizationController(
 
         return Ok(ApiResponse<object>.Ok(frontendSolution));
     }
+
+    /// <summary>
+    /// Planlanan rotaları sürücülere SEVK eder: her rotanın siparişlerini bir sürücüye atar,
+    /// shipment'a sürücü adı/telefon/plaka + InTransit durumu yazar (yoksa order'dan oluşturur),
+    /// order'ı InShipment'a çeker. Böylece sürücü mobilde rotasını görür ve Canlı Takip'e düşer.
+    /// </summary>
+    [HttpPost("dispatch")]
+    public async Task<ActionResult<ApiResponse<object>>> Dispatch([FromBody] DispatchRequest request)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userId = tenantProvider.GetUserId();
+
+        if (request.Routes is null || request.Routes.Count == 0)
+            return BadRequest(ApiResponse<object>.Fail("Sevk edilecek rota yok"));
+
+        var drivers = (await driverRepository.GetAllAsync(tenantId)).Where(d => d.IsActive).ToList();
+        if (drivers.Count == 0)
+            return BadRequest(ApiResponse<object>.Fail("Atanacak aktif sürücü bulunamadı"));
+
+        var existingShipments = (await shipmentRepository.GetAllAsync(tenantId, 1, 1000)).ToList();
+
+        var dispatchedOrders = 0;
+        var shipmentsCreated = 0;
+        var assignments = new List<object>();
+        var driverIdx = 0;
+
+        foreach (var route in request.Routes)
+        {
+            if (route.OrderIds is null || route.OrderIds.Count == 0) continue;
+
+            // Her rotaya bir sürücü ata (araç↔sürücü net eşleşmesi olmadığından aktif sürücülerden sırayla).
+            var driver = drivers[driverIdx % drivers.Count];
+            driverIdx++;
+            var routeOrderCount = 0;
+
+            foreach (var oid in route.OrderIds)
+            {
+                if (!Guid.TryParse(oid, out var orderId)) continue;
+                var order = await orderRepository.GetByIdAsync(orderId, tenantId);
+                if (order is null) continue;
+
+                var shipment = existingShipments.FirstOrDefault(s => s.OrderId == orderId);
+                if (shipment is null)
+                {
+                    shipment = new Shipment
+                    {
+                        Id = Guid.NewGuid(),
+                        TenantId = tenantId,
+                        ShipmentNumber = $"SHP-{order.OrderNumber}",
+                        OrderId = orderId,
+                        OriginAddress = order.OriginAddress,
+                        OriginCity = order.OriginCity,
+                        DestinationAddress = order.DestinationAddress,
+                        DestinationCity = order.DestinationCity,
+                        TotalWeightKg = order.TotalWeightKg,
+                        TotalVolumeM3 = order.TotalVolumeM3,
+                        PalletCount = order.PalletCount,
+                        IsHazardous = order.IsHazardous,
+                        RequiresColdChain = order.RequiresColdChain,
+                        TemperatureMin = order.TemperatureMin,
+                        TemperatureMax = order.TemperatureMax,
+                        RequestedDeliveryDate = order.RequestedDeliveryDate,
+                        Currency = order.Currency,
+                        Status = ShipmentStatus.InTransit,
+                        Priority = ShipmentPriority.Normal,
+                        DriverName = driver.FullName,
+                        DriverPhone = driver.Phone,
+                        VehiclePlate = route.VehiclePlate,
+                        Notes = "Rota optimizasyonu ile sevk edildi",
+                        CreatedBy = userId,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await shipmentRepository.InsertAsync(shipment);
+                    shipmentsCreated++;
+                }
+                else
+                {
+                    shipment.Status = ShipmentStatus.InTransit;
+                    shipment.DriverName = driver.FullName;
+                    shipment.DriverPhone = driver.Phone;
+                    shipment.VehiclePlate = route.VehiclePlate;
+                    shipment.UpdatedBy = userId;
+                    await shipmentRepository.UpdateAsync(shipment);
+                }
+
+                await orderRepository.UpdateStatusAsync(orderId, tenantId, (int)OrderStatus.InShipment);
+                dispatchedOrders++;
+                routeOrderCount++;
+            }
+
+            if (routeOrderCount > 0)
+                assignments.Add(new { driver = driver.FullName, phone = driver.Phone, plate = route.VehiclePlate, orders = routeOrderCount });
+        }
+
+        return Ok(ApiResponse<object>.Ok(new
+        {
+            dispatchedOrders,
+            shipmentsCreated,
+            driversAssigned = assignments.Count,
+            assignments,
+            message = $"{dispatchedOrders} sipariş {assignments.Count} sürücüye sevk edildi"
+        }));
+    }
+
+    public record DispatchRoute(string? VehicleId, string? VehiclePlate, List<string> OrderIds);
+    public record DispatchRequest(List<DispatchRoute> Routes);
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ApiResponse<RouteOptimizationResult>>> GetById(Guid id)

@@ -94,4 +94,22 @@ export const routeOptimizationApi = {
 
   getStops: () =>
     api.get<ApiResponse<VrpStop[]>>('/route-optimization/stops').then(r => r.data),
+
+  // Planlanan rotaları sürücülere sevk et (order→InShipment, shipment'a sürücü+plaka, Canlı Takip'e düşer)
+  dispatch: (solution: VrpSolution) => {
+    const routes = solution.routes.map(r => ({
+      vehicleId: r.vehicleId,
+      vehiclePlate: r.plateNumber,
+      orderIds: r.stops.map(s => s.stopId),
+    }))
+    return api.post<ApiResponse<DispatchResult>>('/route-optimization/dispatch', { routes }).then(r => r.data)
+  },
+}
+
+export interface DispatchResult {
+  dispatchedOrders: number
+  shipmentsCreated: number
+  driversAssigned: number
+  assignments: { driver: string; phone: string; plate: string; orders: number }[]
+  message: string
 }
