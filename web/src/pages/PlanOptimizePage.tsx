@@ -217,7 +217,11 @@ export default function PlanOptimizePage() {
       toast('warning', 'En az 1 sürücü seçmelisiniz')
       return
     }
-    const stopsToOptimize = plannableOrders
+    // Kullanıcının 1. adımda SEÇTİĞİ siparişleri planla (hiç seçim yoksa tüm planlanabilirler)
+    const ordersToPlan = checkedOrderIds.size > 0
+      ? plannableOrders.filter(o => checkedOrderIds.has(o.id))
+      : plannableOrders
+    const stopsToOptimize = ordersToPlan
       .filter(o => !orderDriverMap.has(o.id))
       .map(o => ({
         id: o.id,
@@ -230,7 +234,7 @@ export default function PlanOptimizePage() {
       }))
 
     if (stopsToOptimize.length === 0) {
-      toast('warning', 'Optimize edilecek koordinatli sipariş yok')
+      toast('warning', checkedOrderIds.size > 0 ? 'Seçili siparişlerin koordinatı yok' : 'Optimize edilecek koordinatli sipariş yok')
       return
     }
 
