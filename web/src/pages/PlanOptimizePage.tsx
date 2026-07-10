@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Loader2, Calendar, Upload, Truck, Package, Route, MapPin,
   ChevronLeft, ChevronRight, Plus, Trash2, Copy, XCircle,
-  CheckSquare, Square, Clock,
+  CheckSquare, Square, Clock, Weight, Gauge,
 } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
@@ -136,7 +136,7 @@ export default function PlanOptimizePage() {
       if (res.success && res.data) {
         const v = Array.isArray(res.data) ? res.data : []
         setVehicles(v)
-        setSelectedDrivers(new Set(v.filter(d => d.available).map(d => d.id)))
+        // Hazır seçili GELMESİN — kullanıcı sürücüleri kendisi seçsin (boş başla)
       }
     } catch { /* fallback */ }
     finally { setIsLoadingVehicles(false) }
@@ -289,9 +289,10 @@ export default function PlanOptimizePage() {
     })
   }
 
-  const allDriversSelected = vehicles.length > 0 && selectedDrivers.size === vehicles.length
+  const availableVehicles = vehicles.filter(v => v.available)
+  const allDriversSelected = availableVehicles.length > 0 && availableVehicles.every(v => selectedDrivers.has(v.id))
   const toggleAllDrivers = () => {
-    setSelectedDrivers(allDriversSelected ? new Set() : new Set(vehicles.map(v => v.id)))
+    setSelectedDrivers(allDriversSelected ? new Set() : new Set(availableVehicles.map(v => v.id)))
   }
 
   // Order check toggle
@@ -525,21 +526,34 @@ export default function PlanOptimizePage() {
                 ) : vehicles.length === 0 ? (
                   <div className="text-center py-8 text-[12px] text-slate-400">Sürücü bulunamadı</div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
                     {vehicles.map((v, idx) => {
                       const color = ROUTE_COLORS[idx % ROUTE_COLORS.length]
                       const isSelected = selectedDrivers.has(v.id)
                       return (
                         <button
                           key={v.id}
-                          onClick={() => toggleDriver(v.id)}
-                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all ${isSelected ? 'bg-orange-50 border border-orange-200' : 'border border-slate-200 hover:bg-slate-50'} ${!v.available ? 'opacity-40' : ''}`}
+                          onClick={() => v.available && toggleDriver(v.id)}
+                          disabled={!v.available}
+                          className={`flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all ${isSelected ? 'bg-orange-50 border-2 border-orange-300 shadow-sm' : 'border border-slate-200 hover:border-slate-300 hover:bg-slate-50'} ${!v.available ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                          {isSelected ? <CheckSquare className="w-4 h-4 text-orange-500 shrink-0" /> : <Square className="w-4 h-4 text-slate-300 shrink-0" />}
-                          <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                          {isSelected ? <CheckSquare className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" /> : <Square className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" />}
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}1a` }}>
+                            <Truck className="w-5 h-5" style={{ color }} />
+                          </div>
                           <div className="min-w-0 flex-1">
-                            <div className="text-[12px] font-medium text-slate-700 truncate">Sürücü {idx + 1}</div>
-                            <div className="text-[10px] text-slate-400 truncate">{v.plateNumber} · {v.capacityKg.toLocaleString()} kg · {v.capacityM3} m³</div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[13px] font-semibold text-slate-800 truncate">{v.plateNumber}</span>
+                              {v.vehicleType && <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 shrink-0 uppercase">{v.vehicleType}</span>}
+                            </div>
+                            <div className="flex items-center gap-2.5 mt-1 text-[10px] text-slate-500">
+                              <span className="inline-flex items-center gap-0.5"><Weight className="w-3 h-3 text-slate-400" />{v.capacityKg.toLocaleString()} kg</span>
+                              <span className="inline-flex items-center gap-0.5"><Package className="w-3 h-3 text-slate-400" />{v.capacityM3} m³</span>
+                            </div>
+                            <div className="flex items-center gap-2.5 mt-0.5 text-[10px] text-slate-400">
+                              {v.bodyType && <span className="truncate">{v.bodyType}</span>}
+                              <span className="inline-flex items-center gap-0.5 shrink-0"><Gauge className="w-3 h-3" />{v.costPerKm}₺/km</span>
+                            </div>
                           </div>
                           <span className={`shrink-0 text-[9px] font-semibold px-1.5 py-0.5 rounded ${v.available ? 'text-green-600 bg-green-50' : 'text-red-500 bg-red-50'}`}>
                             {v.available ? 'Müsait' : 'Meşgul'}

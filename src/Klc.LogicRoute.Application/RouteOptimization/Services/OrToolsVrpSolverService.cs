@@ -208,8 +208,10 @@ public class OrToolsVrpSolverService : IVrpSolverService
         var countDimension = routing.GetMutableDimension("StopCount");
         countDimension.SetGlobalSpanCostCoefficient(50);
 
-        // Allow drops (unserved stops) with a high penalty so the solver prefers serving them
-        var dropPenalty = (long)(1000 * DistanceScaleFactor);
+        // Duraklar mümkün olduğunca DÜŞÜRÜLMESİN: drop cezası herhangi bir rota maliyetinden çok yüksek.
+        // Böylece kapasite/zaman açısından servis edilebilen HER durak bir araca atanır (uzak duraklar
+        // uzun rota pahasına da olsa). Yalnızca gerçekten olanaksız (kapasiteye sığmayan) duraklar düşer.
+        var dropPenalty = (long)(100_000 * DistanceScaleFactor);
         for (var s = 0; s < stopCount; s++)
         {
             routing.AddDisjunction(

@@ -10,6 +10,8 @@ export interface VrpVehicle {
   startLat: number
   startLng: number
   available: boolean
+  vehicleType?: string
+  bodyType?: string
 }
 
 export interface VrpStop {
