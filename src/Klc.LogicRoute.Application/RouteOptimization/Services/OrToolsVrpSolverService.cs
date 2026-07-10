@@ -107,8 +107,11 @@ public class OrToolsVrpSolverService : IVrpSolverService
             return (long)(travelMinutes * DurationScaleFactor);
         });
 
-        // Max route duration: 24 hours in scaled minutes
-        var maxRouteDuration = (long)(24 * 60 * DurationScaleFactor);
+        // Max route duration: çok-günlük rotalara izin ver (10 gün). Tek İstanbul deposundan
+        // ülke geneline dağılmış duraklarda 24 saatlik sınır, uzak durakları (Van ~40h gidiş-dönüş)
+        // düşürüyordu. Kullanıcı tercihi "hepsi atansın" olduğundan süreyi bağlayıcı olmaktan çıkarıyoruz;
+        // artık yalnızca gerçekten kapasiteye sığmayan duraklar düşer.
+        var maxRouteDuration = (long)(240 * 60 * DurationScaleFactor);
         routing.AddDimension(
             durationCallback,
             maxRouteDuration, // allow waiting (slack)
