@@ -11,6 +11,7 @@ import Badge from '../components/ui/Badge'
 import TimelineView from '../components/route-optimizer/TimelineView'
 import { routeOptimizationApi } from '../api/routeOptimization'
 import { ordersApi } from '../api/orders'
+import { shipmentsApi } from '../api/shipments'
 import { toast } from '../components/ui/Toast'
 import type { VrpVehicle, VrpSolution, VrpRoute } from '../api/routeOptimization'
 import type { Order } from '../types'
@@ -106,6 +107,8 @@ export default function PlanOptimizePage() {
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [isDispatching, setIsDispatching] = useState(false)
   const [dispatched, setDispatched] = useState(false)
+  // Kalıcı atama: sevk edilmiş siparişlerin sürücüsü (shipment'lardan) — order_id -> {sürücü, plaka, durum}
+  const [assignMap, setAssignMap] = useState<Map<string, { driverName: string; plate: string; status: string }>>(new Map())
 
   // UI state
   const [selectedDrivers, setSelectedDrivers] = useState<Set<string>>(new Set())
@@ -128,6 +131,21 @@ export default function PlanOptimizePage() {
     }
   }, [])
 
+  // Sevk edilmiş siparişlerin sürücüsünü shipment'lardan yükle (kalıcı atama tabloda görünsün)
+  const loadAssignments = useCallback(async () => {
+    try {
+      const res = await shipmentsApi.getAll({ pageSize: 500 })
+      const items = res.data?.items || []
+      const m = new Map<string, { driverName: string; plate: string; status: string }>()
+      for (const s of items) {
+        if (s.orderId && s.driverName) {
+          m.set(s.orderId, { driverName: s.driverName, plate: s.vehiclePlate || '', status: String(s.status) })
+        }
+      }
+      setAssignMap(m)
+    } catch { /* atama yüklenemezse sessiz geç */ }
+  }, [])
+
   // Load vehicles/drivers
   const loadVehicles = useCallback(async () => {
     setIsLoadingVehicles(true)
@@ -142,7 +160,7 @@ export default function PlanOptimizePage() {
     finally { setIsLoadingVehicles(false) }
   }, [])
 
-  useEffect(() => { loadOrders() }, [loadOrders, selectedDate])
+  useEffect(() => { loadOrders(); loadAssignments() }, [loadOrders, loadAssignments, selectedDate])
   useEffect(() => { loadVehicles() }, [loadVehicles])
 
   // Adım-tabanlı görünüm: 3. adımda otomatik "Rotalar" sekmesi.
@@ -273,6 +291,9 @@ export default function PlanOptimizePage() {
       if (res.success && res.data) {
         setDispatched(true)
         toast('success', res.data.message || 'Rotalar sürücülere sevk edildi')
+        // Sevk kaydı siparişlere düşsün: durum + atanan sürücü tablodan görünsün
+        loadOrders()
+        loadAssignments()
       } else {
         toast('error', res.message || 'Sevk başarısız')
       }
@@ -655,6 +676,7 @@ export default function PlanOptimizePage() {
                   <tbody>
                     {orders.map(o => {
                       const assignment = orderDriverMap.get(o.id)
+                      const persisted = assignMap.get(o.id)
                       return (
                         <tr key={o.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                           <td className="w-8 px-2 py-2">
@@ -679,12 +701,19 @@ export default function PlanOptimizePage() {
                                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: assignment.color }} />
                                 <span className="text-slate-600 font-medium">{assignment.plateNumber}</span>
                               </span>
+                            ) : persisted ? (
+                              <span className="inline-flex items-center gap-1" title={persisted.plate}>
+                                <span className="w-2 h-2 rounded-full bg-green-500" />
+                                <span className="text-slate-700 font-medium">{persisted.driverName}</span>
+                              </span>
                             ) : (
                               <span className="text-[11px] text-slate-400">Atanmadı</span>
                             )}
                           </td>
                           <td className="px-3 py-2 text-center text-slate-500">
-                            {assignment ? `#${assignment.seq}` : '-'}
+                            {assignment ? `#${assignment.seq}` : persisted ? (
+                              <span className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">Sevk edildi</span>
+                            ) : '-'}
                           </td>
                         </tr>
                       )
