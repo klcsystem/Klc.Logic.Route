@@ -16,6 +16,15 @@ public interface IInsuranceRepository
     Task<Guid> InsertQuoteAsync(InsuranceQuote quote);
     Task UpdateQuoteAsync(InsuranceQuote quote);
 
+    // Broker kullanıcıları
+    Task<InsuranceBrokerUser?> GetBrokerUserByEmailAsync(string email);
+    Task<InsuranceBrokerUser?> GetBrokerUserByIdAsync(Guid id);
+    Task<Guid> InsertBrokerUserAsync(InsuranceBrokerUser user);
+    Task UpdateBrokerLastLoginAsync(Guid id);
+
+    // Zenginleştirilmiş (sevkiyat join'li) teklif görünümleri — broker portalı için
+    Task<IEnumerable<BrokerQuoteView>> GetPartnerQuoteViewsAsync(Guid partnerId);
+
     // Policies
     Task<InsurancePolicy?> GetPolicyByIdAsync(Guid id);
     Task<IEnumerable<InsurancePolicy>> GetPoliciesByTenantAsync(Guid tenantId, int page = 1, int pageSize = 50);

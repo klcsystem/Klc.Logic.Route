@@ -2,6 +2,7 @@ using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
 using Klc.LogicRoute.Application.Insurance;
 using Klc.LogicRoute.Domain.Entities;
+using Klc.LogicRoute.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 public class InsuranceController(
     IInsuranceService insuranceService,
     IRiskScoringService riskScoringService,
+    IJwtTokenService jwtTokenService,
     ITenantProvider tenantProvider) : ControllerBase
 {
     /// <summary>Request quotes from all active insurance partners</summary>
@@ -115,5 +117,90 @@ public class InsuranceController(
         {
             return BadRequest(ApiResponse<InsuranceQuote>.Fail(ex.Message));
         }
+    }
+
+    // ══════════════════ BROKER PORTALI (bireysel, hesap verebilir kullanıcılar) ══════════════════
+
+    public record BrokerLoginRequest(string Email, string Password);
+    public record BrokerSubmitRequest(Guid QuoteId, decimal PremiumAmount, DateTime? ValidUntil);
+    public record CreateBrokerUserRequest(Guid PartnerId, string FullName, string Email, string Password);
+
+    /// <summary>Broker kullanıcısı girişi (e-posta/şifre) → JWT</summary>
+    [HttpPost("broker/login")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<object>>> BrokerLogin([FromBody] BrokerLoginRequest req)
+    {
+        var result = await insuranceService.BrokerLoginAsync(req.Email, req.Password);
+        if (result == null)
+            return Unauthorized(ApiResponse<object>.Fail("E-posta veya şifre hatalı"));
+
+        var token = jwtTokenService.GenerateBrokerToken(
+            result.User.Id, result.User.FullName, result.User.Email, result.User.PartnerId, result.User.TenantId);
+
+        return Ok(ApiResponse<object>.Ok(new
+        {
+            token,
+            name = result.User.FullName,
+            email = result.User.Email,
+            partnerName = result.PartnerName,
+        }));
+    }
+
+    /// <summary>Broker'ın partneri için tüm teklifler (bekleyen + verilen), sevkiyat detaylarıyla</summary>
+    [HttpGet("broker/quotes")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<IEnumerable<BrokerQuoteView>>>> BrokerQuotes()
+    {
+        if (!TryGetBrokerPartner(out var partnerId, out _, out _))
+            return Forbid();
+        var views = await insuranceService.GetPartnerQuoteViewsAsync(partnerId);
+        return Ok(ApiResponse<IEnumerable<BrokerQuoteView>>.Ok(views));
+    }
+
+    /// <summary>Broker teklif verir — kim verdiği kaydedilir</summary>
+    [HttpPost("broker/submit-quote")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<InsuranceQuote>>> BrokerSubmitQuote([FromBody] BrokerSubmitRequest req)
+    {
+        if (!TryGetBrokerPartner(out var partnerId, out var brokerId, out var brokerName))
+            return Forbid();
+        try
+        {
+            var validUntil = req.ValidUntil ?? DateTime.UtcNow.AddDays(7);
+            var quote = await insuranceService.SubmitQuoteByBrokerAsync(partnerId, brokerId, brokerName, req.QuoteId, req.PremiumAmount, validUntil);
+            return Ok(ApiResponse<InsuranceQuote>.Ok(quote, "Teklif gönderildi"));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<InsuranceQuote>.Fail(ex.Message));
+        }
+    }
+
+    /// <summary>Admin: broker kullanıcısı oluşturur (Kronos çalışanı ekleme)</summary>
+    [HttpPost("broker/users")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ApiResponse<object>>> CreateBrokerUser([FromBody] CreateBrokerUserRequest req)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var userId = tenantProvider.GetUserId();
+        try
+        {
+            var user = await insuranceService.CreateBrokerUserAsync(req.PartnerId, req.FullName, req.Email, req.Password, tenantId, userId);
+            return Ok(ApiResponse<object>.Ok(new { user.Id, user.FullName, user.Email }, "Broker kullanıcısı oluşturuldu"));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ApiResponse<object>.Fail(ex.Message));
+        }
+    }
+
+    // JWT claim'lerinden broker kimliğini çöz (broker olmayan token'lar için false)
+    private bool TryGetBrokerPartner(out Guid partnerId, out Guid brokerId, out string brokerName)
+    {
+        partnerId = Guid.Empty; brokerId = Guid.Empty; brokerName = "";
+        var pid = User.FindFirst("partner_id")?.Value;
+        var bid = User.FindFirst("broker_id")?.Value;
+        brokerName = User.FindFirst("name")?.Value ?? "Broker";
+        return Guid.TryParse(pid, out partnerId) && Guid.TryParse(bid, out brokerId);
     }
 }

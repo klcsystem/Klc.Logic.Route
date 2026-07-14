@@ -133,4 +133,59 @@ public class InsuranceService(
         await insuranceRepository.UpdateQuoteAsync(quote);
         return quote;
     }
+
+    // ── Broker portalı: bireysel kullanıcı + hesap verebilirlik ──
+    public async Task<BrokerLoginResult?> BrokerLoginAsync(string email, string password)
+    {
+        var user = await insuranceRepository.GetBrokerUserByEmailAsync(email);
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            return null;
+        var partner = await insuranceRepository.GetPartnerByIdAsync(user.PartnerId);
+        await insuranceRepository.UpdateBrokerLastLoginAsync(user.Id);
+        return new BrokerLoginResult { User = user, PartnerName = partner?.Name ?? "Broker" };
+    }
+
+    public Task<IEnumerable<BrokerQuoteView>> GetPartnerQuoteViewsAsync(Guid partnerId)
+        => insuranceRepository.GetPartnerQuoteViewsAsync(partnerId);
+
+    public async Task<InsuranceQuote> SubmitQuoteByBrokerAsync(
+        Guid partnerId, Guid brokerUserId, string brokerName, Guid quoteId, decimal premiumAmount, DateTime validUntil)
+    {
+        var quote = await insuranceRepository.GetQuoteByIdAsync(quoteId)
+            ?? throw new InvalidOperationException("Teklif bulunamadı");
+        if (quote.PartnerId != partnerId)
+            throw new InvalidOperationException("Bu teklif size ait değil");
+        if (quote.Status != InsuranceQuoteStatus.Pending)
+            throw new InvalidOperationException("Teklif zaten yanıtlanmış");
+
+        quote.PremiumAmount = premiumAmount;
+        quote.ValidUntil = validUntil;
+        quote.Status = InsuranceQuoteStatus.Quoted;
+        quote.QuotedByUserId = brokerUserId;
+        quote.QuotedByName = brokerName;
+        quote.UpdatedAt = DateTime.UtcNow;
+        await insuranceRepository.UpdateQuoteAsync(quote);
+        return quote;
+    }
+
+    public async Task<InsuranceBrokerUser> CreateBrokerUserAsync(
+        Guid partnerId, string fullName, string email, string password, Guid tenantId, string? createdBy)
+    {
+        if (await insuranceRepository.GetBrokerUserByEmailAsync(email) != null)
+            throw new InvalidOperationException("Bu e-posta ile bir broker kullanıcısı zaten var");
+        var user = new InsuranceBrokerUser
+        {
+            Id = Guid.NewGuid(),
+            TenantId = tenantId,
+            PartnerId = partnerId,
+            FullName = fullName,
+            Email = email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = createdBy
+        };
+        await insuranceRepository.InsertBrokerUserAsync(user);
+        return user;
+    }
 }

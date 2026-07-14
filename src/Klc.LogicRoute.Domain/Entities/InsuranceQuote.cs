@@ -12,6 +12,9 @@ public class InsuranceQuote : BaseEntity
     public string Currency { get; set; } = "TRY";
     public DateTime? ValidUntil { get; set; }
     public InsuranceQuoteStatus Status { get; set; } = InsuranceQuoteStatus.Pending;
+    // Teklifi hangi broker kullanıcısı verdi (hesap verebilirlik)
+    public Guid? QuotedByUserId { get; set; }
+    public string? QuotedByName { get; set; }
 }
 
 public enum InsuranceQuoteStatus

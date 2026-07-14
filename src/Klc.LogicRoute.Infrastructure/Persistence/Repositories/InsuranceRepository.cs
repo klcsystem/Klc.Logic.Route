@@ -90,9 +90,71 @@ public class InsuranceRepository(IPostgresConnectionFactory connectionFactory) :
         await conn.ExecuteAsync(
             @"UPDATE logistics.insurance_quotes SET
               premium_amount = @PremiumAmount, valid_until = @ValidUntil,
-              status = @Status, updated_at = @Now
+              status = @Status, quoted_by_user_id = @QuotedByUserId, quoted_by_name = @QuotedByName,
+              updated_at = @Now
               WHERE id = @Id",
-            new { q.Id, q.PremiumAmount, q.ValidUntil, Status = (int)q.Status, Now = DateTime.UtcNow });
+            new { q.Id, q.PremiumAmount, q.ValidUntil, Status = (int)q.Status, q.QuotedByUserId, q.QuotedByName, Now = DateTime.UtcNow });
+    }
+
+    // ── Broker kullanıcıları ──
+    public async Task<InsuranceBrokerUser?> GetBrokerUserByEmailAsync(string email)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        return await conn.QueryFirstOrDefaultAsync<InsuranceBrokerUser>(
+            "SELECT * FROM logistics.insurance_broker_users WHERE LOWER(email) = LOWER(@Email) AND is_active = TRUE AND is_deleted = FALSE",
+            new { Email = email });
+    }
+
+    public async Task<InsuranceBrokerUser?> GetBrokerUserByIdAsync(Guid id)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        return await conn.QueryFirstOrDefaultAsync<InsuranceBrokerUser>(
+            "SELECT * FROM logistics.insurance_broker_users WHERE id = @Id AND is_deleted = FALSE",
+            new { Id = id });
+    }
+
+    public async Task<Guid> InsertBrokerUserAsync(InsuranceBrokerUser u)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        await conn.ExecuteAsync(
+            @"INSERT INTO logistics.insurance_broker_users
+              (id, tenant_id, partner_id, full_name, email, password_hash, is_active, is_deleted, created_at, created_by)
+              VALUES (@Id, @TenantId, @PartnerId, @FullName, @Email, @PasswordHash, @IsActive, FALSE, @CreatedAt, @CreatedBy)",
+            u);
+        return u.Id;
+    }
+
+    public async Task UpdateBrokerLastLoginAsync(Guid id)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        await conn.ExecuteAsync(
+            "UPDATE logistics.insurance_broker_users SET last_login_at = @Now WHERE id = @Id",
+            new { Id = id, Now = DateTime.UtcNow });
+    }
+
+    public async Task<IEnumerable<BrokerQuoteView>> GetPartnerQuoteViewsAsync(Guid partnerId)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        // Sevkiyat detaylarini (rota, kargo) teklife ekle; sevkiyat yoksa alanlar null kalir.
+        return await conn.QueryAsync<BrokerQuoteView>(
+            @"SELECT q.id AS Id, q.shipment_id AS ShipmentId, s.shipment_number AS ShipmentNumber,
+                     q.cargo_value AS CargoValue, q.risk_score AS RiskScore, q.premium_amount AS PremiumAmount,
+                     q.currency AS Currency, q.status AS Status, q.valid_until AS ValidUntil,
+                     q.quoted_by_name AS QuotedByName, q.created_at AS CreatedAt,
+                     s.origin_city AS OriginCity, s.destination_city AS DestinationCity,
+                     s.origin_address AS OriginAddress, s.destination_address AS DestinationAddress,
+                     s.total_weight_kg AS WeightKg, s.total_volume_m3 AS VolumeM3,
+                     COALESCE(s.is_hazardous, FALSE) AS IsHazardous, COALESCE(s.requires_cold_chain, FALSE) AS RequiresColdChain
+              FROM logistics.insurance_quotes q
+              LEFT JOIN logistics.shipments s ON s.id = q.shipment_id
+              WHERE q.partner_id = @PartnerId AND q.is_deleted = FALSE
+              ORDER BY q.created_at DESC",
+            new { PartnerId = partnerId });
     }
 
     // Policies
