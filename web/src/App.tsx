@@ -46,6 +46,7 @@ import DemandForecastPage from './pages/DemandForecastPage'
 import SustainabilityPage from './pages/SustainabilityPage'
 import SafetyDashboardPage from './pages/SafetyDashboardPage'
 import InsurancePage from './pages/InsurancePage'
+import BrokerPortalPage from './pages/BrokerPortalPage'
 import MarketplacePage from './pages/MarketplacePage'
 import FeedbackPage from './pages/FeedbackPage'
 import ReturnsPage from './pages/ReturnsPage'
@@ -64,6 +65,7 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/api-docs" element={<ApiDocsPage />} />
       <Route path="/tracking/:token" element={<CustomerTrackingPage />} />
+      <Route path="/broker" element={<BrokerPortalPage />} />
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
       <Route path="/onboarding/setup" element={<ProtectedRoute><OnboardingWizard /></ProtectedRoute>} />
 
