@@ -353,13 +353,16 @@ public class OrToolsVrpSolverService : IVrpSolverService
     private static long GetTimeLimitSeconds(int stopCount, int vehicleCount)
     {
         var complexity = stopCount * vehicleCount;
+        // GuidedLocalSearch süre limitini SONUNA kadar kullanır; küçük problemlerde
+        // iyi çözüm saniyeler içinde bulunur. Eski limitler (10-60sn) UI'yı bekletiyordu
+        // ("arada hesaplamıyor"). Hızlı ama yeterli limitler:
         return complexity switch
         {
-            < 50 => 5,
-            < 200 => 10,
-            < 500 => 20,
-            < 1000 => 30,
-            _ => 60
+            < 50 => 2,
+            < 200 => 3,
+            < 500 => 6,
+            < 1000 => 12,
+            _ => 25
         };
     }
 }
