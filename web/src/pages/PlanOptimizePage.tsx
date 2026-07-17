@@ -196,6 +196,13 @@ export default function PlanOptimizePage() {
     return map
   }, [solution])
 
+  // "Siparişler" sekmesi = HENÜZ ELE ALINMAMIŞ siparişler. Planlanan (mevcut çözümde),
+  // sevk edilmiş (InShipment/atanmış) veya tamamlanan siparişler listeden DÜŞER.
+  const handledStatuses = useMemo(() => new Set(['InShipment', 'Delivered', 'Completed', 'Cancelled', 'Failed']), [])
+  const pendingOrders = useMemo(
+    () => orders.filter(o => !orderDriverMap.has(o.id) && !assignMap.has(o.id) && !handledStatuses.has(o.status)),
+    [orders, orderDriverMap, assignMap, handledStatuses])
+
   // Map points for bounds
   const allMapPoints = useMemo<[number, number][]>(() => {
     const pts: [number, number][] = [[depotLat, depotLng]]
@@ -328,8 +335,8 @@ export default function PlanOptimizePage() {
   }
 
   const toggleAllOrders = () => {
-    if (checkedOrderIds.size === orders.length) setCheckedOrderIds(new Set())
-    else setCheckedOrderIds(new Set(orders.map(o => o.id)))
+    const allChecked = pendingOrders.length > 0 && pendingOrders.every(o => checkedOrderIds.has(o.id))
+    setCheckedOrderIds(allChecked ? new Set() : new Set(pendingOrders.map(o => o.id)))
   }
 
   // Delete checked orders
@@ -597,7 +604,7 @@ export default function PlanOptimizePage() {
             <div className="flex items-center justify-between px-4 border-b border-slate-100">
               <div className="flex">
                 {([
-                  { key: 'orders' as const, label: 'Siparişler', icon: Package, count: orders.length },
+                  { key: 'orders' as const, label: 'Siparişler', icon: Package, count: pendingOrders.length },
                   { key: 'routes' as const, label: 'Rotalar', icon: Route, count: routeCount },
                   { key: 'timeline' as const, label: 'Zaman Cizelgesi', icon: Clock, count: undefined },
                 ])
@@ -662,7 +669,7 @@ export default function PlanOptimizePage() {
                       <th className="w-8 px-2 py-2">
                         <input
                           type="checkbox"
-                          checked={orders.length > 0 && checkedOrderIds.size === orders.length}
+                          checked={pendingOrders.length > 0 && pendingOrders.every(o => checkedOrderIds.has(o.id))}
                           onChange={toggleAllOrders}
                           className="w-3 h-3 rounded border-slate-300 text-orange-500 focus:ring-orange-400/20"
                         />
@@ -678,7 +685,7 @@ export default function PlanOptimizePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map(o => {
+                    {pendingOrders.map(o => {
                       const assignment = orderDriverMap.get(o.id)
                       const persisted = assignMap.get(o.id)
                       return (
@@ -722,8 +729,10 @@ export default function PlanOptimizePage() {
                         </tr>
                       )
                     })}
-                    {orders.length === 0 && !isLoadingOrders && (
-                      <tr><td colSpan={9} className="px-6 py-8 text-center text-[13px] text-slate-400">Sipariş bulunamadı</td></tr>
+                    {pendingOrders.length === 0 && !isLoadingOrders && (
+                      <tr><td colSpan={9} className="px-6 py-8 text-center text-[13px] text-slate-400">
+                        {orders.length === 0 ? 'Sipariş bulunamadı' : 'Bekleyen sipariş yok — tümü planlandı/sevk edildi ✓'}
+                      </td></tr>
                     )}
                   </tbody>
                 </table>
