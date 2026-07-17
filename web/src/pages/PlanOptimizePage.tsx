@@ -748,7 +748,7 @@ export default function PlanOptimizePage() {
                       {/* Sevk aksiyon çubuğu — planlanan rotaları sürücülere gönder */}
                       <div className="flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-orange-50 to-white border-b border-orange-100">
                         <div className="text-[12px] text-slate-600">
-                          <span className="font-semibold text-slate-800">{solution.routes.length} rota</span> · {solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak planlandı
+                          <span className="font-semibold text-slate-800">{solution.routes.length} rota</span> · {solution.routes.reduce((a, r) => a + r.stops.length, 0)} durak planlandı{solution.dieselPriceTry ? ` · Mazot ${solution.dieselPriceTry} TRY/L` : ''}
                         </div>
                         {dispatched ? (
                           <div className="flex items-center gap-3">
@@ -848,7 +848,16 @@ export default function PlanOptimizePage() {
                                   <span className="text-slate-600 font-medium">{route.utilizationPercent}%</span>
                                 </div>
                               </td>
-                              <td className="px-3 py-3 text-right text-slate-600 font-medium">{route.totalCost.toLocaleString()} TRY</td>
+                              <td className="px-3 py-3 text-right">
+                                <div className="text-slate-700 font-semibold" title={`Yakıt: ${Math.round(route.fuelCost || 0).toLocaleString()} TRY · Geçiş (tahmini): ${Math.round(route.tollCost || 0).toLocaleString()} TRY · Sürücü: ${Math.round(route.driverCost || 0).toLocaleString()} TRY`}>
+                                  {Math.round(route.totalCost).toLocaleString()} TRY
+                                </div>
+                                {route.fuelCost != null && (
+                                  <div className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                                    Yakıt {Math.round(route.fuelCost).toLocaleString()} · Geçiş {Math.round(route.tollCost || 0).toLocaleString()} · Sürücü {Math.round(route.driverCost || 0).toLocaleString()}
+                                  </div>
+                                )}
+                              </td>
                             </tr>
                           )
                         })}
@@ -862,7 +871,14 @@ export default function PlanOptimizePage() {
                           <td className="px-3 py-2 text-right">{solution.totalDistanceKm.toFixed(1)} km</td>
                           <td className="px-3 py-2 text-right">{Math.round(solution.totalDurationMin)} dk</td>
                           <td className="px-3 py-2 text-right">{solution.vehicleUtilization}%</td>
-                          <td className="px-3 py-2 text-right">{solution.totalCost.toLocaleString()} TRY</td>
+                          <td className="px-3 py-2 text-right">
+                            <div>{Math.round(solution.totalCost).toLocaleString()} TRY</div>
+                            {solution.totalFuelCost != null && (
+                              <div className="text-[10px] font-normal text-slate-400 mt-0.5 whitespace-nowrap">
+                                Yakıt {Math.round(solution.totalFuelCost).toLocaleString()} · Geçiş {Math.round(solution.totalTollCost || 0).toLocaleString()} · Sürücü {Math.round(solution.totalDriverCost || 0).toLocaleString()}
+                              </div>
+                            )}
+                          </td>
                         </tr>
                       </tfoot>
                     </table>

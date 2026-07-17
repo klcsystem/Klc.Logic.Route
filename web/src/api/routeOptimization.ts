@@ -50,6 +50,9 @@ export interface VrpRoute {
   totalDistanceKm: number
   totalDurationMin: number
   totalCost: number
+  fuelCost?: number
+  tollCost?: number
+  driverCost?: number
   loadKg: number
   loadM3: number
   utilizationPercent: number
@@ -60,6 +63,10 @@ export interface VrpSolution {
   totalDistanceKm: number
   totalDurationMin: number
   totalCost: number
+  totalFuelCost?: number
+  totalTollCost?: number
+  totalDriverCost?: number
+  dieselPriceTry?: number
   vehicleUtilization: number
   unassignedStops: string[]
   co2SavedKg: number
@@ -76,6 +83,7 @@ export const routeOptimizationApi = {
         capacityM3: v.capacityM3,
         depotLat: v.startLat || request.depotLat,
         depotLng: v.startLng || request.depotLng,
+        vehicleType: v.vehicleType,   // maliyet (yakıt/geçiş) araç tipine göre hesaplanır
       })),
       stops: request.stops.map(s => ({
         shipmentId: s.id,

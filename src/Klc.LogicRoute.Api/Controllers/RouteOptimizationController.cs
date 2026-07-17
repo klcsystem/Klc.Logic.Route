@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
 using Klc.LogicRoute.Application.RouteOptimization.Models;
@@ -24,6 +25,7 @@ public class RouteOptimizationController(
     IShipmentRepository shipmentRepository,
     IOrderRepository orderRepository,
     IDriverRepository driverRepository,
+    IConfiguration configuration,
     ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpGet("vehicles")]
@@ -64,6 +66,28 @@ public class RouteOptimizationController(
     {
         var t = tonnage ?? 5m;
         return t <= 100m ? t * 1000m : t;
+    }
+
+    private record RouteCost(double Fuel, double Toll, double Driver, double Total);
+
+    // Gerçekçi rota maliyeti: yakıt (araç tüketimi L/km × güncel mazot TRY/L) +
+    // tahmini geçiş ücreti (HGS/OGS — araç sınıfına göre TRY/km, sadece otoyol payı) + sürücü ücreti.
+    private static RouteCost ComputeRouteCost(string? vehicleType, double distanceKm, double durationMin, double dieselPriceTry)
+    {
+        // (yakıt L/km, tahmini geçiş TRY/km) — araç tipine göre
+        var (consumptionLPerKm, tollPerKm) = vehicleType switch
+        {
+            "Tir" => (0.33, 0.75),
+            "Kamyon" => (0.24, 0.55),
+            "Kamyonet" => (0.13, 0.25),
+            "Frigorifik" => (0.32, 0.60),
+            _ => (0.24, 0.50),
+        };
+        const double driverHourlyTry = 200.0;
+        var fuel = distanceKm * consumptionLPerKm * dieselPriceTry;
+        var toll = distanceKm * tollPerKm;
+        var driver = durationMin / 60.0 * driverHourlyTry;
+        return new RouteCost(Math.Round(fuel, 2), Math.Round(toll, 2), Math.Round(driver, 2), Math.Round(fuel + toll + driver, 2));
     }
 
     [HttpPost("solve")]
@@ -146,40 +170,59 @@ public class RouteOptimizationController(
         }
 
         // Return VRP solution in frontend-expected format
-        var totalCost = vrpResult.Routes.Sum(r => r.TotalDistanceKm * 12.5); // default cost/km
+        // Gerçekçi maliyet: yakıt (araç tüketimi × güncel mazot) + tahmini geçiş (HGS/OGS) + sürücü ücreti
+        var dieselPrice = configuration.GetValue<double?>("Costing:DieselPriceTry") ?? 43.5;
         var totalCapacity = request.Vehicles.Sum(v => (double)v.CapacityKg);
         var totalLoad = vrpResult.Routes.Sum(r => (double)r.TotalWeightKg);
         var utilization = totalCapacity > 0 ? totalLoad / totalCapacity * 100 : 0;
 
+        var routeCosts = vrpResult.Routes.ToDictionary(
+            r => r.VehicleId,
+            r => ComputeRouteCost(
+                request.Vehicles.FirstOrDefault(v => v.Id == r.VehicleId)?.VehicleType,
+                r.TotalDistanceKm, r.TotalDurationMinutes, dieselPrice));
+        var totalCost = routeCosts.Values.Sum(c => c.Total);
+
         var frontendSolution = new
         {
-            routes = vrpResult.Routes.Select((r, idx) => new
+            routes = vrpResult.Routes.Select((r, idx) =>
             {
-                vehicleId = r.VehicleId.ToString(),
-                plateNumber = r.VehiclePlate,
-                stops = r.Stops.Select(s => new
+                var c = routeCosts[r.VehicleId];
+                return new
                 {
-                    stopId = s.ShipmentId.ToString(),
-                    address = $"Durak #{s.Order}",
-                    lat = s.Lat,
-                    lng = s.Lng,
-                    sequence = s.Order,
-                    arrivalTime = s.EstimatedArrival?.ToString("HH:mm") ?? "",
-                    departureTime = s.EstimatedDeparture?.ToString("HH:mm") ?? "",
-                }),
-                totalDistanceKm = r.TotalDistanceKm,
-                totalDurationMin = r.TotalDurationMinutes,
-                totalCost = r.TotalDistanceKm * 12.5,
-                loadKg = r.TotalWeightKg,
-                loadM3 = r.TotalVolumeM3,
-                utilizationPercent = request.Vehicles
-                    .Where(v => v.Id == r.VehicleId)
-                    .Select(v => v.CapacityKg > 0 ? (double)r.TotalWeightKg / (double)v.CapacityKg * 100 : 0)
-                    .FirstOrDefault(),
+                    vehicleId = r.VehicleId.ToString(),
+                    plateNumber = r.VehiclePlate,
+                    stops = r.Stops.Select(s => new
+                    {
+                        stopId = s.ShipmentId.ToString(),
+                        address = $"Durak #{s.Order}",
+                        lat = s.Lat,
+                        lng = s.Lng,
+                        sequence = s.Order,
+                        arrivalTime = s.EstimatedArrival?.ToString("HH:mm") ?? "",
+                        departureTime = s.EstimatedDeparture?.ToString("HH:mm") ?? "",
+                    }),
+                    totalDistanceKm = r.TotalDistanceKm,
+                    totalDurationMin = r.TotalDurationMinutes,
+                    totalCost = c.Total,
+                    fuelCost = c.Fuel,
+                    tollCost = c.Toll,
+                    driverCost = c.Driver,
+                    loadKg = r.TotalWeightKg,
+                    loadM3 = r.TotalVolumeM3,
+                    utilizationPercent = request.Vehicles
+                        .Where(v => v.Id == r.VehicleId)
+                        .Select(v => v.CapacityKg > 0 ? (double)r.TotalWeightKg / (double)v.CapacityKg * 100 : 0)
+                        .FirstOrDefault(),
+                };
             }),
             totalDistanceKm = vrpResult.TotalDistance,
             totalDurationMin = vrpResult.TotalDuration,
             totalCost,
+            totalFuelCost = routeCosts.Values.Sum(c => c.Fuel),
+            totalTollCost = routeCosts.Values.Sum(c => c.Toll),
+            totalDriverCost = routeCosts.Values.Sum(c => c.Driver),
+            dieselPriceTry = dieselPrice,
             vehicleUtilization = Math.Round(utilization),
             unassignedStops = vrpResult.UnservedStops.Select(s => s.ShipmentId.ToString()),
             co2SavedKg = vrpResult.TotalDistance * 0.12, // ~120g CO2/km saved estimate
