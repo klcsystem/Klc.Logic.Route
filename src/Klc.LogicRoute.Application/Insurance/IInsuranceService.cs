@@ -11,6 +11,10 @@ public interface IInsuranceService
     Task<IEnumerable<InsuranceQuote>> GetPendingRequestsForPartnerAsync(string apiKey);
     Task<InsuranceQuote> SubmitPartnerQuoteAsync(PartnerQuoteSubmission submission);
 
+    // Nakliyeci tarafı — kimler teklif verecek + tüm dönen teklifler
+    Task<IEnumerable<InsurancePartner>> GetActivePartnersAsync();
+    Task<IEnumerable<BrokerQuoteView>> GetTenantQuoteViewsAsync(Guid tenantId);
+
     // Broker portalı — bireysel, hesap verebilir kullanıcılar
     Task<BrokerLoginResult?> BrokerLoginAsync(string email, string password);
     Task<IEnumerable<BrokerQuoteView>> GetPartnerQuoteViewsAsync(Guid partnerId);

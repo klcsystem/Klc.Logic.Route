@@ -141,21 +141,32 @@ public class InsuranceRepository(IPostgresConnectionFactory connectionFactory) :
         await using var conn = connectionFactory.CreateConnection();
         await conn.OpenAsync();
         // Sevkiyat detaylarini (rota, kargo) teklife ekle; sevkiyat yoksa alanlar null kalir.
-        return await conn.QueryAsync<BrokerQuoteView>(
-            @"SELECT q.id AS Id, q.shipment_id AS ShipmentId, s.shipment_number AS ShipmentNumber,
-                     q.cargo_value AS CargoValue, q.risk_score AS RiskScore, q.premium_amount AS PremiumAmount,
-                     q.currency AS Currency, q.status AS Status, q.valid_until AS ValidUntil,
-                     q.quoted_by_name AS QuotedByName, q.created_at AS CreatedAt,
-                     s.origin_city AS OriginCity, s.destination_city AS DestinationCity,
-                     s.origin_address AS OriginAddress, s.destination_address AS DestinationAddress,
-                     s.total_weight_kg AS WeightKg, s.total_volume_m3 AS VolumeM3,
-                     COALESCE(s.is_hazardous, FALSE) AS IsHazardous, COALESCE(s.requires_cold_chain, FALSE) AS RequiresColdChain
-              FROM logistics.insurance_quotes q
-              LEFT JOIN logistics.shipments s ON s.id = q.shipment_id
-              WHERE q.partner_id = @PartnerId AND q.is_deleted = FALSE
-              ORDER BY q.created_at DESC",
+        return await conn.QueryAsync<BrokerQuoteView>(QuoteViewSelect + " WHERE q.partner_id = @PartnerId AND q.is_deleted = FALSE ORDER BY q.created_at DESC",
             new { PartnerId = partnerId });
     }
+
+    public async Task<IEnumerable<BrokerQuoteView>> GetTenantQuoteViewsAsync(Guid tenantId)
+    {
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync();
+        return await conn.QueryAsync<BrokerQuoteView>(QuoteViewSelect + " WHERE q.tenant_id = @TenantId AND q.is_deleted = FALSE ORDER BY q.created_at DESC",
+            new { TenantId = tenantId });
+    }
+
+    // Teklif + sevkiyat + partner JOIN (broker ve nakliyeci gorunumleri icin ortak)
+    private const string QuoteViewSelect =
+        @"SELECT q.id AS Id, q.shipment_id AS ShipmentId, q.partner_id AS PartnerId, p.name AS PartnerName,
+                 s.shipment_number AS ShipmentNumber,
+                 q.cargo_value AS CargoValue, q.risk_score AS RiskScore, q.premium_amount AS PremiumAmount,
+                 q.currency AS Currency, q.status AS Status, q.valid_until AS ValidUntil,
+                 q.quoted_by_name AS QuotedByName, q.created_at AS CreatedAt,
+                 s.origin_city AS OriginCity, s.destination_city AS DestinationCity,
+                 s.origin_address AS OriginAddress, s.destination_address AS DestinationAddress,
+                 s.total_weight_kg AS WeightKg, s.total_volume_m3 AS VolumeM3,
+                 COALESCE(s.is_hazardous, FALSE) AS IsHazardous, COALESCE(s.requires_cold_chain, FALSE) AS RequiresColdChain
+          FROM logistics.insurance_quotes q
+          LEFT JOIN logistics.shipments s ON s.id = q.shipment_id
+          LEFT JOIN logistics.insurance_partners p ON p.id = q.partner_id";
 
     // Policies
     public async Task<InsurancePolicy?> GetPolicyByIdAsync(Guid id)

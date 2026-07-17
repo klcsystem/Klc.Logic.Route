@@ -148,6 +148,12 @@ public class InsuranceService(
     public Task<IEnumerable<BrokerQuoteView>> GetPartnerQuoteViewsAsync(Guid partnerId)
         => insuranceRepository.GetPartnerQuoteViewsAsync(partnerId);
 
+    public Task<IEnumerable<InsurancePartner>> GetActivePartnersAsync()
+        => insuranceRepository.GetActivePartnersAsync();
+
+    public Task<IEnumerable<BrokerQuoteView>> GetTenantQuoteViewsAsync(Guid tenantId)
+        => insuranceRepository.GetTenantQuoteViewsAsync(tenantId);
+
     public async Task<InsuranceQuote> SubmitQuoteByBrokerAsync(
         Guid partnerId, Guid brokerUserId, string brokerName, Guid quoteId, decimal premiumAmount, DateTime validUntil)
     {

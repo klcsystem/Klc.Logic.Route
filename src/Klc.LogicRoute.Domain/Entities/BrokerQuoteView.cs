@@ -9,6 +9,8 @@ public class BrokerQuoteView
 {
     public Guid Id { get; set; }               // quote id
     public Guid ShipmentId { get; set; }
+    public Guid PartnerId { get; set; }
+    public string? PartnerName { get; set; }
     public string? ShipmentNumber { get; set; }
     public decimal CargoValue { get; set; }
     public decimal RiskScore { get; set; }

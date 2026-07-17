@@ -28,6 +28,25 @@ public class InsuranceController(
         return Ok(ApiResponse<IEnumerable<InsuranceQuote>>.Ok(quotes, $"{quotes.Count()} partner'a teklif talebi gönderildi"));
     }
 
+    /// <summary>Aktif sigorta partnerleri (kimler teklif verecek) — nakliyeci gösterir</summary>
+    [HttpGet("partners")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<object>>> GetPartners()
+    {
+        var partners = await insuranceService.GetActivePartnersAsync();
+        return Ok(ApiResponse<object>.Ok(partners.Select(p => new { id = p.Id, name = p.Name, hasApi = p.HasApi, commissionPercent = p.CommissionPercent })));
+    }
+
+    /// <summary>Tüm teklifler (tenant) — partner adı + sevkiyat detaylarıyla; nakliyeci dönen teklifleri görür</summary>
+    [HttpGet("quotes")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<IEnumerable<BrokerQuoteView>>>> GetAllQuotes()
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var views = await insuranceService.GetTenantQuoteViewsAsync(tenantId);
+        return Ok(ApiResponse<IEnumerable<BrokerQuoteView>>.Ok(views));
+    }
+
     /// <summary>List quotes for a shipment</summary>
     [HttpGet("quotes/{shipmentId:guid}")]
     [Authorize]
