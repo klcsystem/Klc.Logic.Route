@@ -96,6 +96,26 @@ const filterChips: { key: DriverStatus | 'all'; label: string; icon: React.Eleme
   { key: 'Completed', label: 'Tamamlandı', icon: CheckCircle, color: 'text-green-500' },
 ]
 
+// Türkiye şehir merkezleri — sevkiyatın origin/destination'ından aracı gerçek rota üzerine yerleştirmek için
+const CITY_COORDS: Record<string, [number, number]> = {
+  istanbul: [41.01, 28.98], ankara: [39.93, 32.86], izmir: [38.42, 27.14], bursa: [40.19, 29.06],
+  adana: [37.0, 35.32], antalya: [36.9, 30.7], konya: [37.87, 32.48], gaziantep: [37.07, 37.38],
+  kayseri: [38.73, 35.48], mersin: [36.81, 34.64], eskisehir: [39.78, 30.52], diyarbakir: [37.91, 40.24],
+  samsun: [41.29, 36.33], denizli: [37.78, 29.09], malatya: [38.35, 38.31], trabzon: [41.0, 39.72],
+  erzurum: [39.9, 41.27], van: [38.49, 43.38], kocaeli: [40.85, 29.88], manisa: [38.61, 27.43],
+  sakarya: [40.69, 30.44], balikesir: [39.65, 27.89], kahramanmaras: [37.58, 36.93], sanliurfa: [37.17, 38.79],
+  mardin: [37.31, 40.74], zonguldak: [41.45, 31.79], rize: [41.02, 40.52], mus: [38.75, 41.49],
+  aydin: [37.85, 27.84], mugla: [37.22, 28.36], tekirdag: [40.98, 27.51], hatay: [36.2, 36.16],
+  nevsehir: [38.62, 34.71], sivas: [39.75, 37.02], bolu: [40.74, 31.61], corum: [40.55, 34.95],
+  batman: [37.88, 41.13], elazig: [38.68, 39.22], tokat: [40.31, 36.55], afyonkarahisar: [38.76, 30.54],
+  isparta: [37.76, 30.55], bilecik: [40.14, 29.98], karabuk: [41.2, 32.62], duzce: [40.84, 31.16],
+  kutahya: [39.42, 29.98], usak: [38.68, 29.41], aksaray: [38.37, 34.03], nigde: [37.97, 34.68],
+  amasya: [40.65, 35.83], ordu: [40.98, 37.88], giresun: [40.91, 38.39], bartin: [41.63, 32.34],
+}
+const foldCity = (s?: string) => (s || '').trim().toLowerCase()
+  .replace(/ı/g, 'i').replace(/i̇/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c')
+const cityLL = (city?: string): [number, number] | null => CITY_COORDS[foldCity(city)] || null
+
 export default function LiveTrackingPage() {
   const { t } = useI18n()
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null)
@@ -146,16 +166,22 @@ export default function LiveTrackingPage() {
       })
       const built = [...byDriver.entries()].map(([name, ships], idx) => {
         const first = ships[0]
-        const lat = (first.currentLatitude as number) || (41.0 + (idx % 7) * 0.25 - 0.75)
-        const lng = (first.currentLongitude as number) || (29.0 + (idx % 9) * 0.4 - 1.5)
+        const o = cityLL(first.originCity as string)
+        const d = cityLL(first.destinationCity as string)
+        // Canlı GPS yoksa: aracı rotanın ~%35'ine yerleştir (yolda görünsün, harita geneline yayılsın)
+        const cur: [number, number] =
+          (first.currentLatitude && first.currentLongitude) ? [first.currentLatitude as number, first.currentLongitude as number]
+          : (o && d) ? [o[0] + (d[0] - o[0]) * 0.35, o[1] + (d[1] - o[1]) * 0.35]
+          : d || o || [41.0 + (idx % 7) * 0.25 - 0.75, 29.0 + (idx % 9) * 0.4 - 1.5]
         return {
           id: String(first.id || idx),
           name,
           phone: phoneByName.get(name) || String(first.driverPhone || ''),
           plateNumber: String(first.vehiclePlate || ''),
           status: 'OnRoute' as DriverStatus,
-          lat, lng, originLat: 41.0, originLng: 29.0, destLat: lat, destLng: lng,
-          route: `${first.originCity || ''} → ${first.destinationCity || ''}`,
+          lat: cur[0], lng: cur[1],
+          originLat: o?.[0] || 0, originLng: o?.[1] || 0, destLat: d?.[0] || 0, destLng: d?.[1] || 0,
+          route: `${first.originCity || '?'} → ${first.destinationCity || '?'}`,
           progress: 0, eta: '', lastUpdate: '',
           shipmentNo: String(first.shipmentNumber || ''),
           distanceKm: 0, timeWorkedMin: 0,
@@ -290,18 +316,18 @@ export default function LiveTrackingPage() {
                     </Popup>
                   </Marker>
 
-                  {d.originLat && d.originLng && (
+                  {selectedDriver === d.id && d.originLat && d.originLng && (
                     <Marker position={[d.originLat, d.originLng]} icon={pinIcon('#22c55e')}>
                       <Popup><span className="text-[11px]">Çıkış</span></Popup>
                     </Marker>
                   )}
-                  {d.destLat && d.destLng && (
+                  {selectedDriver === d.id && d.destLat && d.destLng && (
                     <Marker position={[d.destLat, d.destLng]} icon={pinIcon('#ef4444')}>
                       <Popup><span className="text-[11px]">Varış</span></Popup>
                     </Marker>
                   )}
 
-                  {(selectedDriver === d.id || !selectedDriver) && d.originLat && d.destLat && (
+                  {selectedDriver === d.id && d.originLat && d.destLat && (
                     <Polyline
                       positions={[[d.originLat, d.originLng], [d.lat, d.lng], [d.destLat, d.destLng]]}
                       pathOptions={{
