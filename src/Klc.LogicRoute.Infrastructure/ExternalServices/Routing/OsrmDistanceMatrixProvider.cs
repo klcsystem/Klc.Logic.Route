@@ -38,7 +38,9 @@ public class OsrmDistanceMatrixProvider : IDistanceMatrixProvider
         {
             // Yavaş/yanıtsız demo sunucu isteği asılı bırakmasın diye kısa timeout.
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cts.CancelAfter(TimeSpan.FromSeconds(10));
+            // Public OSRM demo cogu zaman yavas/erisilemez; uzun timeout solve'u 10sn+ bekletip
+            // "hesaplamiyor" hissi veriyordu. Hizli basarisiz olup Haversine'e dus (3sn).
+            cts.CancelAfter(TimeSpan.FromSeconds(3));
             return await GetOsrmMatrixAsync(points, cts.Token);
         }
         catch (Exception ex)

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet'
-import { Truck, Clock, AlertTriangle, CheckCircle, XCircle, MapPin, Loader2, Users } from 'lucide-react'
+import { Truck, Clock, AlertTriangle, CheckCircle, XCircle, MapPin, Loader2, Users, Search } from 'lucide-react'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
 import api from '../api/client'
@@ -99,6 +99,7 @@ export default function LiveTrackingPage() {
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('actual')
   const [statusFilter, setStatusFilter] = useState<DriverStatus | 'all'>('all')
+  const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
   const [drivers, setDrivers] = useState<DriverLocation[]>([])
@@ -154,7 +155,10 @@ export default function LiveTrackingPage() {
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  const filteredDrivers = statusFilter === 'all' ? drivers : drivers.filter(d => d.status === statusFilter)
+  const searchedDrivers = searchTerm.trim()
+    ? drivers.filter(d => (d.name || '').toLowerCase().includes(searchTerm.trim().toLowerCase()) || (d.plateNumber || '').toLowerCase().includes(searchTerm.trim().toLowerCase()))
+    : drivers
+  const filteredDrivers = statusFilter === 'all' ? searchedDrivers : searchedDrivers.filter(d => d.status === statusFilter)
   const selected = drivers.find(d => d.id === selectedDriver) || null
 
   const onDuty = safety.onDutyCount || drivers.filter(d => d.status === 'OnRoute' || d.status === 'Servicing').length
@@ -378,7 +382,22 @@ export default function LiveTrackingPage() {
               </div>
             )}
 
+            {/* Sürücü arama */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Sürücü ara…"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-400 bg-white"
+              />
+            </div>
+
             {/* Driver List (enhanced) */}
+            {filteredDrivers.length === 0 && (searchTerm.trim() || statusFilter !== 'all') && (
+              <div className="text-center py-6 text-[13px] text-slate-400">Eşleşen sürücü yok</div>
+            )}
             {filteredDrivers.length > 0 && (
               <div className="space-y-2">
                 {filteredDrivers.map((d, idx) => {
