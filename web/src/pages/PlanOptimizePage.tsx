@@ -196,9 +196,6 @@ export default function PlanOptimizePage() {
     return map
   }, [solution])
 
-  // Plan durumu solution'a göre: atanan = planlanmış, kalan planlanabilir = planlanmamış.
-  const unscheduledCount = plannableOrders.filter(o => !orderDriverMap.has(o.id)).length
-
   // Map points for bounds
   const allMapPoints = useMemo<[number, number][]>(() => {
     const pts: [number, number][] = [[depotLat, depotLng]]
@@ -516,15 +513,18 @@ export default function PlanOptimizePage() {
               )}
               {step === 2 && (
                 <button
-                  onClick={() => { setStep(3); handlePlanRoutes() }}
-                  disabled={isOptimizing || unscheduledCount === 0 || selectedDrivers.size === 0}
+                  onClick={() => {
+                    if (selectedDrivers.size === 0) { toast('warning', 'Önce en az bir sürücü seçin'); return }
+                    setStep(3); handlePlanRoutes()
+                  }}
+                  disabled={isOptimizing}
                   className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[12px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 transition-all"
                 >
                   {isOptimizing ? 'Planlanıyor...' : 'İleri: Rotaları Planla →'}
                 </button>
               )}
               {step === 3 && (
-                <button onClick={() => { setSolution(null); setStep(1) }} className="px-4 py-1.5 rounded-lg border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors">↺ Yeni Plan</button>
+                <button onClick={() => { setSolution(null); setStep(1); setBottomTab('orders') }} className="px-4 py-1.5 rounded-lg border border-slate-200 text-[12px] font-semibold text-slate-600 hover:bg-slate-50 transition-colors">↺ Yeni Plan</button>
               )}
             </div>
           </div>
@@ -536,6 +536,7 @@ export default function PlanOptimizePage() {
                 <Truck className="w-4 h-4 text-slate-500" />
                 <span className="text-[13px] font-semibold text-slate-700">Sürücüler</span>
                 <span className="text-[11px] text-slate-400">· {selectedDrivers.size}/{vehicles.length} seçili</span>
+                {selectedDrivers.size === 0 && <span className="text-[11px] font-medium text-amber-500">· planlamak için en az bir sürücü seçin</span>}
                 <div className="ml-auto flex items-center gap-2">
                   <button onClick={toggleAllDrivers} className="text-[12px] font-medium text-orange-500 hover:bg-orange-50 px-2.5 py-1 rounded-lg transition-colors">
                     {allDriversSelected ? 'Hiçbirini Seçme' : 'Tümünü Seç'}
@@ -599,7 +600,10 @@ export default function PlanOptimizePage() {
                   { key: 'orders' as const, label: 'Siparişler', icon: Package, count: orders.length },
                   { key: 'routes' as const, label: 'Rotalar', icon: Route, count: routeCount },
                   { key: 'timeline' as const, label: 'Zaman Cizelgesi', icon: Clock, count: undefined },
-                ]).map(tab => (
+                ])
+                  // Rotalar/Zaman Çizelgesi ancak plan oluştuğunda anlamlı — plan yokken gösterme
+                  .filter(tab => tab.key === 'orders' || solution)
+                  .map(tab => (
                   <button
                     key={tab.key}
                     onClick={() => setBottomTab(tab.key)}
