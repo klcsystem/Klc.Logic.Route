@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet'
 import { Truck, Clock, AlertTriangle, CheckCircle, XCircle, MapPin, Loader2, Users, Search } from 'lucide-react'
+import { shipmentsApi } from '../api/shipments'
 import { useI18n } from '../i18n'
 import Badge from '../components/ui/Badge'
 import api from '../api/client'
@@ -49,6 +50,7 @@ interface DriverLocation {
   shipmentNo: string
   distanceKm: number
   timeWorkedMin: number
+  stopCount?: number   // gerçek sevk edilmiş durak (shipment) sayısı
 }
 
 interface DelayAlert {
@@ -100,6 +102,7 @@ export default function LiveTrackingPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('actual')
   const [statusFilter, setStatusFilter] = useState<DriverStatus | 'all'>('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [allDriverCount, setAllDriverCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
   const [drivers, setDrivers] = useState<DriverLocation[]>([])
@@ -111,41 +114,55 @@ export default function LiveTrackingPage() {
   const fetchData = useCallback(async () => {
     setIsLoading(true)
     try {
-      const [safetyRes, alertsRes, driversRes] = await Promise.allSettled([
+      const [safetyRes, alertsRes, shipmentsRes, driversRes] = await Promise.allSettled([
         api.get('/safety/dashboard').then(r => r.data),
         api.get('/tracking/delay-alerts').then(r => r.data),
+        shipmentsApi.getAll({ pageSize: 500 }),
         api.get('/mobile/drivers').then(r => r.data),
       ])
 
-      if (safetyRes.status === 'fulfilled' && safetyRes.value?.data) {
-        setSafety(safetyRes.value.data)
-      }
+      if (safetyRes.status === 'fulfilled' && safetyRes.value?.data) setSafety(safetyRes.value.data)
       if (alertsRes.status === 'fulfilled' && alertsRes.value?.data) {
         setDelayAlerts(Array.isArray(alertsRes.value.data) ? alertsRes.value.data : alertsRes.value.data?.items || [])
       }
-      if (driversRes.status === 'fulfilled' && driversRes.value?.data) {
-        const raw = Array.isArray(driversRes.value.data) ? driversRes.value.data : driversRes.value.data?.items || []
-        setDrivers(raw.map((d: Record<string, unknown>, idx: number) => ({
-          id: (d.id as string) || String(idx),
-          name: (d.fullName as string) || (d.name as string) || `Sürücü ${idx + 1}`,
-          phone: (d.phone as string) || '',
-          plateNumber: (d.plateNumber as string) || (d.plate as string) || '',
-          status: ((d.status as DriverStatus) || 'Scheduled'),
-          lat: (d.lat as number) || (d.currentLat as number) || 39.9 + Math.random() * 2 - 1,
-          lng: (d.lng as number) || (d.currentLng as number) || 32.8 + Math.random() * 4 - 2,
-          originLat: (d.originLat as number) || 41.0,
-          originLng: (d.originLng as number) || 29.0,
-          destLat: (d.destLat as number) || 39.9,
-          destLng: (d.destLng as number) || 32.8,
-          route: (d.route as string) || '',
-          progress: (d.progress as number) || 0,
-          eta: (d.eta as string) || '',
-          lastUpdate: (d.lastUpdate as string) || '',
-          shipmentNo: (d.shipmentNo as string) || (d.shipmentNumber as string) || '',
-          distanceKm: (d.distanceKm as number) || (d.totalDistance as number) || 0,
-          timeWorkedMin: (d.timeWorkedMin as number) || 0,
-        })))
-      }
+
+      // Telefon araması için sürücü rehberi + toplam sürücü sayısı
+      const driverList: Record<string, unknown>[] = driversRes.status === 'fulfilled'
+        ? (Array.isArray(driversRes.value?.data) ? driversRes.value.data : driversRes.value?.data?.items || []) : []
+      setAllDriverCount(driverList.length)
+      const phoneByName = new Map<string, string>()
+      driverList.forEach(d => { if (d.fullName) phoneByName.set(String(d.fullName), String(d.phone || '')) })
+
+      // GERÇEK sevk edilmiş (sürücüye atanmış, aktif) shipment'ları sürücüye göre grupla
+      const done = new Set(['Delivered', 'Completed', 'Cancelled', '8', '9', '10'])
+      const shipItems: Record<string, unknown>[] = shipmentsRes.status === 'fulfilled'
+        ? ((shipmentsRes.value?.data?.items || shipmentsRes.value?.data || []) as unknown as Record<string, unknown>[]) : []
+      const active = shipItems.filter(s => s.driverName && !done.has(String(s.status)))
+      const byDriver = new Map<string, Record<string, unknown>[]>()
+      active.forEach(s => {
+        const key = String(s.driverName)
+        if (!byDriver.has(key)) byDriver.set(key, [])
+        byDriver.get(key)!.push(s)
+      })
+      const built = [...byDriver.entries()].map(([name, ships], idx) => {
+        const first = ships[0]
+        const lat = (first.currentLatitude as number) || (41.0 + (idx % 7) * 0.25 - 0.75)
+        const lng = (first.currentLongitude as number) || (29.0 + (idx % 9) * 0.4 - 1.5)
+        return {
+          id: String(first.id || idx),
+          name,
+          phone: phoneByName.get(name) || String(first.driverPhone || ''),
+          plateNumber: String(first.vehiclePlate || ''),
+          status: 'OnRoute' as DriverStatus,
+          lat, lng, originLat: 41.0, originLng: 29.0, destLat: lat, destLng: lng,
+          route: `${first.originCity || ''} → ${first.destinationCity || ''}`,
+          progress: 0, eta: '', lastUpdate: '',
+          shipmentNo: String(first.shipmentNumber || ''),
+          distanceKm: 0, timeWorkedMin: 0,
+          stopCount: ships.length,
+        }
+      })
+      setDrivers(built)
     } catch {
       // API not available yet — use empty state
     } finally {
@@ -161,9 +178,10 @@ export default function LiveTrackingPage() {
   const filteredDrivers = statusFilter === 'all' ? searchedDrivers : searchedDrivers.filter(d => d.status === statusFilter)
   const selected = drivers.find(d => d.id === selectedDriver) || null
 
-  const onDuty = safety.onDutyCount || drivers.filter(d => d.status === 'OnRoute' || d.status === 'Servicing').length
-  const offDuty = safety.offDutyCount || drivers.filter(d => d.status === 'Scheduled' || d.status === 'Completed').length
-  const totalDrivers = safety.totalDrivers || drivers.length
+  // drivers = GERÇEK sevk edilmiş (aktif rotadaki) sürücüler. Görevde = bunlar; toplam = tüm sürücüler.
+  const onDuty = drivers.length
+  const totalDrivers = Math.max(allDriverCount, drivers.length)
+  const offDuty = Math.max(0, totalDrivers - onDuty)
   const runningLate = safety.runningLateCount || delayAlerts.length
 
   const completedCount = drivers.filter(d => d.status === 'Completed').length
@@ -402,8 +420,7 @@ export default function LiveTrackingPage() {
               <div className="space-y-2">
                 {filteredDrivers.map((d, idx) => {
                   const isExpanded = selectedDriver === d.id
-                  // Simulated stop counts for visual demo
-                  const totalStops = Math.max(1, Math.round(d.progress * 0.4) || 8)
+                  const totalStops = d.stopCount ?? Math.max(1, Math.round(d.progress * 0.4) || 8)
                   const completedStops = Math.round(totalStops * (d.progress / 100))
                   const failedStops = d.status === 'Failed' ? Math.max(1, Math.floor(totalStops * 0.1)) : 0
                   const inProgressStops = d.status === 'OnRoute' || d.status === 'Servicing' ? 1 : 0
