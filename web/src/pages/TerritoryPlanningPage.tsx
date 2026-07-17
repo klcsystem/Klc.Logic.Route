@@ -10,6 +10,29 @@ interface TerritoryZone {
   orderCount: number
   orderIds: string[]
   centroid?: { lat: number; lng: number }
+  totalWeightKg?: number
+  suggestedVehiclePlate?: string
+}
+
+// Backend /territories/plan zone çıktısı (alan adları frontend'den farklı)
+interface RawZone {
+  zoneId?: number; id?: number; name?: string; zoneName?: string
+  stopCount?: number; orderCount?: number
+  stops?: { orderId?: string }[]; orderIds?: string[]
+  centroidLat?: number; centroidLng?: number; centroid?: { lat: number; lng: number }
+  totalWeightKg?: number; suggestedVehiclePlate?: string
+}
+
+function mapZone(z: RawZone): TerritoryZone {
+  return {
+    zoneId: z.zoneId ?? z.id ?? 0,
+    zoneName: z.name || z.zoneName || `Bölge ${z.zoneId ?? z.id ?? ''}`,
+    orderCount: z.stopCount ?? z.orderCount ?? z.stops?.length ?? 0,
+    orderIds: z.orderIds || (z.stops || []).map(s => s.orderId).filter((x): x is string => !!x),
+    centroid: z.centroidLat != null ? { lat: z.centroidLat, lng: z.centroidLng ?? 0 } : z.centroid,
+    totalWeightKg: z.totalWeightKg,
+    suggestedVehiclePlate: z.suggestedVehiclePlate,
+  }
 }
 
 const zoneColors = [
@@ -51,9 +74,9 @@ export default function TerritoryPlanningPage() {
         zoneCount,
       }).then(r => r.data)
 
-      const resultZones: TerritoryZone[] = res?.data?.zones || res?.data || res?.zones || []
-      if (Array.isArray(resultZones) && resultZones.length > 0) {
-        setZones(resultZones)
+      const rawZones: RawZone[] = res?.data?.zones || res?.data || res?.zones || []
+      if (Array.isArray(rawZones) && rawZones.length > 0) {
+        setZones(rawZones.map(mapZone))
       } else {
         // API may not support this yet - show demo zones based on order count
         const demoZones: TerritoryZone[] = []
@@ -180,8 +203,14 @@ export default function TerritoryPlanningPage() {
                     <span className={`text-[20px] font-bold ${color.text}`}>{zone.orderCount ?? 0}</span>
                     <span className="text-[12px] text-slate-500">sipariş</span>
                   </div>
+                  {zone.totalWeightKg != null && (
+                    <p className="text-[11px] text-slate-500 mt-1">Toplam ağırlık: <b>{Math.round(zone.totalWeightKg).toLocaleString()} kg</b></p>
+                  )}
+                  {zone.suggestedVehiclePlate && (
+                    <p className="text-[11px] text-slate-500 mt-1">Önerilen araç: <b>{zone.suggestedVehiclePlate}</b></p>
+                  )}
                   {zone.centroid && (
-                    <p className="text-[11px] text-slate-400 mt-2">
+                    <p className="text-[11px] text-slate-400 mt-1">
                       Merkez: {zone.centroid.lat.toFixed(4)}, {zone.centroid.lng.toFixed(4)}
                     </p>
                   )}

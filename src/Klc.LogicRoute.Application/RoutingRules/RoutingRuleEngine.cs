@@ -19,14 +19,13 @@ public class RoutingRuleEngine(IRoutingRuleRepository routingRuleRepository) : I
         return null;
     }
 
-    private static bool Matches(RoutingRule rule, Order order)
+    public static bool Matches(RoutingRule rule, Order order)
     {
-        if (!string.IsNullOrEmpty(rule.OriginRegion) && rule.OriginRegion != "*"
-            && !string.Equals(rule.OriginRegion, order.OriginCity, StringComparison.OrdinalIgnoreCase))
+        // Kural bölge bazlı (Marmara), sipariş şehir bazlı (Bursa) — şehir→bölge çözerek eşleştir
+        if (!string.IsNullOrEmpty(rule.OriginRegion) && !RegionResolver.RegionMatches(rule.OriginRegion, order.OriginCity))
             return false;
 
-        if (!string.IsNullOrEmpty(rule.DestinationRegion) && rule.DestinationRegion != "*"
-            && !string.Equals(rule.DestinationRegion, order.DestinationCity, StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrEmpty(rule.DestinationRegion) && !RegionResolver.RegionMatches(rule.DestinationRegion, order.DestinationCity))
             return false;
 
         if (rule.MinWeightKg.HasValue && order.TotalWeightKg < rule.MinWeightKg.Value)

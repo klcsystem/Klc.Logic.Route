@@ -52,6 +52,22 @@ public class ProvidersController(
         return Ok(ApiResponse<bool>.Ok(true));
     }
 
+    public record SetActiveRequest(bool IsActive);
+
+    /// <summary>Taşıyıcıyı aktif/pasif yap (İşlemler kolonu). Mevcut kaydı yükleyip yalnızca durumu değiştirir
+    /// — kısmi PUT'un diğer alanları silmesi sorununu önler.</summary>
+    [HttpPatch("{id:guid}/active")]
+    public async Task<ActionResult<ApiResponse<bool>>> SetActive(Guid id, [FromBody] SetActiveRequest req)
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var provider = await providerRepository.GetByIdAsync(id, tenantId);
+        if (provider == null) return NotFound(ApiResponse<bool>.Fail("Taşıyıcı bulunamadı"));
+        provider.IsActive = req.IsActive;
+        provider.UpdatedBy = tenantProvider.GetUserId();
+        await providerRepository.UpdateAsync(provider);
+        return Ok(ApiResponse<bool>.Ok(true, req.IsActive ? "Taşıyıcı aktifleştirildi" : "Taşıyıcı pasifleştirildi"));
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ApiResponse<bool>>> Delete(Guid id)
     {

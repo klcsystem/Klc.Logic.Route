@@ -81,8 +81,15 @@ export default function FleetPage() {
       if (driversRes.status === 'fulfilled' && driversRes.value) {
         const d = driversRes.value
         const raw = Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : d.data?.items || d.items || []
-        setDrivers(raw.map((d: DriverRecord, idx: number) => ({
-          ...d,
+        // skills/certifications/preferredZones backend'de virgüllü STRING gelebilir; diziye normalize et
+        // (aksi halde render'da .map/.join patlıyordu → sekme "çalışmıyor")
+        const toArr = (x: unknown): string[] =>
+          Array.isArray(x) ? x as string[] : (typeof x === 'string' && x ? x.split(',').map(s => s.trim()).filter(Boolean) : [])
+        setDrivers(raw.map((rec: DriverRecord & { skills?: unknown; certifications?: unknown; preferredZones?: unknown }, idx: number) => ({
+          ...rec,
+          skills: toArr(rec.skills),
+          certifications: toArr(rec.certifications),
+          preferredZones: toArr(rec.preferredZones),
           colorDot: driverColors[idx % driverColors.length],
         })))
       }

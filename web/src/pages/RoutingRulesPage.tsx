@@ -48,6 +48,23 @@ export default function RoutingRulesPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState({ name: '', originRegion: '', destinationRegion: '', minWeightKg: '', maxWeightKg: '', isHazardous: false, requiresColdChain: false, action: '', priority: 1 })
+  const [matchCounts, setMatchCounts] = useState<Record<string, number>>({})
+  const [evaluating, setEvaluating] = useState(false)
+  const [evalSummary, setEvalSummary] = useState('')
+
+  // Kuralları gerçek siparişlere karşı çalıştır — her kurala kaç sipariş uyuyor
+  const handleEvaluate = () => {
+    setEvaluating(true)
+    api.post('/routing-rules/evaluate').then((r) => {
+      const d = r.data?.data
+      if (d?.rules) {
+        const m: Record<string, number> = {}
+        d.rules.forEach((x: { ruleId: string; matchCount: number }) => { m[x.ruleId] = x.matchCount })
+        setMatchCounts(m)
+        setEvalSummary(`${d.evaluatedOrders} sipariş değerlendirildi · toplam ${d.totalMatched} eşleşme`)
+      }
+    }).finally(() => setEvaluating(false))
+  }
 
   const fetchRules = () => {
     setLoading(true)
@@ -92,8 +109,14 @@ export default function RoutingRulesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div><h1 className="text-[22px] font-bold text-slate-900 tracking-tight">{t.rules.title}</h1><p className="text-[14px] text-slate-400 mt-1">{t.rules.subtitle}</p></div>
-        <button onClick={() => { setFormData({ name: '', originRegion: '', destinationRegion: '', minWeightKg: '', maxWeightKg: '', isHazardous: false, requiresColdChain: false, action: '', priority: rules.length + 1 }); setDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all"><Plus className="w-4 h-4" /> {t.rules.newRule}</button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleEvaluate} disabled={evaluating} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-semibold hover:bg-slate-50 disabled:opacity-50 transition-all">
+            {evaluating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings2 className="w-4 h-4" />} Kuralları Değerlendir
+          </button>
+          <button onClick={() => { setFormData({ name: '', originRegion: '', destinationRegion: '', minWeightKg: '', maxWeightKg: '', isHazardous: false, requiresColdChain: false, action: '', priority: rules.length + 1 }); setDrawerOpen(true) }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 shadow-lg shadow-orange-400/10 transition-all"><Plus className="w-4 h-4" /> {t.rules.newRule}</button>
+        </div>
       </div>
+      {evalSummary && <div className="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-2.5 text-[13px] text-indigo-700">📋 {evalSummary} — her kuralın kaç siparişe uyduğu aşağıda görünür.</div>}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatCard label={t.rules.totalRules} value={String(rules.length)} change={0} icon={Settings2} color="text-blue-600 bg-blue-50" />
         <StatCard label={t.rules.activeRules} value={String(rules.filter(r => r.isActive).length)} change={0} icon={Settings2} color="text-green-600 bg-green-50" />
@@ -115,6 +138,11 @@ export default function RoutingRulesPage() {
                   <span className="text-[11px] font-bold text-slate-400 bg-slate-100 rounded-lg px-2 py-1">#{rule.priority}</span>
                   <h3 className="text-[15px] font-semibold text-slate-800">{rule.name}</h3>
                   <Badge variant={rule.isActive ? 'success' : 'default'}>{rule.isActive ? t.rules.enabled : t.rules.disabled}</Badge>
+                  {matchCounts[rule.id] != null && (
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${matchCounts[rule.id] > 0 ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
+                      {matchCounts[rule.id]} sipariş uyuyor
+                    </span>
+                  )}
                 </div>
                 <button onClick={() => handleToggle(rule)} className={`p-1.5 rounded-lg transition-colors ${rule.isActive ? 'text-green-500 hover:bg-green-50' : 'text-slate-400 hover:bg-slate-100'}`}><Power className="w-4 h-4" /></button>
               </div>

@@ -1,5 +1,6 @@
 using Klc.LogicRoute.Application.Common.Interfaces;
 using Klc.LogicRoute.Application.Common.Models;
+using Klc.LogicRoute.Application.RoutingRules;
 using Klc.LogicRoute.Domain.Entities;
 using Klc.LogicRoute.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ namespace Klc.LogicRoute.Api.Controllers;
 [Authorize]
 public class RoutingRulesController(
     IRoutingRuleRepository routingRuleRepository,
+    IOrderRepository orderRepository,
     ITenantProvider tenantProvider) : ControllerBase
 {
     [HttpGet]
@@ -20,6 +22,41 @@ public class RoutingRulesController(
         var tenantId = tenantProvider.GetTenantId();
         var rules = await routingRuleRepository.GetAllAsync(tenantId);
         return Ok(ApiResponse<IEnumerable<RoutingRule>>.Ok(rules));
+    }
+
+    /// <summary>Kuralları gerçek siparişlere karşı çalıştırır: her kurala kaç sipariş uyuyor + örnekler.
+    /// Kuralların "ne işe yaradığını" somut gösterir (motor artık gerçekten çalışıyor).</summary>
+    [HttpPost("evaluate")]
+    public async Task<ActionResult<ApiResponse<object>>> Evaluate()
+    {
+        var tenantId = tenantProvider.GetTenantId();
+        var rules = (await routingRuleRepository.GetAllAsync(tenantId)).Where(r => r.IsActive).OrderBy(r => r.Priority).ToList();
+        var orders = (await orderRepository.GetAllAsync(tenantId, 1, 500)).ToList();
+
+        var results = rules.Select(rule =>
+        {
+            var matched = orders.Where(o => RoutingRuleEngine.Matches(rule, o)).ToList();
+            return new
+            {
+                ruleId = rule.Id,
+                ruleName = rule.Name,
+                action = rule.Action,
+                matchCount = matched.Count,
+                examples = matched.Take(3).Select(o => new
+                {
+                    orderNumber = o.OrderNumber,
+                    route = $"{o.OriginCity} → {o.DestinationCity}",
+                    weightKg = o.TotalWeightKg
+                }).ToList()
+            };
+        }).ToList();
+
+        return Ok(ApiResponse<object>.Ok(new
+        {
+            evaluatedOrders = orders.Count,
+            totalMatched = results.Sum(r => r.matchCount),
+            rules = results
+        }));
     }
 
     [HttpGet("{id:guid}")]
