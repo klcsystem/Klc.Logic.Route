@@ -210,7 +210,6 @@ export default function LiveTrackingPage() {
   const offDuty = Math.max(0, totalDrivers - onDuty)
   const runningLate = safety.runningLateCount || delayAlerts.length
 
-  const completedCount = drivers.filter(d => d.status === 'Completed').length
   const failedCount = drivers.filter(d => d.status === 'Failed').length
 
   return (
@@ -360,7 +359,7 @@ export default function LiveTrackingPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-slate-50 rounded-xl p-3">
                     <p className="text-[10px] text-slate-400 uppercase font-medium">Tamamlanan</p>
-                    <p className="text-[18px] font-bold text-slate-800">{completedCount}/{drivers.length}</p>
+                    <p className="text-[18px] font-bold text-slate-800">{Math.round((selected.stopCount ?? 0) * (selected.progress / 100))}/{selected.stopCount ?? 0}</p>
                   </div>
                   <div className="bg-slate-50 rounded-xl p-3">
                     <p className="text-[10px] text-slate-400 uppercase font-medium">Başarısız</p>
