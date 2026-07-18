@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Truck, Plus, Search, Loader2, Package, CheckCircle, Clock } from 'lucide-react'
+import { Truck, Plus, Search, Loader2, Package, CheckCircle, Clock, ShieldCheck } from 'lucide-react'
 import { useI18n } from '../i18n'
 import StatCard from '../components/ui/StatCard'
 import Badge from '../components/ui/Badge'
 import Drawer from '../components/ui/Drawer'
 import { shipmentsApi } from '../api/shipments'
+import api from '../api/client'
+import { toast } from '../components/ui/Toast'
 import { useApi } from '../utils/useApi'
 import type { Shipment, ShipmentStatus } from '../types'
 
@@ -34,6 +36,40 @@ export default function ShipmentsPage() {
     () => shipmentsApi.getAll({ search: searchTerm || undefined, status: statusFilter !== 'all' ? statusFilter : undefined }),
     [searchTerm, statusFilter],
   )
+
+  // Sigorta durumu: sevkiyat id -> 'insured' (kabul edilmiş poliçe) | 'requested' (teklif istendi)
+  const [insMap, setInsMap] = useState<Record<string, 'insured' | 'requested'>>({})
+  const [insuring, setInsuring] = useState<string>('')
+  const loadInsurance = useCallback(async () => {
+    try {
+      const res = await api.get('/insurance/quotes').then(r => r.data)
+      const m: Record<string, 'insured' | 'requested'> = {}
+      for (const q of (res?.data || []) as { shipmentId: string; status: number }[]) {
+        if (!q.shipmentId) continue
+        if (q.status === 2) m[q.shipmentId] = 'insured'
+        else if (m[q.shipmentId] !== 'insured') m[q.shipmentId] = 'requested'
+      }
+      setInsMap(m)
+    } catch { /* sessiz */ }
+  }, [])
+  useEffect(() => { loadInsurance() }, [loadInsurance])
+
+  const handleInsure = async (s: Shipment) => {
+    setInsuring(s.id)
+    try {
+      const cargoValue = s.calculatedPrice || (s.totalWeightKg || 0) * 120
+      const res = await api.post('/insurance/request-quotes', {
+        shipmentId: s.id, cargoValue, routeDistanceKm: 0, driverScore: 80, vehicleAgeYears: 3,
+        isHazardous: s.isHazardous, requiresColdChain: s.requiresColdChain, currency: s.currency || 'TRY',
+      }).then(r => r.data)
+      if (res.success) { toast('success', res.message || 'Sigorta teklifi istendi — Sigorta ekranından takip edin'); loadInsurance() }
+      else toast('error', res.message || 'Sigorta talebi başarısız')
+    } catch {
+      toast('error', 'Sigorta talebi gönderilemedi')
+    } finally {
+      setInsuring('')
+    }
+  }
   const allShipments: Shipment[] = shipmentsData?.items || (Array.isArray(shipmentsData) ? shipmentsData as unknown as Shipment[] : [])
 
   const statusLabels: Record<string, string> = {
@@ -121,9 +157,10 @@ export default function ShipmentsPage() {
               <th className="text-right px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.cost}</th>
               <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.shipments.vehicle}</th>
               <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t.orders.priority}</th>
+              <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sigorta</th>
             </tr></thead>
             <tbody>
-              {isLoading && <tr><td colSpan={10} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
+              {isLoading && <tr><td colSpan={11} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && filtered.map((s) => (
                 <tr key={s.id} onClick={() => handleRowClick(s)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
                   <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{s.shipmentNumber}</td>
@@ -145,9 +182,24 @@ export default function ShipmentsPage() {
                   <td className="px-6 py-3.5 text-right text-[13px] font-medium text-slate-800">{s.calculatedPrice ? `${s.calculatedPrice.toLocaleString()} ${s.currency}` : '--'}</td>
                   <td className="px-6 py-3.5 text-center"><Badge variant="info">{s.recommendedVehicle}</Badge></td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={priorityVariant[s.priority]}>{s.priority}</Badge></td>
+                  <td className="px-6 py-3.5 text-center" onClick={(e) => e.stopPropagation()}>
+                    {insMap[s.id] === 'insured' ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600"><ShieldCheck className="w-3.5 h-3.5" />Sigortalı</span>
+                    ) : insMap[s.id] === 'requested' ? (
+                      <span className="text-[11px] font-medium text-indigo-500">Teklif İstendi</span>
+                    ) : (
+                      <button
+                        onClick={() => handleInsure(s)}
+                        disabled={insuring === s.id}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-indigo-200 text-indigo-600 text-[11px] font-semibold hover:bg-indigo-50 disabled:opacity-50 transition-colors"
+                      >
+                        {insuring === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />} Sigortala
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
-              {!isLoading && filtered.length === 0 && <tr><td colSpan={10} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
+              {!isLoading && filtered.length === 0 && <tr><td colSpan={11} className="px-6 py-12 text-center text-[14px] text-slate-400">{t.common.noData}</td></tr>}
             </tbody>
           </table>
         </div>
