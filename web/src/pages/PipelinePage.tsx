@@ -12,18 +12,31 @@ interface PipelineStep {
   lastRun: string
 }
 
+// Gercek backend sekli: { lastRunTime, status, details }. Diger alanlar (steps/totalRuns) API'de yok.
 interface PipelineStatus {
-  isRunning: boolean
-  lastRunAt: string
-  lastRunStatus: string
-  totalRuns: number
-  successRate: number
-  steps: PipelineStep[]
+  lastRunTime?: string
+  status?: string
+  details?: string
+  steps?: PipelineStep[]
 }
 
 const pipelineApi = {
   getStatus: () => api.get('/pipeline/status').then(r => r.data),
   run: () => api.post('/pipeline/run').then(r => r.data),
+}
+
+const statusLabels: Record<string, string> = {
+  NoWork: 'İş Yok', Idle: 'Beklemede', Running: 'Çalışıyor',
+  Success: 'Başarılı', Completed: 'Tamamlandı', Failed: 'Hata',
+}
+const statusVariant: Record<string, 'default' | 'success' | 'error' | 'warning' | 'orange' | 'info'> = {
+  NoWork: 'info', Idle: 'default', Running: 'orange',
+  Success: 'success', Completed: 'success', Failed: 'error',
+}
+const fmtDateTime = (v?: string): string => {
+  if (!v) return '—'
+  const d = new Date(v)
+  return isNaN(d.getTime()) ? '—' : d.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 export default function PipelinePage() {
@@ -46,6 +59,8 @@ export default function PipelinePage() {
   }
 
   const steps: PipelineStep[] = statusData?.steps || []
+  const rawStatus = statusData?.status || ''
+  const isRunning = rawStatus === 'Running'
 
   const stepStatusIcon = (status: string) => {
     switch (status) {
@@ -66,10 +81,9 @@ export default function PipelinePage() {
   }
 
   const kpis = [
-    { label: 'Toplam Çalıştırma', value: statusData?.totalRuns?.toString() || '0', icon: Workflow, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Başarı Oranı', value: statusData ? `%${(statusData.successRate ?? 0).toFixed(0)}` : '—', icon: Workflow, color: 'text-green-600 bg-green-50' },
-    { label: 'Son Durum', value: statusData?.lastRunStatus || '—', icon: Workflow, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Aktif', value: statusData?.isRunning ? 'Evet' : 'Hayir', icon: Workflow, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Son Durum', value: statusData ? (statusLabels[rawStatus] || rawStatus || '—') : '—', icon: Workflow, color: 'text-orange-600 bg-orange-50' },
+    { label: 'Son Çalıştırma', value: fmtDateTime(statusData?.lastRunTime), icon: Clock, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Aktif', value: isRunning ? 'Evet' : 'Hayır', icon: Workflow, color: 'text-purple-600 bg-purple-50' },
   ]
 
   return (
@@ -79,7 +93,7 @@ export default function PipelinePage() {
           <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">Pipeline</h1>
           <p className="text-[14px] text-slate-400 mt-1">Veri işleme pipeline durumu ve manuel tetikleme</p>
         </div>
-        <button onClick={handleTrigger} disabled={isTriggering || statusData?.isRunning} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all">
+        <button onClick={handleTrigger} disabled={isTriggering || isRunning} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 text-white text-[13px] font-semibold hover:from-orange-500 hover:to-orange-600 disabled:opacity-50 shadow-lg shadow-orange-400/10 transition-all">
           {isTriggering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
           Pipeline Çalıştır
         </button>
@@ -91,14 +105,14 @@ export default function PipelinePage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {kpis.map(kpi => <StatCard key={kpi.label} {...kpi} />)}
           </div>
 
-          {statusData?.lastRunAt && (
+          {statusData?.details && (
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 flex items-center gap-3">
-              <Clock className="w-5 h-5 text-slate-400" />
-              <span className="text-[13px] text-slate-600">Son çalıştırma: <span className="font-semibold text-slate-800">{statusData.lastRunAt}</span></span>
+              <div className="shrink-0"><Badge variant={statusVariant[rawStatus] || 'default'}>{statusLabels[rawStatus] || rawStatus}</Badge></div>
+              <span className="text-[13px] text-slate-600">{statusData.details}</span>
             </div>
           )}
 
@@ -127,7 +141,7 @@ export default function PipelinePage() {
                 ))}
               </div>
             ) : (
-              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</div>
+              <div className="px-6 py-12 text-center text-[13px] text-slate-400">Pipeline arka planda otomatik çalışır; adım geçmişi tutulmaz. Yukarıdaki durum en son çalıştırmayı gösterir.</div>
             )}
           </div>
         </>
