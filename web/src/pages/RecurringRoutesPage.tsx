@@ -8,7 +8,11 @@ interface RecurringRoute {
   name: string
   schedule: 'Daily' | 'Weekly' | 'Monthly'
   isActive: boolean
-  stopsCount: number
+  stops?: unknown[]
+  stopsCount?: number
+  daysOfWeek?: string
+  activationCount?: number
+  lastActivatedAt?: string
   lastActivated?: string
   description?: string
   origin?: string
@@ -20,6 +24,13 @@ const scheduleLabels: Record<string, string> = {
   Weekly: 'Haftalık',
   Monthly: 'Aylık',
 }
+
+const dayLabels: Record<string, string> = {
+  Monday: 'Pzt', Tuesday: 'Sal', Wednesday: 'Çar', Thursday: 'Per',
+  Friday: 'Cum', Saturday: 'Cmt', Sunday: 'Paz',
+}
+const formatDays = (d?: string): string =>
+  d ? d.split(',').map(x => dayLabels[x.trim()] || x.trim()).join(', ') : ''
 
 const scheduleBadgeVariant = (s: string): 'info' | 'success' | 'orange' => {
   switch (s) {
@@ -96,7 +107,7 @@ export default function RecurringRoutesPage() {
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ad</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Periyot</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Durak Sayısı</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Güzergah</th>
+                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Çalışma Günleri</th>
                   <th className="text-left px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Son Aktifleştirme</th>
                   <th className="text-center px-6 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Aktif</th>
                 </tr>
@@ -122,7 +133,7 @@ export default function RecurringRoutesPage() {
                       </Badge>
                     </td>
                     <td className="px-6 py-3.5 text-center">
-                      <span className="text-[14px] font-semibold text-slate-700">{route.stopsCount}</span>
+                      <span className="text-[14px] font-semibold text-slate-700">{route.stops?.length ?? route.stopsCount ?? 0}</span>
                       <span className="text-[11px] text-slate-400 ml-1">durak</span>
                     </td>
                     <td className="px-6 py-3.5">
@@ -131,14 +142,22 @@ export default function RecurringRoutesPage() {
                           <MapPin className="w-3 h-3 text-slate-400" />
                           {route.origin} → {route.destination}
                         </div>
+                      ) : formatDays(route.daysOfWeek) ? (
+                        <div className="flex items-center gap-1 text-[12px] text-slate-600">
+                          <Calendar className="w-3 h-3 text-slate-400" />
+                          {formatDays(route.daysOfWeek)}
+                        </div>
                       ) : (
                         <span className="text-[12px] text-slate-400">--</span>
                       )}
                     </td>
                     <td className="px-6 py-3.5 text-[13px] text-slate-600">
-                      {route.lastActivated
-                        ? new Date(route.lastActivated).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-                        : '--'}
+                      {route.lastActivatedAt || route.lastActivated ? (
+                        <div>
+                          <span>{new Date((route.lastActivatedAt || route.lastActivated)!).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                          {route.activationCount ? <span className="text-[11px] text-slate-400 ml-1">· {route.activationCount} kez</span> : null}
+                        </div>
+                      ) : '--'}
                     </td>
                     <td className="px-6 py-3.5 text-center">
                       <button
