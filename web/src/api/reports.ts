@@ -17,7 +17,7 @@ export interface CarrierPerformance {
   averageDeliveryHours: number
   totalCost: number
   averageCostPerKg: number
-  co2TotalKg: number
+  cO2TotalKg: number
   overallScore: number
   calculatedAt: string
 }

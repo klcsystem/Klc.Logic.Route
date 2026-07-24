@@ -140,7 +140,7 @@ export default function CarrierScorecardPage() {
               </div>
               <div>
                 <span className="text-[12px] text-slate-500 block mb-1">{t.scorecard.damageRate}</span>
-                <RatingBar value={100 - carrier.damageRate * 10} color="bg-red-400" />
+                <RatingBar value={carrier.damageRate} color="bg-red-400" />
               </div>
               <div>
                 <span className="text-[12px] text-slate-500 block mb-1">Ort. Teslimat</span>
@@ -157,7 +157,7 @@ export default function CarrierScorecardPage() {
               <div>
                 <span className="text-[12px] text-slate-500 block mb-1">CO2 Emisyon</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[14px] font-semibold text-slate-700">{(Number(carrier.co2TotalKg) / 1000).toFixed(1)} ton</span>
+                  <span className="text-[14px] font-semibold text-slate-700">{(Number(carrier.cO2TotalKg) / 1000).toFixed(1)} ton</span>
                 </div>
               </div>
             </div>
