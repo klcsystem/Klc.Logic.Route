@@ -38,6 +38,7 @@ export default function ReportsPage() {
   const { data: monthlyCosts } = useApi(() => dashboardApi.getMonthlyCosts())
   const { data: providerCosts } = useApi(() => dashboardApi.getProviderCosts())
   const { data: carrierPerfsData, isLoading: perfsLoading } = useApi(() => reportsApi.getCarrierPerformance())
+  const { data: otif } = useApi(() => reportsApi.getOtif())
   const { data: ordersData } = useApi(() => ordersApi.getAll({ pageSize: 200 }))
   const { data: shipmentsData } = useApi(() => shipmentsApi.getAll({ pageSize: 200 }))
 
@@ -152,6 +153,46 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {kpis.map((kpi) => <StatCard key={kpi.label} {...kpi} />)}
           </div>
+
+          {/* OTIF (Zamanında + Eksiksiz Teslimat) */}
+          {otif && otif.totalDelivered > 0 && (
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[15px] font-semibold text-slate-800">OTIF — Zamanında & Eksiksiz Teslimat</h3>
+                <span className="text-[12px] text-slate-400">{otif.totalDelivered.toLocaleString()} teslim edilen sevkiyat</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                {[
+                  { label: 'OTIF', value: `%${otif.otifPercent}`, cls: otif.otifPercent >= 90 ? 'text-green-600' : otif.otifPercent >= 75 ? 'text-amber-600' : 'text-red-600' },
+                  { label: 'Zamanında', value: `%${otif.onTimePercent}`, cls: 'text-slate-800' },
+                  { label: 'Eksiksiz', value: `%${otif.inFullPercent}`, cls: 'text-slate-800' },
+                  { label: 'Geciken', value: otif.lateCount.toLocaleString(), cls: 'text-red-500' },
+                ].map(m => (
+                  <div key={m.label} className="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                    <p className="text-[12px] text-slate-400">{m.label}</p>
+                    <p className={`text-[22px] font-bold ${m.cls}`}>{m.value}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase mb-2">Varış Şehri Bazında OTIF</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[12px]">
+                  <thead><tr className="border-b border-slate-100 text-slate-400">
+                    <th className="text-left py-2 font-semibold">Şehir</th><th className="text-right py-2 font-semibold">Teslimat</th><th className="text-right py-2 font-semibold">OTIF</th>
+                  </tr></thead>
+                  <tbody>
+                    {otif.byDestination.map(d => (
+                      <tr key={d.city} className="border-b border-slate-50">
+                        <td className="py-2 text-slate-700">{d.city}</td>
+                        <td className="py-2 text-right text-slate-500">{d.total}</td>
+                        <td className="py-2 text-right"><span className={`font-semibold ${d.otifPercent >= 90 ? 'text-green-600' : d.otifPercent >= 75 ? 'text-amber-600' : 'text-red-600'}`}>%{d.otifPercent}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Tabs */}
           <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
