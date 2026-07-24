@@ -38,7 +38,21 @@ export default function MarketplacePage() {
     ),
     [],
   )
-  const listings: Listing[] = listingsData?.items || []
+  // Backend DIZI donuyor (items degil) ve alan adlari farkli (originCity/availableWeightKg/status=int) — map'le
+  const rawListings = (Array.isArray(listingsData)
+    ? listingsData
+    : ((listingsData as { items?: unknown[] })?.items || [])) as Record<string, unknown>[]
+  const listings: Listing[] = rawListings.map(l => ({
+    id: String(l.id ?? ''),
+    companyName: String(l.contactPhone || 'İlan'),
+    from: String(l.originCity || l.from || ''),
+    to: String(l.destinationCity || l.to || ''),
+    availableDate: l.availableDate ? String(l.availableDate).slice(0, 10) : '',
+    capacityKg: Number(l.availableWeightKg ?? l.capacityKg) || 0,
+    pricePerKg: Number(l.pricePerKg) || 0,
+    vehicleType: String(l.vehicleType || ''),
+    status: (l.status === 0 || l.status === 'Available') ? 'Müsait' : String(l.status ?? ''),
+  }))
 
   const handleSearch = () => { refetch() }
 
@@ -118,7 +132,7 @@ export default function MarketplacePage() {
                   <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{l.capacityKg?.toLocaleString()} kg</td>
                   <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{l.pricePerKg} TRY/kg</td>
                   <td className="px-6 py-3.5 text-center text-[13px] text-slate-600">{l.vehicleType}</td>
-                  <td className="px-6 py-3.5 text-center"><Badge variant={l.status === 'Available' ? 'success' : 'default'}>{l.status}</Badge></td>
+                  <td className="px-6 py-3.5 text-center"><Badge variant={l.status === 'Müsait' ? 'success' : 'default'}>{l.status}</Badge></td>
                 </tr>
               ))}
               {!isLoading && listings.length === 0 && <tr><td colSpan={7} className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</td></tr>}
