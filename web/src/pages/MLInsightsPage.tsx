@@ -8,24 +8,68 @@ import { useApi } from '../utils/useApi'
 import type { MlModel, PredictionVsActual } from '../api/ml'
 
 const modelIcons: Record<string, React.ElementType> = {
+  DeliveryTime: Clock,
   DeliveryTimePrediction: Clock,
   DelayRisk: AlertTriangle,
   CostAnomaly: TrendingUp,
 }
 
 const modelColors: Record<string, { bg: string; text: string; border: string }> = {
+  DeliveryTime: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
   DeliveryTimePrediction: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
   DelayRisk: { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200' },
   CostAnomaly: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' },
 }
 
+const modelNames: Record<string, string> = {
+  DeliveryTime: 'Teslimat Süresi Tahmini',
+  DeliveryTimePrediction: 'Teslimat Süresi Tahmini',
+  DelayRisk: 'Gecikme Riski',
+  CostAnomaly: 'Maliyet Anomalisi',
+}
+
+// Backend ham sekli: modelType/modelVersion/metrics(JSON string)/trainingRecords/isActive.
+// Sayfa MlModel bekliyor -> normalize et (metrics'ten R2/RMSE cikar, accuracy=R2*100).
+interface RawMlModel {
+  id: string
+  modelType: string
+  modelVersion: string
+  metrics?: string
+  trainingRecords?: number
+  isActive?: boolean
+  trainedAt: string
+}
+function normalizeModel(raw: RawMlModel): MlModel {
+  let m: Record<string, number> = {}
+  try { m = raw.metrics ? JSON.parse(raw.metrics) : {} } catch { /* ignore */ }
+  const r2 = m.RSquared ?? m.R2 ?? m.Accuracy
+  const rmse = m.RootMeanSquaredError ?? m.RMSE
+  return {
+    id: raw.id,
+    type: raw.modelType as MlModel['type'],
+    name: modelNames[raw.modelType] || raw.modelType,
+    version: raw.modelVersion?.length === 14
+      ? `${raw.modelVersion.slice(0, 4)}-${raw.modelVersion.slice(4, 6)}-${raw.modelVersion.slice(6, 8)}`
+      : raw.modelVersion,
+    accuracy: r2 != null ? Math.round(r2 * 1000) / 10 : 0,
+    rmse: rmse != null ? Math.round(rmse * 100) / 100 : undefined,
+    r2Score: r2 != null ? Math.round(r2 * 1000) / 1000 : undefined,
+    trainedAt: raw.trainedAt,
+    recordCount: raw.trainingRecords ?? 0,
+    status: raw.isActive ? 'Active' : 'Failed',
+  }
+}
+
 export default function MLInsightsPage() {
   const { t } = useI18n()
   const [trainingModel, setTrainingModel] = useState<string | null>(null)
-  const [selectedModel, setSelectedModel] = useState<string>('DeliveryTimePrediction')
+  const [selectedModel, setSelectedModel] = useState<string>('DeliveryTime')
 
   const { data: modelsData } = useApi(() => mlApi.getModels(), [])
-  const models: MlModel[] = modelsData || []
+  const allModels: MlModel[] = ((modelsData as unknown as RawMlModel[]) || []).map(normalizeModel)
+  // Sadece aktif (production) modelleri goster; 22 tarihsel versiyonu degil.
+  const activeModels = allModels.filter(m => m.status === 'Active')
+  const models: MlModel[] = activeModels.length > 0 ? activeModels : allModels.slice(0, 3)
 
   const { data: scatterRaw } = useApi(() => mlApi.getPredictionVsActual(selectedModel), [selectedModel])
   const scatterData: PredictionVsActual[] = scatterRaw || []
@@ -140,7 +184,7 @@ export default function MLInsightsPage() {
                   selectedModel === m.type ? 'bg-orange-50 text-orange-600 border border-orange-200' : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
                 }`}
               >
-                {m.type === 'DeliveryTimePrediction' ? t.ml.deliveryTime : m.type === 'DelayRisk' ? t.ml.delayRisk : t.ml.costAnomaly}
+                {m.name}
               </button>
             ))}
           </div>
