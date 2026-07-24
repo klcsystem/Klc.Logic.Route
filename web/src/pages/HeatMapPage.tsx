@@ -78,12 +78,15 @@ export default function HeatMapPage() {
   const [filterDateFrom, setFilterDateFrom] = useState('')
   const [filterDateTo, setFilterDateTo] = useState('')
 
-  const { data: ordersData, isLoading } = useApi<OrderPoint[]>(
+  const { data: ordersData, isLoading } = useApi<OrderPoint[] | { items: OrderPoint[] }>(
     () => ordersApi.getAll(1, 5000),
     [],
   )
 
-  const orders: OrderPoint[] = ordersData || []
+  // /orders sayfali OBJECT {items,...} donuyor; useApi ApiResponse.data'yi acar ama pagination sarmalayicisini degil.
+  const orders: OrderPoint[] = Array.isArray(ordersData)
+    ? ordersData
+    : (ordersData?.items || [])
 
   const filteredOrders = useMemo(() => {
     return orders.filter(o => {
