@@ -9,15 +9,17 @@ import { useApi } from '../utils/useApi'
 
 interface InvoiceAudit {
   id: string
-  invoiceNo: string
+  invoiceNo?: string
+  invoiceNumber?: string
   shipmentId?: string
   shipmentNumber?: string
-  providerName: string
+  providerName?: string
   invoiceAmount: number
   expectedAmount: number
-  differenceAmount: number
+  difference?: number
+  differenceAmount?: number
   differencePercent: number
-  status: string
+  status: string | number
   reviewedBy?: string
   invoiceDate?: string
   createdAt: string
@@ -28,13 +30,24 @@ interface InvoiceAuditResult {
   totalCount: number
 }
 
-const statusVariant: Record<string, 'success' | 'warning' | 'error' | 'default' | 'info'> = {
+// Backend, status'u bazen sayisal enum ("0".."3") bazen string ad ("Approved") olarak donuyor.
+// Ikisini de tek bir kanonik degere indirgiyoruz. Seed: 0=Pending, 1=NeedsReview, 2=Flagged, 3=Approved.
+type CanonicalStatus = 'Approved' | 'Flagged' | 'Pending' | 'NeedsReview'
+function normalizeStatus(raw: string | number | undefined): CanonicalStatus {
+  const s = String(raw ?? '').trim()
+  switch (s) {
+    case '3': case 'Approved': case 'Verified': return 'Approved'
+    case '2': case 'Flagged': case 'Disputed': return 'Flagged'
+    case '1': case 'NeedsReview': case 'Rejected': return 'NeedsReview'
+    case '0': case 'Pending': default: return 'Pending'
+  }
+}
+
+const statusVariant: Record<CanonicalStatus, 'success' | 'warning' | 'error' | 'info'> = {
   Approved: 'success',
   Pending: 'warning',
   Flagged: 'error',
   NeedsReview: 'info',
-  Verified: 'success',
-  Disputed: 'error',
 }
 
 export default function InvoiceVerificationPage() {
@@ -44,33 +57,36 @@ export default function InvoiceVerificationPage() {
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false)
   const [selectedAudit, setSelectedAudit] = useState<InvoiceAudit | null>(null)
 
+  // Tumunu cekip filtrelemeyi client-side yapiyoruz: backend status'u numeric string
+  // sakliyor, string ad ("Approved") ile server-side filtre bos donerdi.
   const { data: auditsData, isLoading } = useApi(
-    () => api.get('/invoice-audits', { params: { status: statusFilter !== 'all' ? statusFilter : undefined } }).then(r => r.data),
-    [statusFilter],
+    () => api.get('/invoice-audits').then(r => r.data),
+    [],
   )
 
   const audits: InvoiceAudit[] = (auditsData as unknown as InvoiceAuditResult)?.items
     || (Array.isArray(auditsData) ? auditsData as unknown as InvoiceAudit[] : [])
 
-  const statusLabels: Record<string, string> = {
+  const statusLabels: Record<CanonicalStatus, string> = {
     Approved: t.invoice.verified,
     Pending: t.invoice.pending,
     Flagged: t.invoice.disputed,
     NeedsReview: 'Inceleme Gerekli',
-    Verified: t.invoice.verified,
-    Disputed: t.invoice.disputed,
   }
 
-  const filteredAudits = audits.filter((a) =>
-    searchTerm === '' ||
-    a.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    a.providerName.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const invNo = (a: InvoiceAudit) => a.invoiceNumber || a.invoiceNo || ''
+  const filteredAudits = audits.filter((a) => {
+    const st = normalizeStatus(a.status)
+    if (statusFilter !== 'all' && st !== statusFilter) return false
+    if (searchTerm === '') return true
+    const q = searchTerm.toLowerCase()
+    return invNo(a).toLowerCase().includes(q) || (a.providerName || '').toLowerCase().includes(q)
+  })
 
   const totalCount = audits.length
-  const approvedCount = audits.filter(a => a.status === 'Approved' || a.status === 'Verified').length
-  const flaggedCount = audits.filter(a => a.status === 'Flagged' || a.status === 'Disputed').length
-  const pendingCount = audits.filter(a => a.status === 'Pending' || a.status === 'NeedsReview').length
+  const approvedCount = audits.filter(a => normalizeStatus(a.status) === 'Approved').length
+  const flaggedCount = audits.filter(a => normalizeStatus(a.status) === 'Flagged').length
+  const pendingCount = audits.filter(a => { const s = normalizeStatus(a.status); return s === 'Pending' || s === 'NeedsReview' }).length
 
   const kpis = [
     { label: t.invoice.totalInvoices, value: totalCount.toString(), change: 0, icon: FileText, color: 'text-blue-600 bg-blue-50' },
@@ -133,13 +149,14 @@ export default function InvoiceVerificationPage() {
             <tbody>
               {isLoading && <tr><td colSpan={9} className="px-6 py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-orange-400 mx-auto" /></td></tr>}
               {!isLoading && filteredAudits.map((a) => {
-                const diff = a.differenceAmount || (a.invoiceAmount - a.expectedAmount)
+                const diff = a.difference ?? a.differenceAmount ?? (a.invoiceAmount - a.expectedAmount)
                 const diffPct = a.differencePercent || (a.expectedAmount ? ((diff / a.expectedAmount) * 100) : 0)
+                const st = normalizeStatus(a.status)
                 return (
                   <tr key={a.id} onClick={() => handleRowClick(a)} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors cursor-pointer">
-                    <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{a.invoiceNo}</td>
+                    <td className="px-6 py-3.5 text-[13px] font-medium text-slate-800">{invNo(a) || '--'}</td>
                     <td className="px-6 py-3.5 text-[12px] text-slate-500">{a.shipmentNumber || '--'}</td>
-                    <td className="px-6 py-3.5 text-[13px] text-slate-700">{a.providerName}</td>
+                    <td className="px-6 py-3.5 text-[13px] text-slate-700">{a.providerName || '--'}</td>
                     <td className="px-6 py-3.5 text-right text-[13px] text-slate-800">{a.invoiceAmount.toLocaleString()} TL</td>
                     <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{a.expectedAmount.toLocaleString()} TL</td>
                     <td className="px-6 py-3.5 text-right text-[13px]">
@@ -153,7 +170,7 @@ export default function InvoiceVerificationPage() {
                       </span>
                     </td>
                     <td className="px-6 py-3.5 text-center">
-                      <Badge variant={statusVariant[a.status] || 'default'}>{statusLabels[a.status] || a.status}</Badge>
+                      <Badge variant={statusVariant[st]}>{statusLabels[st]}</Badge>
                     </td>
                     <td className="px-6 py-3.5 text-[12px] text-slate-500">{a.reviewedBy || '--'}</td>
                   </tr>
@@ -166,19 +183,19 @@ export default function InvoiceVerificationPage() {
       </div>
 
       {/* Detail Drawer */}
-      <Drawer isOpen={detailDrawerOpen} onClose={() => setDetailDrawerOpen(false)} title={selectedAudit?.invoiceNo || ''} width="max-w-xl">
+      <Drawer isOpen={detailDrawerOpen} onClose={() => setDetailDrawerOpen(false)} title={selectedAudit ? invNo(selectedAudit) : ''} width="max-w-xl">
         {selectedAudit && (
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <Badge variant={statusVariant[selectedAudit.status] || 'default'}>{statusLabels[selectedAudit.status] || selectedAudit.status}</Badge>
+              <Badge variant={statusVariant[normalizeStatus(selectedAudit.status)]}>{statusLabels[normalizeStatus(selectedAudit.status)]}</Badge>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {([
-                [t.invoice.carrier, selectedAudit.providerName],
+                [t.invoice.carrier, selectedAudit.providerName || '--'],
                 ['Sevkiyat', selectedAudit.shipmentNumber || '--'],
                 [t.invoice.invoiceAmount, `${selectedAudit.invoiceAmount.toLocaleString()} TL`],
                 [t.invoice.calculatedAmount, `${selectedAudit.expectedAmount.toLocaleString()} TL`],
-                [t.invoice.difference, `${(selectedAudit.differenceAmount || (selectedAudit.invoiceAmount - selectedAudit.expectedAmount)).toLocaleString()} TL`],
+                [t.invoice.difference, `${(selectedAudit.difference ?? selectedAudit.differenceAmount ?? (selectedAudit.invoiceAmount - selectedAudit.expectedAmount)).toLocaleString()} TL`],
                 ['Fark %', `${(selectedAudit.differencePercent || 0).toFixed(1)}%`],
                 ['Inceleyen', selectedAudit.reviewedBy || '--'],
                 [t.common.date, selectedAudit.invoiceDate || new Date(selectedAudit.createdAt).toLocaleDateString('tr-TR')],
