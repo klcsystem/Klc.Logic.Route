@@ -1,30 +1,29 @@
-import { Brain, Loader2 } from 'lucide-react'
+import { Brain, Loader2, Clock, MapPin, Timer, Database, TrendingUp } from 'lucide-react'
 import StatCard from '../components/ui/StatCard'
-import Badge from '../components/ui/Badge'
 import api from '../api/client'
 import { useApi } from '../utils/useApi'
 
+// Gercek backend sekli (/learning/summary) — surekli ogrenme motoru
 interface LearningSummary {
-  totalModels: number
-  activeModels: number
-  totalPredictions: number
-  accuracyRate: number
-  lastTrainedAt: string
-  insights: LearningInsight[]
-}
-
-interface LearningInsight {
-  id: string
-  modelName: string
-  category: string
-  description: string
-  impact: string
-  confidence: number
-  learnedAt: string
+  totalServiceTimeLearned: number
+  totalAddressCorrected: number
+  totalTrafficPatterns: number
+  totalDataPointsProcessed: number
+  averageServiceTimeAccuracyImprovement: number
+  averageEtaAccuracyImprovement: number
+  lastTrainingRun: string | null
+  nextScheduledRun: string | null
 }
 
 const learningApi = {
   getSummary: () => api.get('/learning/summary').then(r => r.data),
+}
+
+const num = (n?: number) => (n ?? 0).toLocaleString('tr-TR')
+const fmtDateTime = (v?: string | null): string => {
+  if (!v) return '—'
+  const d = new Date(v)
+  return isNaN(d.getTime()) ? '—' : d.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 export default function LearningPage() {
@@ -33,20 +32,17 @@ export default function LearningPage() {
     [],
   )
 
-  const insights: LearningInsight[] = summaryData?.insights || []
-
   const kpis = [
-    { label: 'Toplam Model', value: summaryData?.totalModels?.toString() || '0', icon: Brain, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Aktif Model', value: summaryData?.activeModels?.toString() || '0', icon: Brain, color: 'text-green-600 bg-green-50' },
-    { label: 'Toplam Tahmin', value: summaryData?.totalPredictions?.toLocaleString() || '0', icon: Brain, color: 'text-orange-600 bg-orange-50' },
-    { label: 'Dogruluk Oranı', value: summaryData ? `%${summaryData.accuracyRate?.toFixed(1)}` : '—', icon: Brain, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Öğrenilen Servis Süresi', value: num(summaryData?.totalServiceTimeLearned), icon: Timer, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Düzeltilen Adres', value: num(summaryData?.totalAddressCorrected), icon: MapPin, color: 'text-green-600 bg-green-50' },
+    { label: 'Trafik Deseni', value: num(summaryData?.totalTrafficPatterns), icon: Brain, color: 'text-orange-600 bg-orange-50' },
+    { label: 'İşlenen Veri Noktası', value: num(summaryData?.totalDataPointsProcessed), icon: Database, color: 'text-purple-600 bg-purple-50' },
   ]
 
-  const impactVariant: Record<string, 'default' | 'success' | 'warning' | 'info'> = {
-    High: 'success',
-    Medium: 'warning',
-    Low: 'info',
-  }
+  const improvements = [
+    { label: 'ETA Doğruluk İyileşmesi', value: `%${(summaryData?.averageEtaAccuracyImprovement ?? 0).toFixed(1)}` },
+    { label: 'Servis Süresi Doğruluk İyileşmesi', value: `%${(summaryData?.averageServiceTimeAccuracyImprovement ?? 0).toFixed(1)}` },
+  ]
 
   return (
     <div className="space-y-6">
@@ -65,44 +61,47 @@ export default function LearningPage() {
             {kpis.map(kpi => <StatCard key={kpi.label} {...kpi} />)}
           </div>
 
-          {summaryData?.lastTrainedAt && (
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4 flex items-center gap-3">
-              <Brain className="w-5 h-5 text-purple-500" />
-              <span className="text-[13px] text-slate-600">Son egitim: <span className="font-semibold text-slate-800">{summaryData.lastTrainedAt}</span></span>
-            </div>
-          )}
-
-          {/* Ogrenilen Kaliplar */}
-          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100">
-              <h3 className="text-[15px] font-semibold text-slate-800">Ogrenilen Kaliplar ve Icerikler</h3>
-            </div>
-            {insights.length > 0 ? (
-              <div className="divide-y divide-slate-50">
-                {insights.map(insight => (
-                  <div key={insight.id} className="px-6 py-4 hover:bg-slate-50/50 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[13px] font-semibold text-slate-800">{insight.modelName}</span>
-                        <Badge variant="default">{insight.category}</Badge>
-                        <Badge variant={impactVariant[insight.impact] || 'default'}>{insight.impact} Etki</Badge>
-                      </div>
-                      <span className="text-[11px] text-slate-400">{insight.learnedAt}</span>
-                    </div>
-                    <p className="text-[13px] text-slate-600">{insight.description}</p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-[11px] text-slate-400">Guven:</span>
-                      <div className="w-24 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-purple-500 h-full rounded-full" style={{ width: `${insight.confidence}%` }} />
-                      </div>
-                      <span className="text-[11px] font-medium text-slate-500">%{insight.confidence}</span>
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Dogruluk Iyilesmeleri */}
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-5 h-5 text-green-500" />
+                <h3 className="text-[15px] font-semibold text-slate-800">Doğruluk İyileşmeleri</h3>
+              </div>
+              <div className="space-y-3">
+                {improvements.map(imp => (
+                  <div key={imp.label} className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200/60">
+                    <span className="text-[13px] font-medium text-green-800">{imp.label}</span>
+                    <span className="text-[16px] font-bold text-green-700">{imp.value}</span>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="px-6 py-12 text-center text-[14px] text-slate-400">Veri bulunamadı</div>
-            )}
+            </div>
+
+            {/* Egitim Takvimi */}
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-purple-500" />
+                <h3 className="text-[15px] font-semibold text-slate-800">Eğitim Takvimi</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                  <span className="text-[13px] font-medium text-slate-700">Son Eğitim</span>
+                  <span className="text-[13px] font-semibold text-slate-800">{fmtDateTime(summaryData?.lastTrainingRun)}</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                  <span className="text-[13px] font-medium text-slate-700">Sonraki Planlanan</span>
+                  <span className="text-[13px] font-semibold text-slate-800">{fmtDateTime(summaryData?.nextScheduledRun)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
+            <p className="text-[13px] text-slate-500">
+              Öğrenme motoru operasyonel verilerden sürekli öğrenir: servis süreleri, adres düzeltmeleri ve trafik desenleri.
+              Yeterli veri biriktikçe tahmin doğruluğu otomatik iyileşir.
+            </p>
           </div>
         </>
       )}
