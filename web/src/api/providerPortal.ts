@@ -41,13 +41,14 @@ export interface PortalShipment {
   plate: string | null
 }
 
+// Gercek backend sekli (/provider-portal/stats)
 export interface PortalStats {
-  activeShipmentCount: number
-  pendingBidCount: number
-  onTimeDeliveryRate: number
-  monthlyRevenue: number
-  totalShipments: number
-  avgDeliveryHours: number
+  totalOrders: number
+  activeShipments: number
+  totalVehicles: number
+  totalDrivers: number
+  completedShipments: number
+  pendingOrders: number
 }
 
 export interface TariffRow {

@@ -327,8 +327,8 @@ export default function ProviderPortalPage() {
 
   // ── Derived values ──
   const providerName = 'Murat Lojistik'
-  const activeShipmentCount = stats?.activeShipmentCount ?? shipments.filter(s => s.status !== 'Delivered').length
-  const pendingBidCount = stats?.pendingBidCount ?? orders.filter(o => o.status === 'open').length
+  const activeShipmentCount = stats?.activeShipments ?? shipments.filter(s => s.status !== 'Delivered').length
+  const pendingBidCount = stats?.pendingOrders ?? orders.filter(o => o.status === 'open').length
 
   if (loading) {
     return (
@@ -349,9 +349,9 @@ export default function ProviderPortalPage() {
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Aktif Sevkiyat" value={String(activeShipmentCount)} change={1} icon={Truck} color="text-orange-600 bg-orange-50" />
-        <StatCard label="Bekleyen Teklif" value={String(pendingBidCount)} change={3} icon={ShoppingCart} color="text-blue-600 bg-blue-50" />
-        <StatCard label="Zamanında Teslimat" value={stats ? `%${stats.onTimeDeliveryRate}` : '—'} change={2} icon={TrendingUp} color="text-green-600 bg-green-50" />
-        <StatCard label="Bu Ay Gelir" value={stats ? `₺${stats.monthlyRevenue.toLocaleString('tr-TR')}` : '—'} change={8} icon={DollarSign} color="text-purple-600 bg-purple-50" />
+        <StatCard label="Bekleyen Sipariş" value={String(pendingBidCount)} change={3} icon={ShoppingCart} color="text-blue-600 bg-blue-50" />
+        <StatCard label="Tamamlanan Sevkiyat" value={stats ? String(stats.completedShipments ?? 0) : '—'} change={2} icon={TrendingUp} color="text-green-600 bg-green-50" />
+        <StatCard label="Toplam Araç" value={stats ? String(stats.totalVehicles ?? 0) : '—'} change={8} icon={DollarSign} color="text-purple-600 bg-purple-50" />
       </div>
 
       {/* ── Tab Bar ── */}
@@ -600,9 +600,9 @@ export default function ProviderPortalPage() {
       {activeTab === 'shipments' && (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <StatCard label="Toplam Sevkiyat" value={stats ? String(stats.totalShipments) : String(shipments.length)} change={5} icon={Package} color="text-blue-600 bg-blue-50" />
-            <StatCard label="Zamanında Teslimat" value={stats ? `%${stats.onTimeDeliveryRate}` : '—'} change={2} icon={CheckCircle2} color="text-green-600 bg-green-50" />
-            <StatCard label="Ort. Teslimat Süresi" value={stats ? `${stats.avgDeliveryHours} saat` : '—'} change={-3} icon={Clock} color="text-purple-600 bg-purple-50" />
+            <StatCard label="Toplam Sevkiyat" value={stats ? String((stats.activeShipments ?? 0) + (stats.completedShipments ?? 0)) : String(shipments.length)} change={5} icon={Package} color="text-blue-600 bg-blue-50" />
+            <StatCard label="Tamamlanan" value={stats ? String(stats.completedShipments ?? 0) : '—'} change={2} icon={CheckCircle2} color="text-green-600 bg-green-50" />
+            <StatCard label="Aktif Sevkiyat" value={stats ? String(stats.activeShipments ?? 0) : '—'} change={-3} icon={Clock} color="text-purple-600 bg-purple-50" />
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
