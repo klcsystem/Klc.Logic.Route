@@ -6,7 +6,8 @@ export type RouteStatus = 'Planned' | 'InProgress' | 'Completed' | 'Cancelled'
 
 export type VehicleStatus = 'Available' | 'OnRoute' | 'Maintenance' | 'OutOfService'
 
-export type OrderStatus = 'Pending' | 'Assigned' | 'InTransit' | 'Delivered' | 'Failed' | 'Cancelled'
+// API'nin gercek OrderStatus degerleri (Draft/ReadyForShipment/InShipment/Completed) + geriye donuk eski degerler
+export type OrderStatus = 'Draft' | 'ReadyForShipment' | 'InShipment' | 'Completed' | 'Cancelled' | 'Pending' | 'Assigned' | 'InTransit' | 'Delivered' | 'Failed'
 
 export type OrderPriority = 'Normal' | 'Priority' | 'Urgent'
 

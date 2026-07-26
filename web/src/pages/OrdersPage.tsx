@@ -16,7 +16,15 @@ import type { ReverseGeocodingResult } from '../api/geocoding'
 import type { Order } from '../types'
 
 const priorityVariant: Record<string, 'default' | 'warning' | 'error'> = { Normal: 'default', Priority: 'warning', Urgent: 'error' }
-const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'orange'> = { Pending: 'warning', Assigned: 'info', InTransit: 'orange', Delivered: 'success', Failed: 'error', Cancelled: 'default' }
+// API'nin gercek OrderStatus degerleri: Draft/ReadyForShipment/InShipment/Completed/Cancelled/Pending
+// (eski Assigned/InTransit/Delivered/Failed anahtarlari da geriye donuk uyumluluk icin tutuldu)
+const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info' | 'orange'> = {
+  Draft: 'default', ReadyForShipment: 'info', InShipment: 'orange', Completed: 'success', Cancelled: 'error', Pending: 'warning',
+  Assigned: 'info', InTransit: 'orange', Delivered: 'success', Failed: 'error',
+}
+const statusLabels: Record<string, string> = {
+  Draft: 'Taslak', ReadyForShipment: 'Sevkiyata Hazır', InShipment: 'Sevkiyatta', Completed: 'Tamamlandı', Cancelled: 'İptal', Pending: 'Bekliyor',
+}
 
 export default function OrdersPage() {
   const { t } = useI18n()
@@ -42,8 +50,6 @@ export default function OrdersPage() {
     totalWeightKg: 0, totalVolumeM3: 0, priority: 'Normal', productCategory: 'FMCG', isHazardous: false, requiresColdChain: false,
   })
   const [activeMapField, setActiveMapField] = useState<'origin' | 'destination' | null>(null)
-
-  const statusLabels: Record<string, string> = { Pending: t.orders.pending, Assigned: t.orders.assigned, InTransit: t.orders.inTransit, Delivered: t.orders.delivered, Failed: t.orders.failed, Cancelled: t.orders.cancelled }
 
   const handleSyncErp = async () => {
     setIsSyncing(true)
@@ -71,8 +77,9 @@ export default function OrdersPage() {
   }
 
   const totalCount = ordersData?.totalCount || orders.length
-  const pendingCount = orders.filter(o => o.status === 'Pending').length
-  const deliveredCount = orders.filter(o => o.status === 'Delivered').length
+  // Sevkiyat bekleyenler: Draft + ReadyForShipment + Pending; teslim edilen: Completed
+  const pendingCount = orders.filter(o => o.status === 'Draft' || o.status === 'ReadyForShipment' || o.status === 'Pending').length
+  const deliveredCount = orders.filter(o => o.status === 'Completed' || o.status === 'Delivered').length
 
   const kpis = [
     { label: t.orders.totalOrders, value: totalCount.toLocaleString(), change: 0, icon: Package, color: 'text-blue-600 bg-blue-50' },
@@ -156,7 +163,7 @@ export default function OrdersPage() {
                   <td className="px-6 py-3.5"><span className="text-[12px] text-slate-500">{o.originCity} → {o.destinationCity}</span></td>
                   <td className="px-6 py-3.5 text-right text-[13px] text-slate-600">{o.totalWeightKg.toLocaleString()} kg</td>
                   <td className="px-6 py-3.5 text-center"><Badge variant={priorityVariant[o.priority]}>{o.priority}</Badge></td>
-                  <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[o.status]}>{statusLabels[o.status]}</Badge></td>
+                  <td className="px-6 py-3.5 text-center"><Badge variant={statusVariant[o.status] || 'default'}>{statusLabels[o.status] || o.status}</Badge></td>
                   <td className="px-6 py-3.5 text-center text-[12px] text-slate-500">{o.requestedDeliveryDate}</td>
                   <td className="w-12 px-2 py-3.5">
                     <button
@@ -179,7 +186,7 @@ export default function OrdersPage() {
         {selectedOrder && (
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <Badge variant={statusVariant[selectedOrder.status]}>{statusLabels[selectedOrder.status]}</Badge>
+              <Badge variant={statusVariant[selectedOrder.status] || 'default'}>{statusLabels[selectedOrder.status] || selectedOrder.status}</Badge>
               <Badge variant={priorityVariant[selectedOrder.priority]}>{selectedOrder.priority}</Badge>
               {selectedOrder.isHazardous && <Badge variant="error">ADR</Badge>}
               {selectedOrder.requiresColdChain && <Badge variant="info">Frigo</Badge>}
